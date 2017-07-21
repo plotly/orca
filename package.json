@@ -1,0 +1,30 @@
+{
+  "name": "image-exporter",
+  "version": "0.0.1",
+  "description": "Plotly's image exporting utility",
+  "license": "MIT",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "lint": "standard --fix",
+    "test:lint": "standard | snazzy",
+    "test": "npm run test:lint"
+  },
+  "author": "Plotly, Inc.",
+  "keywords": [
+    "graphing",
+    "plotting",
+    "data",
+    "visualization",
+    "plotly"
+  ],
+  "dependencies": {
+    "electron": "^1.6.11",
+    "is-plain-obj": "^1.1.0",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.2"
+  }
+}
