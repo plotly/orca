@@ -14,6 +14,9 @@
     + pass logger as argument
 - debug mode!
     + use `assert`
+    + https://github.com/electron/devtron
+    + https://github.com/sindresorhus/electron-debug/blob/master/index.js
+    + https://github.com/sindresorhus/electron-unhandled
 - plugin system for renderers and converters
 
 - CLI should support
@@ -24,6 +27,8 @@
     + don't assume plotly plot payloads (jupyter notebooks are next, animations)
 
 - benchmarks!!
+- test coverage!!
+    + https://github.com/electron/spectron
 
 - should image comparison be a component here? 
     Or a hook in plotly.js after 'plotly-graph' convert.js?
@@ -113,3 +118,9 @@ server.on('after-convert', (result) => {
   // log something    
 })
 ```
+
+### Nomenclature
+
+- request (or caller) to renderer (evt: ${component.name})
+- renderer to converter (evt: ${uid})
+- converter to request (or caller)

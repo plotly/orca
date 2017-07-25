@@ -1,13 +1,13 @@
 /* global Plotly:false */
 
-module.exports = function (event, info, send) {
+module.exports = function (event, info, sendToMain) {
   const gd = document.createElement('div')
   document.body.appendChild(gd)
 
   Plotly.newPlot(gd, info.fig)
   .then((gd) => Plotly.toImage(gd, {format: info.format}))
   .then((imgData) => {
-    send({
+    sendToMain({
       code: 200,
       imgData: imgData.replace(/^data:image\/\w+;base64,/, '')
     })
@@ -15,7 +15,7 @@ module.exports = function (event, info, send) {
     document.body.removeChild(gd)
   })
   .catch((err) => {
-    send({
+    sendToMain({
       code: 525,
       msg: JSON.stringify(err, ['message', 'arguments', 'type', 'name'])
     })

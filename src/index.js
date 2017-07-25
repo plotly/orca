@@ -1,2 +1,2 @@
 exports.run = require('./run')
-exports.serve = require('./server')
+exports.serve = require('./serve')

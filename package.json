@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Plotly's image exporting utility",
   "license": "MIT",
-  "main": "src/main.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "electron .",
     "lint": "standard --fix",
@@ -19,11 +19,16 @@
     "plotly"
   ],
   "dependencies": {
+    "body": "^5.1.0",
+    "browserify": "^14.4.0",
     "electron": "^1.6.11",
+    "fast-isnumeric": "^1.1.1",
     "is-plain-obj": "^1.1.0",
+    "string-to-stream": "^1.1.0",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
+    "request": "^2.81.0",
     "snazzy": "^7.0.0",
     "standard": "^10.0.2"
   }
