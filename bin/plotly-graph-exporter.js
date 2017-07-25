@@ -12,6 +12,8 @@ const app = plotlyExporter.run({
 // file overwrite option?
 
 app.on('after-convert', (info) => {
+  console.log('exported', info.name, info.pending)
+
   fs.writeFile(info.name + '.png', info.body, (err) => {
     if (err) throw err
   })

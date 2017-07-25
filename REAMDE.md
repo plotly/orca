@@ -27,6 +27,7 @@
     + don't assume plotly plot payloads (jupyter notebooks are next, animations)
 
 - benchmarks!!
+    + https://github.com/electron/asar
 - test coverage!!
     + https://github.com/electron/spectron
 

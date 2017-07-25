@@ -24,6 +24,7 @@
     "electron": "^1.6.11",
     "fast-isnumeric": "^1.1.1",
     "is-plain-obj": "^1.1.0",
+    "run-parallel-limit": "^1.0.3",
     "string-to-stream": "^1.1.0",
     "uuid": "^3.1.0"
   },

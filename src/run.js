@@ -3,6 +3,7 @@ const {ipcMain} = require('electron')
 const fs = require('fs')
 const path = require('path')
 const uuid = require('uuid/v4')
+const parallelLimit = require('run-parallel-limit')
 
 const createIndex = require('./util/create-index')
 
@@ -72,11 +73,9 @@ function coerceOptions (_opts) {
 
 function run (app, win, opts) {
   const comp = opts._comp
-  let pending = 0
+  let pending = opts._input.length
 
-  // https://github.com/feross/run-parallel-limit
-
-  opts._input.forEach((item) => {
+  const tasks = opts._input.map((item) => (done) => {
     const id = uuid()
 
     const sendToRenderer = (info) => {
@@ -86,29 +85,31 @@ function run (app, win, opts) {
     getFigure(item, (err, fig) => {
       if (err) throw err
 
-      pending++
       comp.parse(fig, opts, sendToRenderer)
     })
 
     ipcMain.once(id, (event, info) => {
       const reply = (head, body) => {
-        pending--
-
         app.emit('after-convert', {
           name: path.parse(item).name,
           head: head,
           body: body,
-          pending: pending
+          pending: --pending
         })
 
-        if (pending === 0) {
-          win.close()
-          app.emit('done')
-        }
+        done()
       }
 
       comp.convert(event, info, reply)
     })
+  })
+
+  parallelLimit(tasks, 2, (err) => {
+    if (err) console.warn(err)
+    if (pending !== 0) console.warn('something is up !?!')
+
+    win.close()
+    app.emit('done')
   })
 }
 
