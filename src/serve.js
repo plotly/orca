@@ -9,6 +9,17 @@ const isNumeric = require('fast-isnumeric')
 // const isValidComponent = require('./util/is-valid-component')
 const createIndex = require('./util/create-index')
 
+const BUFFER_OVERFLOW_LIMIT = 1e9
+const REQUEST_TIMEOUT = 50000
+const STATUS_MSG = {
+  200: 'pong',
+  401: 'error during request',
+  499: 'client closed request before generation complete',
+  404: 'invalid route',
+  422: 'json parse error',
+  522: 'client socket timeout'
+}
+
 /** Create
  *
  * @param {object} opts
@@ -51,10 +62,11 @@ function createApp (_opts) {
     })
 
     win.webContents.once('did-finish-load', () => {
-      server.listen(Number(opts.port), opts.debug
-        ? () => console.log(`listening on port ${opts.port}`)
-        : () => {}
-      )
+      server.listen(opts.port, () => {
+        app.emit('after-connect', {
+          port: opts.port
+        })
+      })
     })
   })
 
@@ -86,40 +98,81 @@ function createServer (app, win, opts) {
     const id = uuid()
     const route = req.url.substr(1)
 
+    const simpleReply = (code, _msg) => {
+      const msg = _msg || STATUS_MSG[code]
+
+      app.emit('error', {
+        code: code,
+        msg: msg
+      })
+
+      res.writeHead(code, {'Content-Type': 'text/plain'})
+      return res.end(msg)
+    }
+
+    req.once('error', () => simpleReply(401))
+    req.once('close', () => simpleReply(499))
+
+    req.socket.removeAllListeners('timeout')
+    req.socket.on('timeout', () => simpleReply(522))
+    req.socket.setTimeout(REQUEST_TIMEOUT)
+
     if (route === 'ping') {
-      res.writeHead(200, {'Content-Type': 'text/plain'})
-      return res.end('pong')
+      return simpleReply(200)
     }
 
     const comp = opts._componentLookup[route]
 
     if (!comp) {
-      res.writeHead(404, {'Content-Type': 'text/plain'})
-      return res.end(`invalid route: ${route}`)
+      return simpleReply(404)
     }
 
-    const sendToRenderer = (info) => {
-      win.webContents.send(comp.name, id, info)
+    const sendToRenderer = (errorCode, info) => {
+      if (errorCode) {
+        return simpleReply(errorCode, info)
+      }
+
+      win.webContents.send(comp.name, id, info, opts)
     }
 
-    textBody(req, {limit: 1e9}, (err, body) => {
+    textBody(req, {limit: BUFFER_OVERFLOW_LIMIT}, (err, _body) => {
+      let body
+
       if (err) {
-        res.writeHead(500, {'Content-Type': 'text/plain'})
-        return res.end('body parse error')
+        return simpleReply(422)
+      }
+
+      try {
+        body = JSON.parse(_body)
+      } catch (e) {
+        return simpleReply(422)
       }
 
       pending++
       comp.parse(body, opts, sendToRenderer)
     })
 
-    ipcMain.once(id, (event, info) => {
-      const cb = () => {
-        pending--
-        app.emit('after-convert', {pending: pending})
+    ipcMain.once(id, (event, errorCode, info) => {
+      if (errorCode) {
+        return simpleReply(errorCode, info)
       }
 
-      const reply = (head, body) => {
-        res.writeHead(info.code, head)
+      const reply = (errorCode, head, body) => {
+        if (errorCode) {
+          return simpleReply(errorCode, head)
+        }
+
+        const cb = () => {
+          app.emit('after-convert', {
+            port: opts.port,
+            // TODO this won't match 1-to-1 in general !!
+            // we might need a meta argument to `reply` ?!?
+            head: head,
+            pending: --pending
+          })
+        }
+
+        res.writeHead(200, head)
 
         if (res.write(body)) {
           res.end(cb)
@@ -128,7 +181,7 @@ function createServer (app, win, opts) {
         }
       }
 
-      comp.convert(event, info, reply)
+      comp.convert(info, opts, reply)
     })
   })
 }

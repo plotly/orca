@@ -1,30 +1,33 @@
+const cst = require('./constants')
+
 /**
- * @param {object} event
- * @param {info} info
+ * @param {object} info
+ * @param {object} opts
  * @param {function} reply
+ *  - errorCode {number or null}
  *  - head
  *  - body
  *
  */
-function convert (event, info, reply) {
-  let head
+function convert (info, opts, reply) {
+  let errorCode = null
+  let head = {}
   let body
 
-  switch (info.code) {
-    case 200:
-      head = {
-        'Content-Type': 'image/png',
-        'Content-Length': info.imgData.length
-      }
+  head['Content-Type'] = cst[info.format]
+
+  switch (info.format) {
+    case 'png':
+      head['Content-Length'] = info.imgData.length
       body = Buffer.from(info.imgData, 'base64')
       break
-    case 525:
-      head = {'Content-Type': 'text/plain'}
-      body = 'plotly.js error'
+    case 'jpeg':
+      head['Content-Length'] = info.imgData.length
+      body = Buffer.from(info.imgData, 'base64')
       break
   }
 
-  reply(head, body)
+  reply(errorCode, head, body)
 }
 
 module.exports = convert

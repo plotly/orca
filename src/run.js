@@ -7,6 +7,12 @@ const parallelLimit = require('run-parallel-limit')
 
 const createIndex = require('./util/create-index')
 
+const PARALLEL_LIMIT_DFLT = 4
+const STATUS_MSG = {
+  422: 'json parse error',
+  500: 'incomplete asks'
+}
+
 /** Create
  *
  * @param {object} opts
@@ -36,8 +42,11 @@ function createApp (_opts) {
       win = null
     })
 
+    // on uncaughtException too?
     process.on('exit', () => {
-      win.close()
+      if (win) {
+        win.close()
+      }
     })
 
     createIndex(opts, (pathToIndex) => {
@@ -61,10 +70,7 @@ function coerceOptions (_opts) {
 
   opts._comp = require('./component/plotly-graph')
 
-  opts._browserWindowOpts = {
-    width: 2048,
-    height: 1024
-  }
+  opts._browserWindowOpts = {}
 
   opts._input = _opts.input
 
@@ -75,45 +81,79 @@ function run (app, win, opts) {
   const comp = opts._comp
   let pending = opts._input.length
 
+  const emitError = (code, msg) => {
+    app.emit('error', {
+      code: code,
+      msg: msg || STATUS_MSG[code]
+    })
+  }
+
   const tasks = opts._input.map((item) => (done) => {
     const id = uuid()
 
-    const sendToRenderer = (info) => {
-      win.webContents.send(comp.name, id, info)
+    const errorOut = (code, msg) => {
+      emitError(code, msg)
+      done()
     }
 
-    getFigure(item, (err, fig) => {
-      if (err) throw err
+    const sendToRenderer = (errorCode, info) => {
+      if (errorCode) {
+        return errorOut(errorCode, info)
+      }
 
-      comp.parse(fig, opts, sendToRenderer)
+      win.webContents.send(comp.name, id, info, opts)
+    }
+
+    getBody(item, (err, _body) => {
+      let body
+
+      if (err) {
+        return errorOut(422)
+      }
+
+      try {
+        body = JSON.parse(_body)
+      } catch (e) {
+        return errorOut(422)
+      }
+
+      comp.parse(body, opts, sendToRenderer)
     })
 
-    ipcMain.once(id, (event, info) => {
-      const reply = (head, body) => {
+    ipcMain.once(id, (event, errorCode, info) => {
+      if (errorCode) {
+        return errorOut(errorCode, info)
+      }
+
+      const reply = (errorCode, head, body) => {
+        if (errorCode) {
+          return errorOut(errorCode, head)
+        }
+
         app.emit('after-convert', {
           name: path.parse(item).name,
           head: head,
           body: body,
           pending: --pending
         })
-
         done()
       }
 
-      comp.convert(event, info, reply)
+      comp.convert(info, opts, reply)
     })
   })
 
-  parallelLimit(tasks, 2, (err) => {
-    if (err) console.warn(err)
-    if (pending !== 0) console.warn('something is up !?!')
+  parallelLimit(tasks, PARALLEL_LIMIT_DFLT, (err) => {
+    if (err || pending !== 0) {
+      emitError(500)
+    }
 
-    win.close()
     app.emit('done')
+    win.close()
   })
 }
 
-function getFigure (item, cb) {
+function getBody (item, cb) {
   // handle read file, wget from url or string logic
 
   fs.readFile(item, 'utf-8', cb)

@@ -21,13 +21,16 @@ list.forEach(p => {
     ? p
     : `${MOCK_URL_BASE}/${p}.json`
 
-  wget(figUrl, (err, body) => {
+  wget(figUrl, (err, fig) => {
     if (err) throw err
 
     request({
       method: 'post',
       url: SERVER_URL + '/plotly-graph',
-      body: body
+      body: JSON.stringify({
+        figure: JSON.parse(fig),
+        format: 'jpeg'
+      })
     })
     .on('error', (err) => console.warn(err))
     .pipe(fs.createWriteStream(`${p}.png`))

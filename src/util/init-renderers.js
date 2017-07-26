@@ -4,12 +4,12 @@ function initRenderers (components) {
   Object.keys(components).forEach((k) => {
     const comp = components[k]
 
-    ipcRenderer.on(comp.name, (event, id, info) => {
-      const sendToMain = (info) => {
-        ipcRenderer.send(id, info)
+    ipcRenderer.on(comp.name, (event, id, info, opts) => {
+      const sendToMain = (errorCode, info) => {
+        ipcRenderer.send(id, errorCode, info)
       }
 
-      comp.render(event, info, sendToMain)
+      comp.render(info, opts, sendToMain)
     })
   })
 }

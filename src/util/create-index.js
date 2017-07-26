@@ -25,7 +25,7 @@ function createIndex (opts, cb) {
   <html>
     <head>
       <meta charset="UTF-8">
-      <title>plotly.js image exporter</title>
+      <title>plotly image exporter</title>
       ${scripts()}
     </head>
     <body>

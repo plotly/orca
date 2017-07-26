@@ -3,15 +3,7 @@ module.exports = {
   injectScripts: (opts) => {
     return opts
   },
-  parse: parse,
+  parse: require('./parse'),
   render: require('./render'),
   convert: require('./convert')
-}
-
-// do I really need this?
-function parse (body, opts, sendToRenderer) {
-  sendToRenderer({
-    fig: JSON.parse(body),
-    format: opts.format
-  })
 }

@@ -2,16 +2,20 @@
 ## Stuff we need
 
 - output raw SVG strings (not image data) maybe add `Plotly.serialize` or `Plotly.toSVG`
-- mapbox access token
 - MathJax !!
     + local or CDN!
 - use local plotly.js (found with `pkgUp` or provided path) or CDN (latest or tagged)
 
 - `scale` png in the client
 - client module and client `<script>` deps (e.g. plotly.js)
+- similar options to https://github.com/rreusser/plotly-mock-viewer
+    + mapbox access token
+    + must have `local-topojson` option
+    + must have `strict-d3` option
 
 - logging!
-    + pass logger as argument
+    + pass logger as argument or listen to events?
+    + `bunyan`? other?
 - debug mode!
     + use `assert`
     + https://github.com/electron/devtron
@@ -32,8 +36,11 @@
     + https://github.com/electron/spectron
 
 - should image comparison be a component here? 
-    Or a hook in plotly.js after 'plotly-graph' convert.js?
-    
+    + Or a hook in plotly.js after 'plotly-graph' convert.js?
+
+- Maybe each component should spawn a browser window??
+    + so that each dependencies don't conflict
+    + might slow down app though?
 
 ## Questions
 
@@ -111,8 +118,7 @@ var server = plotlyExporter.serve({
       pathToPlotlyJS: ''
     }
   }],
-  port: 9090,
-  logger: () => {} // defaults to console.log
+  port: 9090
 })
 
 server.on('after-convert', (result) => {
@@ -122,6 +128,14 @@ server.on('after-convert', (result) => {
 
 ### Nomenclature
 
-- request (or caller) to renderer (evt: ${component.name})
-- renderer to converter (evt: ${uid})
-- converter to request (or caller)
+- request (or caller) to renderer (evt: ${component.name} sendToRenderer)
+- renderer to converter (evt: ${uid} sendToMain)
+- converter to request (or caller, reply)
+
+```
+comp[/* parse, render, convert */] = (info, opts, cb) => {}
+
+
+// with
+cb = (errorCode, info [, info2]) => {}
+```
