@@ -8,6 +8,7 @@ const isNumeric = require('fast-isnumeric')
 // const coerceCommon = require('./util/coerce-common')
 // const isValidComponent = require('./util/is-valid-component')
 const createIndex = require('./util/create-index')
+const createTimer = require('./util/create-timer')
 
 const BUFFER_OVERFLOW_LIMIT = 1e9
 const REQUEST_TIMEOUT = 50000
@@ -54,7 +55,9 @@ function createApp (_opts) {
 
     process.on('exit', () => {
       server.close()
-      win.close()
+      if (win) {
+        win.close()
+      }
     })
 
     createIndex(opts, (pathToIndex) => {
@@ -83,10 +86,7 @@ function coerceOpts (_opts) {
     'plotly-graph': require('./component/plotly-graph')
   }
 
-  opts._browserWindowOpts = {
-    width: 2048,
-    height: 1024
-  }
+  opts._browserWindowOpts = {}
 
   return opts
 }
@@ -95,19 +95,31 @@ function createServer (app, win, opts) {
   let pending = 0
 
   return http.createServer((req, res) => {
+    const timer = createTimer()
     const id = uuid()
     const route = req.url.substr(1)
 
-    const simpleReply = (code, _msg) => {
-      const msg = _msg || STATUS_MSG[code]
+    // initialize 'full' info object
+    //   which accumulates parse, render, convert results
+    //   and is emitted on 'export-error' and 'after-convert'
+    const fullInfo = {
+      port: opts.port
+    }
 
-      app.emit('error', {
-        code: code,
-        msg: msg
-      })
-
+    const simpleReply = (code, msg) => {
       res.writeHead(code, {'Content-Type': 'text/plain'})
-      return res.end(msg)
+      return res.end(msg || STATUS_MSG[code])
+    }
+
+    const errorReply = (code) => {
+      fullInfo.msg = fullInfo.msg || STATUS_MSG[code] || ''
+
+      app.emit('export-error', Object.assign(
+        {code: code},
+        fullInfo
+      ))
+
+      return simpleReply(code, fullInfo.msg)
     }
 
     req.once('error', () => simpleReply(401))
@@ -124,64 +136,71 @@ function createServer (app, win, opts) {
     const comp = opts._componentLookup[route]
 
     if (!comp) {
-      return simpleReply(404)
+      return errorReply(404)
     }
 
-    const sendToRenderer = (errorCode, info) => {
+    // setup parse callback
+    const sendToRenderer = (errorCode, parseInfo) => {
+      Object.assign(fullInfo, parseInfo)
+
       if (errorCode) {
-        return simpleReply(errorCode, info)
+        return errorReply(errorCode)
       }
 
-      win.webContents.send(comp.name, id, info, opts)
+      win.webContents.send(comp.name, id, fullInfo, opts)
     }
 
+    // setup convert callback
+    const reply = (errorCode, convertInfo) => {
+      Object.assign(fullInfo, convertInfo)
+
+      if (errorCode) {
+        return errorReply(errorCode)
+      }
+
+      fullInfo.pending = --pending
+      fullInfo.processingTime = timer.end()
+
+      const cb = () => {
+        app.emit('after-convert', fullInfo)
+      }
+
+      res.writeHead(200, fullInfo.head)
+
+      if (res.write(fullInfo.body)) {
+        res.end(cb)
+      } else {
+        res.once('drain', () => res.end(cb))
+      }
+    }
+
+    // parse -> send to renderer!
     textBody(req, {limit: BUFFER_OVERFLOW_LIMIT}, (err, _body) => {
       let body
 
       if (err) {
-        return simpleReply(422)
+        return errorReply(422)
       }
 
       try {
         body = JSON.parse(_body)
       } catch (e) {
-        return simpleReply(422)
+        return errorReply(422)
       }
 
       pending++
       comp.parse(body, opts, sendToRenderer)
     })
 
-    ipcMain.once(id, (event, errorCode, info) => {
+    // convert on render message -> end response
+    ipcMain.once(id, (event, errorCode, renderInfo) => {
+      Object.assign(fullInfo, renderInfo)
+
       if (errorCode) {
-        return simpleReply(errorCode, info)
+        return errorReply(errorCode)
       }
 
-      const reply = (errorCode, head, body) => {
-        if (errorCode) {
-          return simpleReply(errorCode, head)
-        }
-
-        const cb = () => {
-          app.emit('after-convert', {
-            port: opts.port,
-            // TODO this won't match 1-to-1 in general !!
-            // we might need a meta argument to `reply` ?!?
-            head: head,
-            pending: --pending
-          })
-        }
-
-        res.writeHead(200, head)
-
-        if (res.write(body)) {
-          res.end(cb)
-        } else {
-          res.once('drain', () => res.end(cb))
-        }
-      }
-
-      comp.convert(info, opts, reply)
+      comp.convert(fullInfo, opts, reply)
     })
   })
 }

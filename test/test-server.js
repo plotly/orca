@@ -2,9 +2,11 @@ const https = require('https')
 const url = require('url')
 const fs = require('fs')
 const request = require('request')
+const uuid = require('uuid/v4')
 
 const SERVER_URL = 'http://localhost:9091'
 const MOCK_URL_BASE = 'https://raw.githubusercontent.com/plotly/plotly.js/master/test/image/mocks'
+const FORMAT = 'png'
 
 const argv = process.argv.slice(2)
 const list = argv.length > 0 ? argv : ['0']
@@ -21,19 +23,23 @@ list.forEach(p => {
     ? p
     : `${MOCK_URL_BASE}/${p}.json`
 
-  wget(figUrl, (err, fig) => {
+  wget(figUrl, (err, _fig) => {
     if (err) throw err
+
+    const fig = JSON.parse(_fig)
 
     request({
       method: 'post',
       url: SERVER_URL + '/plotly-graph',
       body: JSON.stringify({
-        figure: JSON.parse(fig),
-        format: 'jpeg'
+        fid: uuid(),
+        figure: fig,
+        format: FORMAT
       })
     })
     .on('error', (err) => console.warn(err))
-    .pipe(fs.createWriteStream(`${p}.png`))
+    .on('response', (res) => console.warn(res.statusCode))
+    .pipe(fs.createWriteStream(`${p}.${FORMAT}`))
   })
 })
 

@@ -12,15 +12,15 @@ const app = plotlyExporter.run({
 // file overwrite option?
 
 app.on('after-convert', (info) => {
-  console.log(`exported ${info.name}, ${info.pending} graphs pending`)
+  console.log(`exported ${info.itemName}, in ${info.processingTime} nanoseconds`)
 
-  fs.writeFile(`${info.name}.png`, info.body, (err) => {
+  fs.writeFile(`${info.itemName}.png`, info.body, (err) => {
     if (err) throw err
   })
 })
 
-app.on('error', (info) => {
-  console.log(`export error ${info.code} -  ${info.msg}`)
+app.on('export-error', (info) => {
+  console.log(`export error ${info.code} - ${info.msg}`)
 })
 
 app.on('done', () => {

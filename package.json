@@ -5,10 +5,12 @@
   "license": "MIT",
   "main": "src/index.js",
   "scripts": {
-    "start": "electron .",
-    "lint": "standard --fix",
+    "start:server": "electron bin/plotly-export-server",
+    "start:runner": "electron bin/plotly-graph-exporter",
     "test:lint": "standard | snazzy",
-    "test": "npm run test:lint"
+    "test:server": "node test/test-server.js",
+    "test": "npm run test:lint",
+    "lint": "standard --fix"
   },
   "author": "Plotly, Inc.",
   "keywords": [

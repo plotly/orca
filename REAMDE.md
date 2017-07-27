@@ -1,4 +1,3 @@
-
 ## Stuff we need
 
 - output raw SVG strings (not image data) maybe add `Plotly.serialize` or `Plotly.toSVG`
@@ -135,7 +134,8 @@ server.on('after-convert', (result) => {
 ```
 comp[/* parse, render, convert */] = (info, opts, cb) => {}
 
-
 // with
-cb = (errorCode, info [, info2]) => {}
+cb = (errorCode, result) => {}
 ```
+
+Should we add an option about which keys are included in event data?

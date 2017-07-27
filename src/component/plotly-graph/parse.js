@@ -3,15 +3,18 @@ const isNumeric = require('fast-isnumeric')
 const isPlainObj = require('is-plain-obj')
 
 function parse (body, _opts, sendToRenderer) {
-  const info = {}
+  const result = {}
+
+  const errorOut = (code, extra) => {
+    result.msg = `${cst.statusMsg[code]} (${extra})`
+    sendToRenderer(code, result)
+  }
+
   let figure
   let opts
 
-  const errorOut = (code, extra) => {
-    sendToRenderer(code, `${cst.statusMsg[code]} (${extra})`)
-  }
-
-  // to support both serve & run body structures
+  // to support both 'serve' requests (figure/format/../)
+  // and 'run' body (data/layout) structures
   if (body.figure) {
     figure = body.figure
     opts = body
@@ -20,22 +23,20 @@ function parse (body, _opts, sendToRenderer) {
     opts = _opts
   }
 
-  info.encoded = !!opts.encoded
-  info.scale = isNumeric(opts.scale) ? Number(opts.scale) : cst.dflt.scale
-  info.thumbnail = !!opts.thumbnail
+  result.encoded = !!opts.encoded
+  result.scale = isNumeric(opts.scale) ? Number(opts.scale) : cst.dflt.scale
+  result.thumbnail = !!opts.thumbnail
 
-  if (typeof opts.fig === 'string') {
-    info.fid = opts.fid
-  }
+  result.fid = typeof opts.fid === 'string' ? opts.fid : null
 
   if (typeof opts.format === 'string') {
     if (cst.contentFormat[opts.format]) {
-      info.format = opts.format
+      result.format = opts.format
     } else {
       return errorOut(400, 'wrong format')
     }
   } else {
-    info.format = cst.dflt.format
+    result.format = cst.dflt.format
   }
 
   if (!isPlainObj(figure)) {
@@ -46,37 +47,37 @@ function parse (body, _opts, sendToRenderer) {
     return errorOut(400, 'no \'data\' and no \'layout\' in figure')
   }
 
-  info.figure = {}
+  result.figure = {}
 
   if (figure.data) {
     if (Array.isArray(figure.data)) {
-      info.figure.data = figure.data
+      result.figure.data = figure.data
     } else {
       return errorOut(400, 'non-array figure data')
     }
   } else {
-    info.figure.data = []
+    result.figure.data = []
   }
 
   if (figure.layout) {
     if (isPlainObj(figure.layout)) {
-      info.figure.layout = figure.layout
+      result.figure.layout = figure.layout
     } else {
       return errorOut(400, 'non-object figure layout')
     }
   } else {
-    info.figure.layout = {}
+    result.figure.layout = {}
   }
 
-  info.width = isNumeric(opts.width) ? Number(opts.width)
-    : isNumeric(info.figure.layout.width) ? Number(info.figure.layout.width)
+  result.width = isNumeric(opts.width) ? Number(opts.width)
+    : isNumeric(result.figure.layout.width) ? Number(result.figure.layout.width)
     : cst.dflt.width
 
-  info.height = isNumeric(opts.height) ? Number(opts.height)
-    : isNumeric(info.figure.layout.height) ? Number(info.figure.layout.height)
+  result.height = isNumeric(opts.height) ? Number(opts.height)
+    : isNumeric(result.figure.layout.height) ? Number(result.figure.layout.height)
     : cst.dflt.height
 
-  sendToRenderer(null, info)
+  sendToRenderer(null, result)
 }
 
 module.exports = parse

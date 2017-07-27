@@ -6,11 +6,12 @@ const uuid = require('uuid/v4')
 const parallelLimit = require('run-parallel-limit')
 
 const createIndex = require('./util/create-index')
+const createTimer = require('./util/create-timer')
 
 const PARALLEL_LIMIT_DFLT = 4
 const STATUS_MSG = {
   422: 'json parse error',
-  500: 'incomplete asks'
+  500: 'incomplete task(s)'
 }
 
 /** Create
@@ -42,7 +43,6 @@ function createApp (_opts) {
       win = null
     })
 
-    // on uncaughtException too?
     process.on('exit', () => {
       if (win) {
         win.close()
@@ -81,29 +81,60 @@ function run (app, win, opts) {
   const comp = opts._comp
   let pending = opts._input.length
 
-  const emitError = (code, msg) => {
-    app.emit('error', {
-      code: code,
-      msg: msg || STATUS_MSG[code]
-    })
+  const emitError = (code, info) => {
+    info = info || {}
+    info.msg = info.msg || STATUS_MSG[code] || ''
+
+    app.emit('export-error', Object.assign(
+      {code: code},
+      info
+    ))
   }
 
   const tasks = opts._input.map((item) => (done) => {
+    const timer = createTimer()
     const id = uuid()
 
-    const errorOut = (code, msg) => {
-      emitError(code, msg)
+    // initialize 'full' info object
+    //   which accumulates parse, render, convert results
+    //   and is emitted on 'export-error' and 'after-convert'
+    const fullInfo = {
+      item: item,
+      itemName: path.parse(item).name
+    }
+
+    const errorOut = (code) => {
+      emitError(code, fullInfo)
       done()
     }
 
-    const sendToRenderer = (errorCode, info) => {
+    // setup parse callback
+    const sendToRenderer = (errorCode, parseInfo) => {
+      Object.assign(fullInfo, parseInfo)
+
       if (errorCode) {
-        return errorOut(errorCode, info)
+        return errorOut(errorCode)
       }
 
-      win.webContents.send(comp.name, id, info, opts)
+      win.webContents.send(comp.name, id, fullInfo, opts)
     }
 
+    // setup convert callback
+    const reply = (errorCode, convertInfo) => {
+      Object.assign(fullInfo, convertInfo)
+
+      if (errorCode) {
+        return errorOut(errorCode)
+      }
+
+      fullInfo.pending = --pending
+      fullInfo.processingTime = timer.end()
+
+      app.emit('after-convert', fullInfo)
+      done()
+    }
+
+    // parse -> send to renderer!
     getBody(item, (err, _body) => {
       let body
 
@@ -120,26 +151,15 @@ function run (app, win, opts) {
       comp.parse(body, opts, sendToRenderer)
     })
 
-    ipcMain.once(id, (event, errorCode, info) => {
+    // convert on render message -> emit 'after-convert'
+    ipcMain.once(id, (event, errorCode, renderInfo) => {
+      Object.assign(fullInfo, renderInfo)
+
       if (errorCode) {
-        return errorOut(errorCode, info)
+        return errorOut(errorCode)
       }
 
-      const reply = (errorCode, head, body) => {
-        if (errorCode) {
-          return errorOut(errorCode, head)
-        }
-
-        app.emit('after-convert', {
-          name: path.parse(item).name,
-          head: head,
-          body: body,
-          pending: --pending
-        })
-        done()
-      }
-
-      comp.convert(info, opts, reply)
+      comp.convert(fullInfo, opts, reply)
     })
   })
 

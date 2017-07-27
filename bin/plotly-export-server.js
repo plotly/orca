@@ -18,11 +18,11 @@ app.on('after-connect', (info) => {
 })
 
 app.on('after-convert', (info) => {
-  log(`after-convert, pending: ${info.pending}`)
+  log(`after-convert, fig: ${info.fid} in ${info.processingTime / 1e6} miliseconds`)
 })
 
-app.on('error', (info) => {
-  log(`export error ${info.code} -  ${info.msg}`)
+app.on('export-error', (info) => {
+  log(`export error ${info.code} - ${info.msg}`)
 })
 
 function log (msg) {

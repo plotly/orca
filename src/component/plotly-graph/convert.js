@@ -2,32 +2,36 @@ const cst = require('./constants')
 
 /**
  * @param {object} info
+ *  - format {string} (from parse)
+ *  - imgData {string} (from render)
  * @param {object} opts
+ *  - pathToBatik {string}
  * @param {function} reply
  *  - errorCode {number or null}
- *  - head
- *  - body
+ *  - results {object}
+ *    - head
+ *    - body
  *
  */
 function convert (info, opts, reply) {
   let errorCode = null
-  let head = {}
-  let body
 
-  head['Content-Type'] = cst[info.format]
+  const result = {
+    head: {'Content-Type': cst[info.format]}
+  }
 
   switch (info.format) {
     case 'png':
-      head['Content-Length'] = info.imgData.length
-      body = Buffer.from(info.imgData, 'base64')
+      result.bodyLength = result.head['Content-Length'] = info.imgData.length
+      result.body = Buffer.from(info.imgData, 'base64')
       break
     case 'jpeg':
-      head['Content-Length'] = info.imgData.length
-      body = Buffer.from(info.imgData, 'base64')
+      result.bodyLength = result.head['Content-Length'] = info.imgData.length
+      result.body = Buffer.from(info.imgData, 'base64')
       break
   }
 
-  reply(errorCode, head, body)
+  reply(errorCode, result)
 }
 
 module.exports = convert
