@@ -97,7 +97,7 @@ function run (app, win, opts) {
 
     // initialize 'full' info object
     //   which accumulates parse, render, convert results
-    //   and is emitted on 'export-error' and 'after-convert'
+    //   and is emitted on 'export-error' and 'after-export'
     const fullInfo = {
       item: item,
       itemName: path.parse(item).name
@@ -130,7 +130,7 @@ function run (app, win, opts) {
       fullInfo.pending = --pending
       fullInfo.processingTime = timer.end()
 
-      app.emit('after-convert', fullInfo)
+      app.emit('after-export', fullInfo)
       done()
     }
 
@@ -151,7 +151,7 @@ function run (app, win, opts) {
       comp.parse(body, opts, sendToRenderer)
     })
 
-    // convert on render message -> emit 'after-convert'
+    // convert on render message -> emit 'after-export'
     ipcMain.once(id, (event, errorCode, renderInfo) => {
       Object.assign(fullInfo, renderInfo)
 

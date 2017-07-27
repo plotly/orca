@@ -17,8 +17,8 @@ app.on('after-connect', (info) => {
   log(`Listening on port ${info.port}`)
 })
 
-app.on('after-convert', (info) => {
-  log(`after-convert, fig: ${info.fid} in ${info.processingTime / 1e6} miliseconds`)
+app.on('after-export', (info) => {
+  log(`after-export, fig: ${info.fid} in ${info.processingTime / 1e6} miliseconds`)
 })
 
 app.on('export-error', (info) => {

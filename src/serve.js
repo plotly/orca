@@ -101,7 +101,7 @@ function createServer (app, win, opts) {
 
     // initialize 'full' info object
     //   which accumulates parse, render, convert results
-    //   and is emitted on 'export-error' and 'after-convert'
+    //   and is emitted on 'export-error' and 'after-export'
     const fullInfo = {
       port: opts.port
     }
@@ -162,7 +162,7 @@ function createServer (app, win, opts) {
       fullInfo.processingTime = timer.end()
 
       const cb = () => {
-        app.emit('after-convert', fullInfo)
+        app.emit('after-export', fullInfo)
       }
 
       res.writeHead(200, fullInfo.head)

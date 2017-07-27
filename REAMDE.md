@@ -115,12 +115,17 @@ var server = plotlyExporter.serve({
     route: /* default to same as name */,
     opts: {
       pathToPlotlyJS: ''
-    }
+    },
+    //
+    inject: () => {},
+    parse: () => {},
+    render: () => {},
+    convert: () => {}
   }],
   port: 9090
 })
 
-server.on('after-convert', (result) => {
+server.on('after-export', (result) => {
   // log something    
 })
 ```

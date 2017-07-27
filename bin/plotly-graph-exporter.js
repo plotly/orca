@@ -11,7 +11,7 @@ const app = plotlyExporter.run({
 
 // file overwrite option?
 
-app.on('after-convert', (info) => {
+app.on('after-export', (info) => {
   console.log(`exported ${info.itemName}, in ${info.processingTime} nanoseconds`)
 
   fs.writeFile(`${info.itemName}.png`, info.body, (err) => {
@@ -23,6 +23,7 @@ app.on('export-error', (info) => {
   console.log(`export error ${info.code} - ${info.msg}`)
 })
 
+// TODO more descriptive event name?
 app.on('done', () => {
   console.log('done!!')
 })
