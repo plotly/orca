@@ -1,18 +1,23 @@
 const plotlyExporter = require('../')
+const subarg = require('subarg')
 const fs = require('fs')
 
-// handle stdin inputs !!
+const argv = subarg(process.argv.slice(2))
+
+// TODO
+// - handle stdin inputs!
+// - file overwrite option?
+//
+// - try to be on-par with https://github.com/rreusser/plotly-mock-viewer
 
 const app = plotlyExporter.run({
-  input: process.argv.slice(2),
+  input: argv._,
   component: 'plotly-graph',
   debug: true
 })
 
-// file overwrite option?
-
 app.on('after-export', (info) => {
-  console.log(`exported ${info.itemName}, in ${info.processingTime} nanoseconds`)
+  console.log(`exported ${info.itemName}, in ${info.processingTime} ms`)
 
   fs.writeFile(`${info.itemName}.png`, info.body, (err) => {
     if (err) throw err
@@ -20,7 +25,7 @@ app.on('after-export', (info) => {
 })
 
 app.on('export-error', (info) => {
-  console.log(`export error ${info.code} - ${info.msg}`)
+  console.log(`export error ${info.code} for ${info.itemName} - ${info.msg}`)
 })
 
 // TODO more descriptive event name?
