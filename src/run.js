@@ -4,6 +4,9 @@ const fs = require('fs')
 const path = require('path')
 const uuid = require('uuid/v4')
 const parallelLimit = require('run-parallel-limit')
+const glob = require('glob')
+const isUrl = require('is-url')
+const request = require('request')
 
 const createIndex = require('./util/create-index')
 const createTimer = require('./util/create-timer')
@@ -118,6 +121,7 @@ function run (app, win, opts) {
     //   and is emitted on 'export-error' and 'after-export'
     const fullInfo = {
       item: item,
+      // won't work for string input
       itemName: path.parse(item).name
     }
 
@@ -160,10 +164,14 @@ function run (app, win, opts) {
         return errorOut(422)
       }
 
-      try {
-        body = JSON.parse(_body)
-      } catch (e) {
-        return errorOut(422)
+      if (typeof _body === 'string') {
+        try {
+          body = JSON.parse(_body)
+        } catch (e) {
+          return errorOut(422)
+        }
+      } else {
+        body = _body
       }
 
       comp.parse(body, opts, sendToRenderer)
@@ -183,6 +191,7 @@ function run (app, win, opts) {
 
   parallelLimit(tasks, PARALLEL_LIMIT_DFLT, (err) => {
     if (err || pending !== 0) {
+      // maybe should be emitted as part of 'done'?
       emitError(500)
     }
 
@@ -192,9 +201,19 @@ function run (app, win, opts) {
 }
 
 function getBody (item, cb) {
-  // handle read file, wget from url or string logic
-
-  fs.readFile(item, 'utf-8', cb)
+  if (fs.existsSync(item)) {
+    fs.readFile(item, 'utf-8', cb)
+  } else if (isUrl(item)) {
+    request.get(item, (err, res, body) => {
+      if (res.statusCode === 200) {
+        cb(null, body)
+      } else {
+        cb(err)
+      }
+    })
+  } else {
+    cb(null, item)
+  }
 }
 
 module.exports = createApp
