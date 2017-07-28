@@ -1,36 +1,26 @@
 ## Stuff we need
 
 - output raw SVG strings (not image data) maybe add `Plotly.serialize` or `Plotly.toSVG`
+- `scale` png in the client
+
 - MathJax !!
     + local or CDN!
-- use local plotly.js (found with `pkgUp` or provided path) or CDN (latest or tagged)
-
-- `scale` png in the client
-- client module and client `<script>` deps (e.g. plotly.js)
-- similar options to https://github.com/rreusser/plotly-mock-viewer
-    + mapbox access token
-    + must have `local-topojson` option
-    + must have `strict-d3` option
 
 - logging!
-    + pass logger as argument or listen to events?
-    + `bunyan`? other?
+    + pass logger (e.g. bunyan) as argument or listen to events?
+
 - debug mode!
-    + use `assert`
     + https://github.com/electron/devtron
     + https://github.com/sindresorhus/electron-debug/blob/master/index.js
     + https://github.com/sindresorhus/electron-unhandled
-- plugin system for renderers and converters
 
 - CLI should support
-    + data/layout strings
-    + glob of data/layout files
-    + glob of URL to data/layout files
     + options: format (png, jpeg, svg, pdf, eps, webp), scale, width/height, encoded(??)
     + don't assume plotly plot payloads (jupyter notebooks are next, animations)
 
 - benchmarks!!
     + https://github.com/electron/asar
+
 - test coverage!!
     + https://github.com/electron/spectron
 
@@ -112,15 +102,11 @@ var server = plotlyExporter.serve({
   // I think ...
   component: [{
     name: 'plotly-graph',
+    path: /* if none given, try to resolve ${name} */,
     route: /* default to same as name */,
-    opts: {
+    options: {
       pathToPlotlyJS: ''
     },
-    //
-    inject: () => {},
-    parse: () => {},
-    render: () => {},
-    convert: () => {}
   }],
   port: 9090
 })

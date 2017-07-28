@@ -19,5 +19,9 @@ module.exports = {
     scale: 1,
     width: 700,
     height: 500
+  },
+
+  plotConfig: {
+    staticPlot: true
   }
 }

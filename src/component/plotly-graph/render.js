@@ -3,6 +3,9 @@
 const cst = require('./constants')
 
 module.exports = function (info, opts, sendToMain) {
+  const config = Object.assign({}, cst.plotConfig, {mapboxAccessToken: opts.mapboxAccessToken})
+  const figure = Object.assign({}, {config: config}, info.figure)
+
   const gd = document.createElement('div')
   document.body.appendChild(gd)
 
@@ -20,7 +23,7 @@ module.exports = function (info, opts, sendToMain) {
     sendToMain(errorCode, result)
   }
 
-  Plotly.newPlot(gd, info.figure)
+  Plotly.newPlot(gd, figure)
   .then(() => Plotly.toImage(gd, {format: info.format}))
   .then((imgData) => {
     result.imgData = imgData.replace(/^data:image\/\w+;base64,/, '')
