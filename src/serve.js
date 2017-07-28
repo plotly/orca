@@ -5,10 +5,9 @@ const textBody = require('body')
 const uuid = require('uuid/v4')
 const isNumeric = require('fast-isnumeric')
 
-// const coerceCommon = require('./util/coerce-common')
-// const isValidComponent = require('./util/is-valid-component')
 const createIndex = require('./util/create-index')
 const createTimer = require('./util/create-timer')
+const coerceComponent = require('./util/coerce-component')
 
 const BUFFER_OVERFLOW_LIMIT = 1e9
 const REQUEST_TIMEOUT = 50000
@@ -35,6 +34,7 @@ const STATUS_MSG = {
 function createApp (_opts) {
   const opts = coerceOpts(_opts)
 
+  let timer = createTimer()
   let server = null
   let win = null
 
@@ -67,7 +67,9 @@ function createApp (_opts) {
     win.webContents.once('did-finish-load', () => {
       server.listen(opts.port, () => {
         app.emit('after-connect', {
-          port: opts.port
+          port: opts.port,
+          startupTime: timer.end(),
+          openRoutes: Object.keys(opts._componentLookup).map((r) => '/' + r)
         })
       })
     })
@@ -76,19 +78,35 @@ function createApp (_opts) {
   return app
 }
 
-function coerceOpts (_opts) {
-  const opts = {}
+function coerceOpts (opts) {
+  const fullOpts = {}
 
-  opts.port = isNumeric(_opts.port) ? Number(_opts.port) : 8000
-  opts.debug = !!_opts.debug
+  // should we error out if no port is given?
+  fullOpts.port = isNumeric(opts.port) ? Number(opts.port) : 8000
+  fullOpts.debug = !!opts.debug
+  fullOpts._browserWindowOpts = {}
 
-  opts._componentLookup = {
-    'plotly-graph': require('./component/plotly-graph')
+  const components = Array.isArray(opts.component) ? opts.component : [opts.component]
+  const componentLookup = {}
+  fullOpts.component = []
+
+  components.forEach((comp) => {
+    const fullComp = coerceComponent(comp)
+
+    if (fullComp) {
+      fullComp.route = typeof comp.route === 'string' ? comp.route : comp.name
+      componentLookup[comp.route] = fullComp
+      fullOpts.component.push(fullComp)
+    }
+  })
+
+  if (fullOpts.component.length === 0) {
+    throw new Error('no valid component registered')
   }
 
-  opts._browserWindowOpts = {}
+  fullOpts._componentLookup = componentLookup
 
-  return opts
+  return fullOpts
 }
 
 function createServer (app, win, opts) {

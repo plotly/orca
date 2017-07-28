@@ -7,6 +7,7 @@ const parallelLimit = require('run-parallel-limit')
 
 const createIndex = require('./util/create-index')
 const createTimer = require('./util/create-timer')
+const coerceComponent = require('./util/coerce-component')
 
 const PARALLEL_LIMIT_DFLT = 4
 const STATUS_MSG = {
@@ -61,25 +62,42 @@ function createApp (_opts) {
   return app
 }
 
-function coerceOptions (_opts) {
-  const opts = {}
+function coerceOptions (opts) {
+  const fullOpts = {}
 
-  // handle glob to list
+  fullOpts.debug = !!opts.debug
+  fullOpts._browserWindowOpts = {}
 
-  opts.debug = !!_opts.debug
+  const comp = Array.isArray(opts.component) ? opts.component[0] : opts.component
+  const fullComp = coerceComponent(comp)
 
-  opts._comp = require('./component/plotly-graph')
+  if (fullComp) {
+    fullOpts.component = fullComp
+  } else {
+    throw new Error('no valid component registered')
+  }
 
-  opts._browserWindowOpts = {}
+  const input = Array.isArray(opts.input) ? opts.input : [opts.input]
+  const fullInput = []
 
-  opts._input = _opts.input
+  input.forEach((item) => {
+    const matches = glob.sync(item)
 
-  return opts
+    if (matches.length === 0) {
+      fullInput.push(item)
+    } else {
+      fullInput.push(...matches)
+    }
+  })
+
+  fullOpts.input = fullInput
+
+  return fullOpts
 }
 
 function run (app, win, opts) {
-  const comp = opts._comp
-  let pending = opts._input.length
+  const comp = opts.component
+  let pending = opts.input.length
 
   const emitError = (code, info) => {
     info = info || {}
@@ -91,7 +109,7 @@ function run (app, win, opts) {
     ))
   }
 
-  const tasks = opts._input.map((item) => (done) => {
+  const tasks = opts.input.map((item) => (done) => {
     const timer = createTimer()
     const id = uuid()
 
