@@ -1,58 +1,47 @@
 const fs = require('fs')
 const path = require('path')
-const browserify = require('browserify')
-const str = require('string-to-stream')
 
 const COMPONENT_GLOBAL = 'PlotlyExporterComponents'
+const PATH_TO_BUILD = path.join(__dirname, '..', '..', 'build')
+const PATH_TO_INIT_RENDERERS = path.join(__dirname, 'init-renderers.js')
 
 /** Create HTML index file
  *
  * @param {object} opts (full) option object
- *  - ...
  *
  */
 function createIndex (opts, cb) {
-  const pathToBuild = path.join(__dirname, '..', '..', 'build')
-  const pathToIndex = path.join(pathToBuild, 'index.html')
-  const pathToRenderBundle = path.join(pathToBuild, 'render-bundle.js')
-  const pathToInitRenderers = path.join(__dirname, 'init-renderers.js')
+  const pathToIndex = path.join(PATH_TO_BUILD, 'index.html')
+  const components = Array.isArray(opts.component) ? opts.component : [opts.component]
 
-  const scripts = () => {
-    return `<script src="https://cdn.plot.ly/plotly-latest.js"></script>`
+  const head = () => {
+    const parts = components.map((comp) => comp.inject(opts, comp.options))
+    return parts.join('\n')
   }
 
-  var html = `<!DOCTYPE html>
+  const js = () => {
+    const parts = components.map((comp) => `require('${comp.path}')`)
+    return `${COMPONENT_GLOBAL} = [${parts.join(',')}]`
+  }
+
+  const html = `<!DOCTYPE html>
   <html>
     <head>
       <meta charset="UTF-8">
       <title>plotly image exporter</title>
-      ${scripts()}
+      ${head()}
     </head>
     <body>
-      <script src=${pathToRenderBundle}></script>
       <script>
-        const initRenderers = require('${pathToInitRenderers}')
-        initRenderers(${COMPONENT_GLOBAL})
+        ${js()}
+        require('${PATH_TO_INIT_RENDERERS}')(${COMPONENT_GLOBAL})
       </script>
     </body>
   </html>`
 
-  const js = `
-    module.exports = {
-      'plotly-graph': require('../component/plotly-graph')
-    }`
-
   fs.writeFile(pathToIndex, html, (err) => {
     if (err) throw err
-
-    browserify(str(js), {
-      basedir: __dirname,
-      standalone: COMPONENT_GLOBAL,
-      debug: opts.debug
-    })
-    .bundle()
-    .pipe(fs.createWriteStream(pathToRenderBundle))
-    .on('finish', () => cb(pathToIndex))
+    cb(pathToIndex)
   })
 }
 

@@ -1,8 +1,6 @@
 module.exports = {
   name: 'plotly-graph',
-  injectScripts: (opts) => {
-    return opts
-  },
+  inject: require('./inject'),
   parse: require('./parse'),
   render: require('./render'),
   convert: require('./convert')
