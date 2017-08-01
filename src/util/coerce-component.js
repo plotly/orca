@@ -4,9 +4,15 @@ const isPlainObj = require('is-plain-obj')
 const REQUIRED_METHODS = ['inject', 'parse', 'render', 'convert']
 const PATH_TO_COMPONENT = path.join(__dirname, '..', 'component')
 
-// probably 'inject' should be made optional?
-// maybe all methods should be optional? Would that make sense?
+// TODO:
+// - probably 'inject' should be made optional?
+// - maybe all methods should be optional? Would that make sense?
 
+/** Coerce component options
+ *
+ * @param {object} comp : component option object
+ * @return {object or null}
+ */
 function coerceComponent (comp) {
   const compOut = {}
 

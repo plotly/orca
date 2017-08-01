@@ -8,14 +8,16 @@ const PATH_TO_INIT_RENDERERS = path.join(__dirname, 'init-renderers.js')
 /** Create HTML index file
  *
  * @param {object} opts (full) option object
- *
+ *  - component {object or array of objects}
+ * @param {function} cb callback
+ *  - pathToIndex {string}
  */
 function createIndex (opts, cb) {
   const pathToIndex = path.join(PATH_TO_BUILD, 'index.html')
   const components = Array.isArray(opts.component) ? opts.component : [opts.component]
 
   const head = () => {
-    const parts = components.map((comp) => comp.inject(opts, comp.options))
+    const parts = components.map((comp) => comp.inject(comp.options))
     return parts.join('\n')
   }
 

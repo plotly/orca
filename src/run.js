@@ -99,9 +99,11 @@ function coerceOptions (opts) {
 }
 
 function run (app, win, opts) {
+  const input = opts.input
   const comp = opts.component
-  let pending = opts.input.length
+  const compOpts = comp.options
 
+  let pending = input.length
   const emitError = (code, info) => {
     info = info || {}
     info.msg = info.msg || STATUS_MSG[code] || ''
@@ -112,7 +114,7 @@ function run (app, win, opts) {
     ))
   }
 
-  const tasks = opts.input.map((item) => (done) => {
+  const tasks = input.map((item) => (done) => {
     const timer = createTimer()
     const id = uuid()
 
@@ -138,7 +140,7 @@ function run (app, win, opts) {
         return errorOut(errorCode)
       }
 
-      win.webContents.send(comp.name, id, fullInfo, opts)
+      win.webContents.send(comp.name, id, fullInfo, compOpts)
     }
 
     // setup convert callback
@@ -174,7 +176,7 @@ function run (app, win, opts) {
         body = _body
       }
 
-      comp.parse(body, opts, sendToRenderer)
+      comp.parse(body, compOpts, sendToRenderer)
     })
 
     // convert on render message -> emit 'after-export'
@@ -185,7 +187,7 @@ function run (app, win, opts) {
         return errorOut(errorCode)
       }
 
-      comp.convert(fullInfo, opts, reply)
+      comp.convert(fullInfo, compOpts, reply)
     })
   })
 

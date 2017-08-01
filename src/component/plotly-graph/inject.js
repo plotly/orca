@@ -1,27 +1,21 @@
-const cst = require('./constants')
-
-// TODO Do we really need to pass around `appOpts
-// I guess passing `appOpts.debug` might be nice, but
-// that might be it ...
-
-function inject (appOpts, compOpts) {
+function inject (opts) {
   const parts = []
 
-  if (compOpts.MathJax) {
-    parts.push(script(compOpts.MathJax + '?config=TeX-AMS-MML_SVG'))
+  if (opts.MathJax) {
+    parts.push(script(opts.MathJax + '?config=TeX-AMS-MML_SVG'))
   }
 
-  if (compOpts.localTopojson) {
-    parts.push(script(compOpts.localTopojson))
+  if (opts.localTopojson) {
+    parts.push(script(opts.localTopojson))
   }
 
-  // TODO handle logic CDN ('latest' / 'v1.23.1') / given path / require.resolve
-  //
-  // https://github.com/rreusser/plotly-mock-viewer#usage
+  // TODO
+  // - handle logic CDN ('latest' / 'v1.23.1') / given path / require.resolve
+  // - on par with: https://github.com/rreusser/plotly-mock-viewer#usage
 
-  const plotlyJS = typeof compOpts.pathToPlotlyJS === 'string'
-    ? compOpts.pathToPlotlyJS
-    : cst.dflt.pathToPlotlyJS
+  const plotlyJS = typeof opts.pathToPlotlyJS === 'string'
+    ? opts.pathToPlotlyJS
+    : 'https://cdn.plot.ly/plotly-latest.min.js'
 
   parts.push(script(plotlyJS))
 

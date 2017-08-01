@@ -2,7 +2,7 @@
 
 const cst = require('./constants')
 
-module.exports = function (info, opts, sendToMain) {
+function render (info, opts, sendToMain) {
   const config = Object.assign({}, cst.plotConfig, {mapboxAccessToken: opts.mapboxAccessToken})
   const figure = Object.assign({}, {config: config}, info.figure)
 
@@ -35,3 +35,5 @@ module.exports = function (info, opts, sendToMain) {
     done()
   })
 }
+
+module.exports = render

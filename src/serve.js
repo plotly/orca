@@ -157,6 +157,8 @@ function createServer (app, win, opts) {
       return errorReply(404)
     }
 
+    const compOpts = comp.options
+
     // setup parse callback
     const sendToRenderer = (errorCode, parseInfo) => {
       Object.assign(fullInfo, parseInfo)
@@ -165,7 +167,7 @@ function createServer (app, win, opts) {
         return errorReply(errorCode)
       }
 
-      win.webContents.send(comp.name, id, fullInfo, opts)
+      win.webContents.send(comp.name, id, fullInfo, compOpts)
     }
 
     // setup convert callback
@@ -207,7 +209,7 @@ function createServer (app, win, opts) {
       }
 
       pending++
-      comp.parse(body, opts, sendToRenderer)
+      comp.parse(body, compOpts, sendToRenderer)
     })
 
     // convert on render message -> end response
@@ -218,7 +220,7 @@ function createServer (app, win, opts) {
         return errorReply(errorCode)
       }
 
-      comp.convert(fullInfo, opts, reply)
+      comp.convert(fullInfo, compOpts, reply)
     })
   })
 }
