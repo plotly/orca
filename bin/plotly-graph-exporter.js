@@ -29,8 +29,8 @@ app.on('export-error', (info) => {
 })
 
 // TODO more descriptive event name?
-app.on('done', () => {
-  console.log('done!!')
+app.on('done', (info) => {
+  console.log(`\ndone with code ${info.code} - ${info.msg}`)
 })
 
 app.on('renderer-error', (info) => {

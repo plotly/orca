@@ -14,10 +14,10 @@ const coerceComponent = require('./util/coerce-component')
 
 const PARALLEL_LIMIT_DFLT = 4
 const STATUS_MSG = {
+  200: 'all task(s) completed',
   422: 'json parse error',
   500: 'incomplete task(s)',
   501: 'renderer error'
-  500: 'incomplete task(s)'
 }
 
 /** Create
@@ -115,15 +115,6 @@ function run (app, win, opts) {
   const compOpts = comp.options
 
   let pending = input.length
-  const emitError = (code, info) => {
-    info = info || {}
-    info.msg = info.msg || STATUS_MSG[code] || ''
-
-    app.emit('export-error', Object.assign(
-      {code: code},
-      info
-    ))
-  }
 
   const tasks = input.map((item) => (done) => {
     const timer = createTimer()
@@ -134,13 +125,19 @@ function run (app, win, opts) {
     //   and is emitted on 'export-error' and 'after-export'
     const fullInfo = {
       item: item,
-      // won't work for string input
+      // TODO won't work for string input, fallback to `new ${comp.name} (*)`
       itemName: path.parse(item).name
     }
 
     const errorOut = (code) => {
-      emitError(code, fullInfo)
-      done()
+      fullInfo.msg = fullInfo.msg || STATUS_MSG[code] || ''
+
+      app.emit('export-error', Object.assign(
+        {code: code},
+        fullInfo
+      ))
+
+      return done()
     }
 
     // setup parse callback
@@ -203,12 +200,13 @@ function run (app, win, opts) {
   })
 
   parallelLimit(tasks, PARALLEL_LIMIT_DFLT, (err) => {
-    if (err || pending !== 0) {
-      // maybe should be emitted as part of 'done'?
-      emitError(500)
-    }
+    const code = (err || pending !== 0) ? 500 : 200
 
-    app.emit('done')
+    app.emit('done', {
+      code: code,
+      msg: STATUS_MSG[code]
+    })
+
     win.close()
     app.quit()
   })
