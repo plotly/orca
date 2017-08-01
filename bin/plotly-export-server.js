@@ -22,6 +22,9 @@ const opts = {
       localTopojson: `${__dirname}/../../plotly.js/dist/plotly-geo-assets.js`,
       mapboxAccessToken: 'pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ'
     }
+  }, {
+    name: 'plotly-dashboard',
+    route: 'dashboard'
   }]
 }
 

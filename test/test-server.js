@@ -11,6 +11,7 @@ const FORMAT = 'png'
 const argv = process.argv.slice(2)
 const list = argv.length > 0 ? argv : ['0']
 
+// pong
 request({
   method: 'post',
   url: SERVER_URL + '/ping'
@@ -18,6 +19,7 @@ request({
 .on('error', (err) => console.warn(err))
 .pipe(process.stdout)
 
+// mock list
 list.forEach(p => {
   const figUrl = url.parse(p).host
     ? p
@@ -28,9 +30,12 @@ list.forEach(p => {
 
     const fig = JSON.parse(_fig)
 
+    // add LaTeX !
+    fig.layout.title = '$\\int_x^\\infty f(x) dx$'
+
     request({
       method: 'post',
-      url: SERVER_URL + '/plotly-graph',
+      url: SERVER_URL + '/',
       body: JSON.stringify({
         fid: uuid(),
         figure: fig,
@@ -42,6 +47,20 @@ list.forEach(p => {
     .pipe(fs.createWriteStream(`${p}.${FORMAT}`))
   })
 })
+
+// try dashboard
+request({
+  method: 'post',
+  url: SERVER_URL + '/dashboard',
+  body: JSON.stringify({
+    fid: uuid(),
+    url: 'https://plot.ly/dashboard/jackp:17872/present',
+    format: 'pdf'
+  })
+})
+.on('error', (err) => console.warn(err))
+.on('response', (res) => console.warn(res.statusCode))
+.pipe(fs.createWriteStream('dashboard.pdf'))
 
 function wget (url, cb) {
   let body = ''
