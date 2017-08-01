@@ -32,7 +32,7 @@ This project has a larger scope than the current image server.
 We want to export not just plotly `"data"/"layout"`, but dashboard print and
 thumbnail views.  Eventually, we could even export plotly animations to gifs.
 Moreover, we probably want some export types to be open-source while others
-streambed only. Therefore, this package defines a _component_ framework. See
+streambed-only. Therefore, this package defines a _component_ framework. See
 `src/component/` for two examples.
 
 Each component has an `inject`, a `parse`, a `render` and a `convert` method:
