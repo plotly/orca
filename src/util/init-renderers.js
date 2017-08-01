@@ -12,4 +12,9 @@ function initRenderers (components) {
   })
 }
 
+// send errors to main process
+window.onerror = (err) => {
+  ipcRenderer.send('renderer-error', err)
+}
+
 module.exports = initRenderers

@@ -15,6 +15,8 @@ const coerceComponent = require('./util/coerce-component')
 const PARALLEL_LIMIT_DFLT = 4
 const STATUS_MSG = {
   422: 'json parse error',
+  500: 'incomplete task(s)',
+  501: 'renderer error'
   500: 'incomplete task(s)'
 }
 
@@ -59,6 +61,15 @@ function createApp (_opts) {
 
     win.webContents.once('did-finish-load', () => {
       run(app, win, opts)
+    })
+
+    ipcMain.on('renderer-error', (event, info) => {
+      const code = 501
+      app.emit('renderer-error', {
+        code: code,
+        msg: STATUS_MSG[code],
+        error: info
+      })
     })
   })
 

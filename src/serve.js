@@ -17,6 +17,7 @@ const STATUS_MSG = {
   499: 'client closed request before generation complete',
   404: 'invalid route',
   422: 'json parse error',
+  501: 'renderer error',
   522: 'client socket timeout'
 }
 
@@ -71,6 +72,15 @@ function createApp (_opts) {
           startupTime: timer.end(),
           openRoutes: Object.keys(opts._componentLookup).map((r) => '/' + r)
         })
+      })
+    })
+
+    ipcMain.on('renderer-error', (event, info) => {
+      const code = 501
+      app.emit('renderer-error', {
+        code: code,
+        msg: STATUS_MSG[code],
+        error: info
       })
     })
   })
