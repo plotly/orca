@@ -32,3 +32,13 @@ app.on('export-error', (info) => {
 app.on('done', () => {
   console.log('done!!')
 })
+
+app.on('renderer-error', (info) => {
+  console.warn(`${info.msg} - ${info.error}`)
+  app.quit()
+})
+
+process.on('uncaughtException', (err) => {
+  console.warn(err)
+  app.quit()
+})

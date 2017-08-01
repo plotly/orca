@@ -210,8 +210,7 @@ function run (app, win, opts) {
 
     app.emit('done')
     win.close()
-    // or ??
-    // app.close()
+    app.quit()
   })
 }
 
