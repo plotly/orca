@@ -8,10 +8,10 @@ const cst = require('./constants')
  *  - pathToBatik {string}
  * @param {function} reply
  *  - errorCode {number or null}
- *  - results {object}
+ *  - result {object}
  *    - head
  *    - body
- *
+ *    - bodyLength
  */
 function convert (info, opts, reply) {
   let errorCode = null
@@ -19,6 +19,12 @@ function convert (info, opts, reply) {
   const result = {
     head: {'Content-Type': cst[info.format]}
   }
+
+  // TODO
+  // - should pdf and eps format be part of a streambed-only component?
+  // - should we use batik for that or something?
+  // - implement 'svg' and 'webp'
+  // - is the 'encoded' option still relevant?
 
   switch (info.format) {
     case 'png':

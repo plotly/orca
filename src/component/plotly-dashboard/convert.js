@@ -1,3 +1,12 @@
+/**
+ * @param {object} info
+ *  - imgData
+ * @param {object} opts
+ * @param {function} reply
+ *  - head
+ *  - body
+ *  - bodyLength
+ */
 function convert (info, opts, reply) {
   const result = {}
 

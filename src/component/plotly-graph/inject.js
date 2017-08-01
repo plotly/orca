@@ -1,3 +1,10 @@
+/**
+ * @param {object} opts
+ *  - pathToPlotlyJS {string}
+ *  - MathJax
+ *  - localTopojson
+ * @return {string}
+ */
 function inject (opts) {
   const parts = []
 

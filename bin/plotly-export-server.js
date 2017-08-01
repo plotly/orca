@@ -1,18 +1,23 @@
 const plotlyExporter = require('../')
 const subarg = require('subarg')
 
-const argv = subarg(process.argv.slice(2))
+const argv = subarg(process.argv.slice(2), {
+  'boolean': ['debug'],
+  'string': ['port'],
+  'default': {
+    debug: false,
+    port: 9091
+  }
+})
 
 // TODO
-// - by default, use `require.resolve` (or `pkg-up`) to find
-//   closest plotly.js directory
 // - try https://github.com/indexzero/node-portfinder
 
 let app
 
 const opts = {
-  port: argv.port || 9091,
-  debug: true,
+  port: argv.port,
+  debug: argv.debug,
   component: [{
     name: 'plotly-graph',
     route: '',

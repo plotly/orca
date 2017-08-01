@@ -21,14 +21,15 @@ const STATUS_MSG = {
   522: 'client socket timeout'
 }
 
-/** Create
+/** Create server app
  *
  * @param {object} opts
- *   - component
- *   - port
- *   - ...
- *   - debug
- *
+ *   - port {number} port number
+ *   - component {string, object}
+ *     - name {string}
+ *     - path {string}
+ *     - options {object}
+ *   - debug {boolean} turn on debugging tooling
  *
  * @return {object} app
  */
@@ -39,6 +40,7 @@ function createApp (_opts) {
   let server = null
   let win = null
 
+  // to render WebGL in headless environments
   app.commandLine.appendSwitch('ignore-gpu-blacklist')
 
   app.on('ready', () => {
@@ -91,7 +93,7 @@ function createApp (_opts) {
 function coerceOpts (opts) {
   const fullOpts = {}
 
-  // should we error out if no port is given?
+  // TODO should we error out if no port is given?
   fullOpts.port = isNumeric(opts.port) ? Number(opts.port) : 8000
   fullOpts.debug = !!opts.debug
   fullOpts._browserWindowOpts = {}

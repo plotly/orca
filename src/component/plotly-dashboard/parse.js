@@ -1,3 +1,14 @@
+/**
+ * @param {object} body
+ *  - url
+ *  - width
+ *  - height
+ *  - fid
+ * @param {object} opts
+ * @param {function} sendToRenderer
+ *  - errorCode
+ *  - result
+ */
 function parse (body, opts, sendToRenderer) {
   const result = {}
 

@@ -2,6 +2,32 @@ const cst = require('./constants')
 const isNumeric = require('fast-isnumeric')
 const isPlainObj = require('is-plain-obj')
 
+/**
+ * @param {object} body : request body
+ *  - figure
+ *  - format
+ *  - encoded (?)
+ *  - scale
+ *  - width
+ *  - height
+ *  - fid (figure id)
+ *  - thumbnail (?)
+ * 0r:
+ *  - data
+ *  - layout
+ *
+ * @param {object} _opts :
+ * If data/layout body:
+ *  - format
+ *  - encoded (?)
+ *  - scale
+ *  - width
+ *  - height
+ *  - thumbnail (?)
+ * @param {function} sendToRenderer
+ * - errorCode
+ * - result
+ */
 function parse (body, _opts, sendToRenderer) {
   const result = {}
 

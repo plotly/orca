@@ -2,18 +2,22 @@ const plotlyExporter = require('../')
 const subarg = require('subarg')
 const fs = require('fs')
 
-const argv = subarg(process.argv.slice(2))
+const argv = subarg(process.argv.slice(2), {
+  'boolean': ['debug'],
+  'default': {
+    debug: false
+  }
+})
 
 // TODO
 // - handle stdin inputs!
 // - file overwrite option?
-//
 // - try to be on-par with https://github.com/rreusser/plotly-mock-viewer
 
 const app = plotlyExporter.run({
   input: argv._,
-  component: 'plotly-graph',
-  debug: true
+  debug: argv.debug,
+  component: 'plotly-graph'
 })
 
 app.on('after-export', (info) => {

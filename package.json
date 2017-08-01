@@ -5,8 +5,8 @@
   "license": "MIT",
   "main": "src/index.js",
   "scripts": {
-    "start:server": "electron bin/plotly-export-server",
-    "start:runner": "electron bin/plotly-graph-exporter",
+    "start:server": "electron bin/plotly-export-server --debug",
+    "start:runner": "electron bin/plotly-graph-exporter --debug",
     "test:lint": "standard | snazzy",
     "test:server": "node test/test-server.js",
     "test": "npm run test:lint",
@@ -16,7 +16,6 @@
   "keywords": [
     "graphing",
     "plotting",
-    "data",
     "visualization",
     "plotly"
   ],

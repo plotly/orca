@@ -20,14 +20,16 @@ const STATUS_MSG = {
   501: 'renderer error'
 }
 
-/** Create
+/** Create runner app
  *
  * @param {object} opts
- *   - input
- *   - component
- *   - ...
- *   - debug
- *
+ *   - input {string or array of strings}
+ *   - component {string, object, array of a strings or array of objects}
+ *     - name {string}
+ *     - path {string}
+ *     - route {string}
+ *     - options {object}
+ *   - debug {boolean} turn on debugging tooling
  *
  * @return {object} app
  */
@@ -36,6 +38,7 @@ function createApp (_opts) {
 
   let win = null
 
+  // to render WebGL in headless environments
   app.commandLine.appendSwitch('ignore-gpu-blacklist')
 
   app.on('ready', () => {

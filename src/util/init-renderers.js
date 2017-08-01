@@ -1,5 +1,12 @@
 const {ipcRenderer} = require('electron')
 
+/** Small wrapper that registers ipc listeners for all components
+ *  on channels given by their component name.
+ *
+ * @param {array of objects} components
+ *   - name {string}
+ *   - render {function}
+ */
 function initRenderers (components) {
   components.forEach((comp) => {
     ipcRenderer.on(comp.name, (event, id, info, opts) => {
