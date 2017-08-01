@@ -54,7 +54,7 @@ request({
   url: SERVER_URL + '/dashboard',
   body: JSON.stringify({
     fid: uuid(),
-    url: 'https://plot.ly/dashboard/jackp:17872/present',
+    url: 'https://plot.ly/dashboard/jackp:17872/embed',
     format: 'pdf'
   })
 })
