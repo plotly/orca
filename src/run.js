@@ -1,7 +1,6 @@
 const {app, BrowserWindow} = require('electron')
 const {ipcMain} = require('electron')
 const fs = require('fs')
-const path = require('path')
 const uuid = require('uuid/v4')
 const parallelLimit = require('run-parallel-limit')
 const glob = require('glob')
@@ -27,7 +26,6 @@ const STATUS_MSG = {
  *   - component {string, object, array of a strings or array of objects}
  *     - name {string}
  *     - path {string}
- *     - route {string}
  *     - options {object}
  *   - debug {boolean} turn on debugging tooling
  *
@@ -119,7 +117,7 @@ function run (app, win, opts) {
 
   let pending = input.length
 
-  const tasks = input.map((item) => (done) => {
+  const tasks = input.map((item, i) => (done) => {
     const timer = createTimer()
     const id = uuid()
 
@@ -127,9 +125,7 @@ function run (app, win, opts) {
     //   which accumulates parse, render, convert results
     //   and is emitted on 'export-error' and 'after-export'
     const fullInfo = {
-      item: item,
-      // TODO won't work for string input, fallback to `new ${comp.name} (*)`
-      itemName: path.parse(item).name
+      itemIndex: i
     }
 
     const errorOut = (code) => {
