@@ -23,11 +23,13 @@
     "body": "^5.1.0",
     "electron": "^1.6.11",
     "fast-isnumeric": "^1.1.1",
+    "get-stdin": "^5.0.1",
     "glob": "^7.1.2",
     "is-plain-obj": "^1.1.0",
     "is-url": "^1.2.2",
     "request": "^2.81.0",
     "run-parallel-limit": "^1.0.3",
+    "semver-regex": "^1.0.0",
     "subarg": "^1.0.0",
     "uuid": "^3.1.0"
   },

@@ -23,5 +23,7 @@ module.exports = {
 
   plotConfig: {
     staticPlot: true
-  }
+  },
+
+  mathJaxConfigQuery: '?config=TeX-AMS-MML_SVG'
 }
