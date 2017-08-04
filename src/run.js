@@ -89,7 +89,7 @@ function coerceOptions (opts) {
     : PARALLEL_LIMIT_DFLT
 
   const comp = Array.isArray(opts.component) ? opts.component[0] : opts.component
-  const fullComp = coerceComponent(comp)
+  const fullComp = coerceComponent(comp, fullOpts.debug)
 
   if (fullComp) {
     fullOpts.component = fullComp

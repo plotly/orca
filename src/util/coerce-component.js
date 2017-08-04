@@ -12,9 +12,10 @@ const PATH_TO_COMPONENT = path.join(__dirname, '..', 'component')
 /** Coerce component options
  *
  * @param {object} comp : component option object
+ * @param {boolean} debug : debug flag
  * @return {object or null}
  */
-function coerceComponent (comp) {
+function coerceComponent (comp, debug) {
   const compOut = {}
 
   if (isNonEmptyString(comp)) {
@@ -25,9 +26,11 @@ function coerceComponent (comp) {
     } else if (isNonEmptyString(comp.name)) {
       compOut.path = path.join(PATH_TO_COMPONENT, comp.name)
     } else {
+      if (debug) console.warn(`path to component not found`)
       return null
     }
   } else {
+    if (debug) console.warn(`non-string, non-object component passed`)
     return null
   }
 
@@ -35,12 +38,14 @@ function coerceComponent (comp) {
     const _module = require(compOut.path)
     Object.assign(compOut, _module)
   } catch (e) {
+    if (debug) console.warn(e)
     return null
   }
 
   if (isModuleValid(compOut)) {
     compOut.options = isPlainObj(comp.options) ? comp.options : {}
   } else {
+    if (debug) console.warn(`invalid component module ${compOut.path}`)
     return null
   }
 

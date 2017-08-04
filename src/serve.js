@@ -110,10 +110,15 @@ function coerceOpts (opts) {
   fullOpts.component = []
 
   components.forEach((comp) => {
-    const fullComp = coerceComponent(comp)
+    const fullComp = coerceComponent(comp, fullOpts.debug)
 
     if (fullComp) {
       fullComp.route = isNonEmptyString(comp.route) ? comp.route : comp.name
+
+      if (componentLookup[comp.route]) {
+        throw new Error('trying to register multiple components on same route')
+      }
+
       componentLookup[comp.route] = fullComp
       fullOpts.component.push(fullComp)
     }
