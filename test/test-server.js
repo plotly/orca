@@ -29,15 +29,17 @@ list.forEach(p => {
     if (err) throw err
 
     const fig = JSON.parse(_fig)
+    const fid = uuid()
 
     // add LaTeX !
     fig.layout.title = '$\\int_x^\\infty f(x) dx$'
 
+    // plotly-graph
     request({
       method: 'post',
       url: SERVER_URL + '/',
       body: JSON.stringify({
-        fid: uuid(),
+        fid: fid,
         figure: fig,
         format: FORMAT
       })
@@ -45,10 +47,23 @@ list.forEach(p => {
     .on('error', (err) => console.warn(err))
     .on('response', (res) => console.warn(res.statusCode))
     .pipe(fs.createWriteStream(`${p}.${FORMAT}`))
+
+    // plotly-thumbnail
+    request({
+      method: 'post',
+      url: SERVER_URL + '/thumbnail',
+      body: JSON.stringify({
+        fid: fid,
+        figure: fig
+      })
+    })
+    .on('error', (err) => console.warn(err))
+    .on('response', (res) => console.warn(res.statusCode))
+    .pipe(fs.createWriteStream(`${p}-thumbnail.png`))
   })
 })
 
-// try dashboard
+// plotly-dashboard
 request({
   method: 'post',
   url: SERVER_URL + '/dashboard',

@@ -16,8 +16,21 @@ function createIndex (opts, cb) {
   const pathToIndex = path.join(PATH_TO_BUILD, 'index.html')
   const components = Array.isArray(opts.component) ? opts.component : [opts.component]
 
+  // TODO maybe each component should have its own window?
+  const didInject = []
+
   const head = () => {
-    const parts = components.map((comp) => comp.inject(comp.options))
+    const parts = []
+
+    components.forEach((comp) => {
+      const inject = comp.inject
+
+      if (didInject.indexOf(inject) === -1) {
+        parts.push(inject(comp.options))
+        didInject.push(inject)
+      }
+    })
+
     return parts.join('\n')
   }
 

@@ -80,6 +80,15 @@ const opts = {
   }, {
     name: 'plotly-dashboard',
     route: 'dashboard'
+  }, {
+    name: 'plotly-thumbnail',
+    route: 'thumbnail',
+    options: {
+      // ...
+      plotlyJS: `${__dirname}/../../plotly.js/build/plotly.js`,
+      mapboxAccessToken: 'pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ',
+      topojson: `${__dirname}/../../plotly.js/dist/plotly-geo-assets.js`
+    }
   }]
 }
 

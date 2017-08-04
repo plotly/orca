@@ -12,7 +12,6 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
  *  - width
  *  - height
  *  - fid (figure id)
- *  - thumbnail (?)
  * 0r:
  *  - data
  *  - layout
@@ -24,7 +23,6 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
  *  - scale
  *  - width
  *  - height
- *  - thumbnail (?)
  * @param {function} sendToRenderer
  * - errorCode
  * - result
@@ -52,8 +50,6 @@ function parse (body, _opts, sendToRenderer) {
 
   result.encoded = !!opts.encoded
   result.scale = isPositiveNumeric(opts.scale) ? Number(opts.scale) : cst.dflt.scale
-  result.thumbnail = !!opts.thumbnail
-
   result.fid = isNonEmptyString(opts.fid) ? opts.fid : null
 
   if (isNonEmptyString(opts.format)) {
