@@ -163,6 +163,8 @@ Debugging:
 Perf:
 
 + https://github.com/electron/asar
++ https://github.com/pixijs/pixi.js/issues/2233
++ https://github.com/pixijs/pixi.js/pull/2481/files
 
 Test:
 
