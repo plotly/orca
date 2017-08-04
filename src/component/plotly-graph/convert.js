@@ -14,27 +14,31 @@ const cst = require('./constants')
  *    - bodyLength
  */
 function convert (info, opts, reply) {
+  const imgData = info.imgData
+  const format = info.format
+
   let errorCode = null
 
   const result = {
-    head: {'Content-Type': cst[info.format]}
+    head: {'Content-Type': cst[format]}
   }
 
   // TODO
   // - should pdf and eps format be part of a streambed-only component?
   // - should we use batik for that or something?
-  // - implement 'svg' and 'webp'
   // - is the 'encoded' option still relevant?
 
-  switch (info.format) {
+  switch (format) {
     case 'png':
-      result.bodyLength = result.head['Content-Length'] = info.imgData.length
-      result.body = Buffer.from(info.imgData, 'base64')
-      break
     case 'jpeg':
-      result.bodyLength = result.head['Content-Length'] = info.imgData.length
-      result.body = Buffer.from(info.imgData, 'base64')
+    case 'webp':
+      result.bodyLength = result.head['Content-Length'] = imgData.length
+      result.body = Buffer.from(imgData, 'base64')
       break
+    case 'svg':
+      // see http://stackoverflow.com/a/12205668/800548
+      result.bodyLength = encodeURI(imgData).split(/%..|./).length - 1
+      result.body = imgData
   }
 
   reply(errorCode, result)

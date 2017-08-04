@@ -6,6 +6,9 @@ const cst = require('./constants')
  * @param {object} info
  *  - figure
  *  - format
+ *  - width
+ *  - height
+ *  - scale
  * @param {object} opts
  *  - mapboxAccessToken
  * @param {function} sendToMain
@@ -14,36 +17,46 @@ const cst = require('./constants')
  *    - imgData
  */
 function render (info, opts, sendToMain) {
-  const config = Object.assign({}, cst.plotConfig, {mapboxAccessToken: opts.mapboxAccessToken})
-  const figure = Object.assign({}, {config: config}, info.figure)
+  const figure = info.figure
+  const format = info.format
 
-  const gd = document.createElement('div')
-  document.body.appendChild(gd)
+  const config = Object.assign({},
+    {mapboxAccessToken: opts.mapboxAccessToken},
+    figure.config
+  )
 
   const result = {}
   let errorCode = null
 
   const done = () => {
-    Plotly.purge(gd)
-    document.body.removeChild(gd)
-
     if (errorCode) {
       result.msg = cst.statusMsg[errorCode]
     }
-
     sendToMain(errorCode, result)
   }
 
   // TODO
-  // - output raw SVG strings (not image data) maybe add `Plotly.serialize` or `Plotly.toSVG`
-  //   for 'svg', 'pdf' and 'eps' formats
-  // - scale images here (instead of via batik)
+  // - figure out if we still need this:
+  //   https://github.com/plotly/streambed/blob/7311d4386d80d45999797e87992f43fb6ecf48a1/image_server/server_app/main.js#L224-L229
+  // - increase pixel ratio images (scale up here, scale down in convert) ??
   // - handle thumbnails here? or in a separate component?
+  // - does webp (via batik) support transparency now?
 
-  Plotly.newPlot(gd, figure)
-  .then(() => Plotly.toImage(gd, {format: info.format}))
+  Plotly.toImage({
+    data: figure.data,
+    layout: figure.layout,
+    config: config
+  }, {
+    format: format,
+    width: info.scale * info.width,
+    height: info.scale * info.height,
+    // return image data w/o the leading 'data:image' spec
+    imageDataOnly: true,
+    // blend jpeg background color as jpeg does not support transparency
+    setBackground: format === 'jpeg' ? 'blend' : ''
+  })
   .then((imgData) => {
-    result.imgData = imgData.replace(/^data:image\/\w+;base64,/, '')
+    result.imgData = imgData
     done()
   })
   .catch((err) => {
