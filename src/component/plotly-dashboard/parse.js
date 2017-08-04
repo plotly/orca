@@ -1,3 +1,5 @@
+const isNonEmptyString = require('../../util/is-non-empty-string')
+
 /**
  * @param {object} body
  *  - url
@@ -17,9 +19,9 @@ function parse (body, opts, sendToRenderer) {
     sendToRenderer(code, result)
   }
 
-  result.fid = typeof body.fid === 'string' ? body.fid : null
+  result.fid = isNonEmptyString(body.fid) ? body.fid : null
 
-  if (typeof body.url === 'string') {
+  if (isNonEmptyString(body.url)) {
     result.url = body.url
   } else {
     errorOut(400)

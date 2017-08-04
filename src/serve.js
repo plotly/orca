@@ -3,11 +3,12 @@ const {ipcMain} = require('electron')
 const http = require('http')
 const textBody = require('body')
 const uuid = require('uuid/v4')
-const isNumeric = require('fast-isnumeric')
 
 const createIndex = require('./util/create-index')
 const createTimer = require('./util/create-timer')
 const coerceComponent = require('./util/coerce-component')
+const isPositiveNumeric = require('./util/is-positive-numeric')
+const isNonEmptyString = require('./util/is-non-empty-string')
 
 const BUFFER_OVERFLOW_LIMIT = 1e9
 const REQUEST_TIMEOUT = 50000
@@ -106,7 +107,7 @@ function coerceOpts (opts) {
     const fullComp = coerceComponent(comp)
 
     if (fullComp) {
-      fullComp.route = typeof comp.route === 'string' ? comp.route : comp.name
+      fullComp.route = isNonEmptyString(comp.route) ? comp.route : comp.name
       componentLookup[comp.route] = fullComp
       fullOpts.component.push(fullComp)
     }

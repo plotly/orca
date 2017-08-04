@@ -83,6 +83,10 @@ function coerceOptions (opts) {
   fullOpts.debug = !!opts.debug
   fullOpts._browserWindowOpts = {}
 
+  fullOpts.parallelLimit = isPositiveNumeric(opts.parallelLimit)
+    ? Number(opts.parallelLimit)
+    : PARALLEL_LIMIT_DFLT
+
   const comp = Array.isArray(opts.component) ? opts.component[0] : opts.component
   const fullComp = coerceComponent(comp)
 

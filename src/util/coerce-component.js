@@ -1,5 +1,6 @@
 const path = require('path')
 const isPlainObj = require('is-plain-obj')
+const isNonEmptyString = require('./is-non-empty-string')
 
 const REQUIRED_METHODS = ['inject', 'parse', 'render', 'convert']
 const PATH_TO_COMPONENT = path.join(__dirname, '..', 'component')
@@ -16,12 +17,12 @@ const PATH_TO_COMPONENT = path.join(__dirname, '..', 'component')
 function coerceComponent (comp) {
   const compOut = {}
 
-  if (typeof comp === 'string') {
+  if (isNonEmptyString(comp)) {
     compOut.path = path.join(PATH_TO_COMPONENT, comp)
   } else if (isPlainObj(comp)) {
-    if (typeof comp.path === 'string') {
+    if (isNonEmptyString(comp.path)) {
       compOut.path = comp.path
-    } else if (typeof comp.name === 'string') {
+    } else if (isNonEmptyString(comp.name)) {
       compOut.path = path.join(PATH_TO_COMPONENT, comp.name)
     } else {
       return null
@@ -48,7 +49,7 @@ function coerceComponent (comp) {
 
 function isModuleValid (_module) {
   return (
-    typeof _module.name === 'string' && _module.name !== '' &&
+    isNonEmptyString(_module.name) &&
     REQUIRED_METHODS.every((m) => typeof _module[m] === 'function')
   )
 }

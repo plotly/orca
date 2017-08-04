@@ -1,6 +1,7 @@
 const cst = require('./constants')
-const isNumeric = require('fast-isnumeric')
 const isPlainObj = require('is-plain-obj')
+const isPositiveNumeric = require('../../util/is-positive-numeric')
+const isNonEmptyString = require('../../util/is-non-empty-string')
 
 /**
  * @param {object} body : request body
@@ -50,12 +51,12 @@ function parse (body, _opts, sendToRenderer) {
   }
 
   result.encoded = !!opts.encoded
-  result.scale = isNumeric(opts.scale) ? Number(opts.scale) : cst.dflt.scale
+  result.scale = isPositiveNumeric(opts.scale) ? Number(opts.scale) : cst.dflt.scale
   result.thumbnail = !!opts.thumbnail
 
-  result.fid = typeof opts.fid === 'string' ? opts.fid : null
+  result.fid = isNonEmptyString(opts.fid) ? opts.fid : null
 
-  if (typeof opts.format === 'string') {
+  if (isNonEmptyString(opts.format)) {
     if (cst.contentFormat[opts.format]) {
       result.format = opts.format
     } else {
@@ -95,12 +96,12 @@ function parse (body, _opts, sendToRenderer) {
     result.figure.layout = {}
   }
 
-  result.width = isNumeric(opts.width) ? Number(opts.width)
-    : isNumeric(result.figure.layout.width) ? Number(result.figure.layout.width)
+  result.width = isPositiveNumeric(opts.width) ? Number(opts.width)
+    : isPositiveNumeric(result.figure.layout.width) ? Number(result.figure.layout.width)
     : cst.dflt.width
 
-  result.height = isNumeric(opts.height) ? Number(opts.height)
-    : isNumeric(result.figure.layout.height) ? Number(result.figure.layout.height)
+  result.height = isPositiveNumeric(opts.height) ? Number(opts.height)
+    : isPositiveNumeric(result.figure.layout.height) ? Number(result.figure.layout.height)
     : cst.dflt.height
 
   sendToRenderer(null, result)
