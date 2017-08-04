@@ -69,7 +69,9 @@ function createApp (_opts) {
     })
 
     win.webContents.once('did-finish-load', () => {
-      server.listen(opts.port, () => {
+      server.listen(opts.port, (err) => {
+        if (err) throw err
+
         app.emit('after-connect', {
           port: opts.port,
           startupTime: timer.end(),
@@ -94,8 +96,12 @@ function createApp (_opts) {
 function coerceOpts (opts) {
   const fullOpts = {}
 
-  // TODO should we error out if no port is given?
-  fullOpts.port = isNumeric(opts.port) ? Number(opts.port) : 8000
+  if (isPositiveNumeric(opts.port)) {
+    fullOpts.port = Number(opts.port)
+  } else {
+    throw new Error('invalid port number')
+  }
+
   fullOpts.debug = !!opts.debug
   fullOpts._browserWindowOpts = {}
 
