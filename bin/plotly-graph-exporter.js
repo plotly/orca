@@ -1,6 +1,8 @@
 const plotlyExporter = require('../')
 const cst = require('../src/component/plotly-graph/constants')
+const makeFormatAliases = require('../src/util/make-format-aliases')
 const pkg = require('../package.json')
+
 const getStdin = require('get-stdin')
 const subarg = require('subarg')
 const fs = require('fs')
@@ -42,17 +44,12 @@ const ARGS_CONFIG = {
 }
 
 const argv = subarg(process.argv.slice(2), ARGS_CONFIG)
+const formatAliases = makeFormatAliases(ARGS_CONFIG)
 const showLogs = argv.debug || argv.verbose
 
 if (argv.version) {
   console.log(pkg.version)
   process.exit(0)
-}
-
-const showAliases = (opt) => {
-  const aliases = ARGS_CONFIG.alias[opt]
-  const flags = aliases.map((a) => a.length === 1 ? `-${a}` : `--${a}`)
-  return `[or ${flags.join(', ')}]`
 }
 
 if (argv.help) {
@@ -66,29 +63,29 @@ if (argv.help) {
 
   Options:
 
-  --help ${showAliases('help')}
+  --help ${formatAliases('help')}
     Displays this message.
 
-  --version ${showAliases('version')}
+  --version ${formatAliases('version')}
     Displays package version.
 
-  --plotly ${showAliases('plotly')}
+  --plotly ${formatAliases('plotly')}
     Sets the path to the plotly.js bundle to use.
     This option can be also set to 'latest' or any valid plotly.js server release (e.g. 'v1.2.3'),
     where the corresponding plot.ly CDN bundle is used.
     By default, the 'latest' CDN bundle is used.
 
-  --mapbox-access-token ${showAliases('mapbox-access-token')}
+  --mapbox-access-token ${formatAliases('mapbox-access-token')}
     Sets mapbox access token. Required to export mapbox graphs.
     Alternatively, one can set a \`mapboxAccessToken\` environment variable.
 
   --topojson
     Sets path to topojson files. By default topojson files on the plot.ly CDN are used.
 
-  --mathjax ${showAliases('mathjax')}
+  --mathjax ${formatAliases('mathjax')}
     Sets path to MathJax files. Required to export LaTeX characters.
 
-  --format ${showAliases('format')}
+  --format ${formatAliases('format')}
     Sets the output format (${Object.keys(cst.contentFormat).join(', ')}). Applies to all output images.
 
   --scale
@@ -100,7 +97,7 @@ if (argv.help) {
   --height
     Sets the image height. If not set, defaults to \`layout.height\` value. Applies to all output images.
 
-  --parallel-limit ${showAliases('parallel-limit')}
+  --parallel-limit ${formatAliases('parallel-limit')}
     Sets the limit of parallel tasks run.
 
   --verbose
