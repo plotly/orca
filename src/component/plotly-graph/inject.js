@@ -33,7 +33,7 @@ function inject (opts) {
 
   if (plotlyJS) {
     if (fs.existsSync(plotlyJS)) {
-      parts.path(script(plotlyJS))
+      parts.push(script(plotlyJS))
     } else if (plotlyJS === 'latest' || semverRegex.test(plotlyJS)) {
       parts.push(script(cdnSrc(plotlyJS)))
     } else {
