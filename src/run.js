@@ -10,6 +10,7 @@ const request = require('request')
 const createIndex = require('./util/create-index')
 const createTimer = require('./util/create-timer')
 const coerceComponent = require('./util/coerce-component')
+const isPositiveNumeric = require('./util/is-positive-numeric')
 
 const PARALLEL_LIMIT_DFLT = 4
 const STATUS_MSG = {
@@ -97,7 +98,7 @@ function coerceOptions (opts) {
   }
 
   const input = Array.isArray(opts.input) ? opts.input : [opts.input]
-  const fullInput = []
+  let fullInput = []
 
   input.forEach((item) => {
     const matches = glob.sync(item)
@@ -105,7 +106,7 @@ function coerceOptions (opts) {
     if (matches.length === 0) {
       fullInput.push(item)
     } else {
-      fullInput.push(...matches)
+      fullInput = fullInput.concat(matches)
     }
   })
 
@@ -118,6 +119,7 @@ function run (app, win, opts) {
   const input = opts.input
   const comp = opts.component
   const compOpts = comp.options
+  const totalTimer = createTimer()
 
   let pending = input.length
 
@@ -202,22 +204,30 @@ function run (app, win, opts) {
     })
   })
 
-  parallelLimit(tasks, PARALLEL_LIMIT_DFLT, (err) => {
+  parallelLimit(tasks, opts.parallelLimit, (err) => {
     const code = (err || pending !== 0) ? 500 : 200
 
+    // TODO maybe a more descriptive event name?
+    // e.g. 'after-export-all'
     app.emit('done', {
       code: code,
-      msg: STATUS_MSG[code]
+      msg: STATUS_MSG[code],
+      totalProcessingTime: totalTimer.end()
     })
 
-    win.close()
-    app.quit()
+    // do not close window to look for unlogged console errors
+    if (!opts.debug) {
+      win.close()
+      app.quit()
+    }
   })
 }
 
 function getBody (item, cb) {
   if (fs.existsSync(item)) {
     fs.readFile(item, 'utf-8', cb)
+  } else if (fs.existsSync(item + '.json')) {
+    fs.readFile(item + '.json', 'utf-8', cb)
   } else if (isUrl(item)) {
     request.get(item, (err, res, body) => {
       if (res.statusCode === 200) {
