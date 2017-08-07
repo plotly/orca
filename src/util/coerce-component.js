@@ -44,6 +44,13 @@ function coerceComponent (_comp, debug) {
   }
 
   if (isModuleValid(comp)) {
+    if (Array.isArray(comp.availableOptions) && isPlainObj(_comp)) {
+      comp.availableOptions.forEach((k) => {
+        if (_comp[k] !== undefined) {
+          comp[k] = _comp[k]
+        }
+      })
+    }
   } else {
     if (debug) console.warn(`invalid component module ${comp.path}`)
     return null

@@ -24,11 +24,11 @@ const STATUS_MSG = {
  *
  * @param {object} _opts
  *   - input {string or array of strings}
+ *   - debug {boolean} turn on debugging tooling
  *   - component {string, object, array of a strings or array of objects}
  *     - name {string}
  *     - path {string}
- *     - options {object}
- *   - debug {boolean} turn on debugging tooling
+ *     - ... other options to be passed to methods
  *
  * @return {object} app
  */
@@ -118,7 +118,6 @@ function coerceOptions (_opts) {
 function run (app, win, opts) {
   const input = opts.input
   const comp = opts.component
-  const compOpts = comp.options
   const totalTimer = createTimer()
 
   let pending = input.length
@@ -153,7 +152,7 @@ function run (app, win, opts) {
         return errorOut(errorCode)
       }
 
-      win.webContents.send(comp.name, id, fullInfo, compOpts)
+      win.webContents.send(comp.name, id, fullInfo)
     }
 
     // setup convert callback
@@ -189,7 +188,7 @@ function run (app, win, opts) {
         body = _body
       }
 
-      comp.parse(body, compOpts, sendToRenderer)
+      comp.parse(body, sendToRenderer)
     })
 
     // convert on render message -> emit 'after-export'
@@ -200,7 +199,7 @@ function run (app, win, opts) {
         return errorOut(errorCode)
       }
 
-      comp.convert(fullInfo, compOpts, reply)
+      comp.convert(fullInfo, reply)
     })
   })
 

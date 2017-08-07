@@ -90,13 +90,11 @@ var app = plotlyExporter.serve({
     path: /* path to module if none given, try to resolve ${name} */,
     route: /* default to same as ${name} */,
 
-    // options passed to component methods
-    options: {
-      pathToPlotlyJS: '',
-      MathJax: '',
-      localTopojson: '',
-      mapboxAccessToken: ''
-    },
+    // other options passed to component methods
+    plotlyJS: '',
+    mathjax: '',
+    topojson: '',
+    mapboxAccessToken: ''
   }, {
     // other component
   }, {
@@ -177,11 +175,13 @@ Test:
 - converter to request (or caller, reply)
 
 ```
-comp.inject = (opts) => {}
-comp[/* parse, render, convert */] = (info, opts, cb) => {}
+comp.inject = function () {
+  // this === comp
+}
+comp[/* parse, render, convert */] = function (info, cb) {
+  // this === comp
+}
 
 // with
 cb = (errorCode, result) => {}
-
-// where `opts` is the component's `options` container passed via the API.
 ```

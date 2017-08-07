@@ -128,16 +128,14 @@ getStdin().then((txt) => {
     parallelLimit: argv.parallelLimit,
     component: {
       name: 'plotly-graph',
-      options: {
-        plotlyJS: path.resolve(argv.plotly),
-        mapboxAccessToken: argv['mapbox-access-token'],
-        mathjax: argv.mathjax,
-        topojson: argv.topojson,
-        format: argv.format,
-        scale: argv.scale,
-        width: argv.width,
-        height: argv.height
-      }
+      plotlyJS: path.resolve(argv.plotly),
+      mapboxAccessToken: argv['mapbox-access-token'],
+      mathjax: argv.mathjax,
+      topojson: argv.topojson,
+      format: argv.format,
+      scale: argv.scale,
+      width: argv.width,
+      height: argv.height
     }
   })
 

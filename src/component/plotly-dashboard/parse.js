@@ -6,12 +6,11 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
  *  - width
  *  - height
  *  - fid
- * @param {object} opts
  * @param {function} sendToRenderer
  *  - errorCode
  *  - result
  */
-function parse (body, opts, sendToRenderer) {
+function parse (body, sendToRenderer) {
   const result = {}
 
   const errorOut = (code) => {

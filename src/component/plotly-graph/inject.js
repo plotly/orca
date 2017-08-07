@@ -2,17 +2,14 @@ const cst = require('./constants')
 const fs = require('fs')
 const semverRegex = require('semver-regex')
 
-/**
- * @param {object} opts
- *  - plotlyJS {string}
- *  - MathJax {string}
- *  - topojson {string}
+/** plotly-graph inject
+ *
  * @return {string}
  */
-function inject (opts) {
-  const plotlyJS = opts.plotlyJS
-  const mathjax = opts.mathjax
-  const topojson = opts.topojson
+function inject () {
+  const plotlyJS = this.plotlyJS
+  const mathjax = this.mathjax
+  const topojson = this.topojson
   const parts = []
 
   if (mathjax) {

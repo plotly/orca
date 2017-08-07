@@ -9,12 +9,12 @@ const {ipcRenderer} = require('electron')
  */
 function initRenderers (components) {
   components.forEach((comp) => {
-    ipcRenderer.on(comp.name, (event, id, info, opts) => {
+    ipcRenderer.on(comp.name, (event, id, info) => {
       const sendToMain = (errorCode, info) => {
         ipcRenderer.send(id, errorCode, info)
       }
 
-      comp.render(info, opts, sendToMain)
+      comp.render(info, sendToMain)
     })
   })
 }

@@ -26,11 +26,11 @@ const STATUS_MSG = {
  *
  * @param {object} _opts
  *   - port {number} port number
+ *   - debug {boolean} turn on debugging tooling
  *   - component {string, object}
  *     - name {string}
  *     - path {string}
- *     - options {object}
- *   - debug {boolean} turn on debugging tooling
+ *     - ... other options to be passed to methods
  *
  * @return {object} app
  */
@@ -182,7 +182,6 @@ function createServer (app, win, opts) {
       return errorReply(404)
     }
 
-    const compOpts = comp.options
 
     // setup parse callback
     const sendToRenderer = (errorCode, parseInfo) => {
@@ -192,7 +191,7 @@ function createServer (app, win, opts) {
         return errorReply(errorCode)
       }
 
-      win.webContents.send(comp.name, id, fullInfo, compOpts)
+      comp._win.webContents.send(comp.name, id, fullInfo)
     }
 
     // setup convert callback
@@ -234,7 +233,7 @@ function createServer (app, win, opts) {
       }
 
       pending++
-      comp.parse(body, compOpts, sendToRenderer)
+      comp.parse(body, sendToRenderer)
     })
 
     // convert on render message -> end response
@@ -245,7 +244,7 @@ function createServer (app, win, opts) {
         return errorReply(errorCode)
       }
 
-      comp.convert(fullInfo, compOpts, reply)
+      comp.convert(fullInfo, reply)
     })
   })
 }

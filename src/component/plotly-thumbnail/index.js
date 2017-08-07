@@ -1,7 +1,10 @@
+const plotlyGraph = require('../plotly-graph')
+
 module.exports = {
   name: 'plotly-thumbnail',
-  inject: require('../plotly-graph/inject'),
+  availableOptions: ['plotlyJS', 'mathjax', 'topojson'],
+  inject: plotlyGraph.inject,
   parse: require('./parse'),
-  render: require('../plotly-graph/render'),
-  convert: require('../plotly-graph/convert')
+  render: plotlyGraph.render,
+  convert: plotlyGraph.convert
 }

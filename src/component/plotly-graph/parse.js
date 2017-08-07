@@ -3,7 +3,8 @@ const isPlainObj = require('is-plain-obj')
 const isPositiveNumeric = require('../../util/is-positive-numeric')
 const isNonEmptyString = require('../../util/is-non-empty-string')
 
-/**
+/** plotly-graph parse
+ *
  * @param {object} body : request body
  *  - figure
  *  - format
@@ -15,19 +16,11 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
  * 0r:
  *  - data
  *  - layout
- *
- * @param {object} _opts :
- * If data/layout body:
- *  - format
- *  - encoded (?)
- *  - scale
- *  - width
- *  - height
  * @param {function} sendToRenderer
  * - errorCode
  * - result
  */
-function parse (body, _opts, sendToRenderer) {
+function parse (body, sendToRenderer) {
   const result = {}
 
   const errorOut = (code, extra) => {
@@ -45,7 +38,7 @@ function parse (body, _opts, sendToRenderer) {
     opts = body
   } else {
     figure = body
-    opts = _opts
+    opts = this
   }
 
   result.encoded = !!opts.encoded

@@ -5,13 +5,12 @@ const IFRAME_LOAD_TIMEOUT = 5000
  *  - url
  *  - width
  *  - height
- * @param {object} opts
  * @param {function} sendToMain
  *  - errorCode
  *  - result
  *    - imgData
  */
-function render (info, opts, sendToMain) {
+function render (info, sendToMain) {
   // Cannot require 'remote' in the module scope
   // as this file gets required in main process first
   // during the coerce-component step
