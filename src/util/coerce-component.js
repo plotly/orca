@@ -11,20 +11,21 @@ const PATH_TO_COMPONENT = path.join(__dirname, '..', 'component')
 
 /** Coerce component options
  *
- * @param {object} comp : component option object
+ * @param {object} _comp : user component option object
  * @param {boolean} debug : debug flag
- * @return {object or null}
+ * @return {object or null} :
+ *  full component option object or null (if component is invalid)
  */
-function coerceComponent (comp, debug) {
-  const compOut = {}
+function coerceComponent (_comp, debug) {
+  const comp = {}
 
-  if (isNonEmptyString(comp)) {
-    compOut.path = path.join(PATH_TO_COMPONENT, comp)
-  } else if (isPlainObj(comp)) {
-    if (isNonEmptyString(comp.path)) {
-      compOut.path = comp.path
-    } else if (isNonEmptyString(comp.name)) {
-      compOut.path = path.join(PATH_TO_COMPONENT, comp.name)
+  if (isNonEmptyString(_comp)) {
+    comp.path = path.join(PATH_TO_COMPONENT, _comp)
+  } else if (isPlainObj(_comp)) {
+    if (isNonEmptyString(_comp.path)) {
+      comp.path = _comp.path
+    } else if (isNonEmptyString(_comp.name)) {
+      comp.path = path.join(PATH_TO_COMPONENT, _comp.name)
     } else {
       if (debug) console.warn(`path to component not found`)
       return null
@@ -35,21 +36,20 @@ function coerceComponent (comp, debug) {
   }
 
   try {
-    const _module = require(compOut.path)
-    Object.assign(compOut, _module)
+    const _module = require(comp.path)
+    Object.assign(comp, _module)
   } catch (e) {
     if (debug) console.warn(e)
     return null
   }
 
-  if (isModuleValid(compOut)) {
-    compOut.options = isPlainObj(comp.options) ? comp.options : {}
+  if (isModuleValid(comp)) {
   } else {
-    if (debug) console.warn(`invalid component module ${compOut.path}`)
+    if (debug) console.warn(`invalid component module ${comp.path}`)
     return null
   }
 
-  return compOut
+  return comp
 }
 
 function isModuleValid (_module) {

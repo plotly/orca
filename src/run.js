@@ -22,7 +22,7 @@ const STATUS_MSG = {
 
 /** Create runner app
  *
- * @param {object} opts
+ * @param {object} _opts
  *   - input {string or array of strings}
  *   - component {string, object, array of a strings or array of objects}
  *     - name {string}
@@ -78,41 +78,41 @@ function createApp (_opts) {
   return app
 }
 
-function coerceOptions (opts) {
-  const fullOpts = {}
+function coerceOptions (_opts) {
+  const opts = {}
 
-  fullOpts.debug = !!opts.debug
-  fullOpts._browserWindowOpts = {}
+  opts.debug = !!_opts.debug
+  opts._browserWindowOpts = {}
 
-  fullOpts.parallelLimit = isPositiveNumeric(opts.parallelLimit)
-    ? Number(opts.parallelLimit)
+  opts.parallelLimit = isPositiveNumeric(_opts.parallelLimit)
+    ? Number(_opts.parallelLimit)
     : PARALLEL_LIMIT_DFLT
 
-  const comp = Array.isArray(opts.component) ? opts.component[0] : opts.component
-  const fullComp = coerceComponent(comp, fullOpts.debug)
+  const _comp = Array.isArray(_opts.component) ? _opts.component[0] : _opts.component
+  const comp = coerceComponent(_comp, opts.debug)
 
-  if (fullComp) {
-    fullOpts.component = fullComp
+  if (comp) {
+    opts.component = comp
   } else {
     throw new Error('no valid component registered')
   }
 
-  const input = Array.isArray(opts.input) ? opts.input : [opts.input]
-  let fullInput = []
+  const _input = Array.isArray(_opts.input) ? _opts.input : [_opts.input]
+  let input = []
 
-  input.forEach((item) => {
+  _input.forEach((item) => {
     const matches = glob.sync(item)
 
     if (matches.length === 0) {
-      fullInput.push(item)
+      input.push(item)
     } else {
-      fullInput = fullInput.concat(matches)
+      input = input.concat(matches)
     }
   })
 
-  fullOpts.input = fullInput
+  opts.input = input
 
-  return fullOpts
+  return opts
 }
 
 function run (app, win, opts) {

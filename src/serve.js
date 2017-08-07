@@ -24,7 +24,7 @@ const STATUS_MSG = {
 
 /** Create server app
  *
- * @param {object} opts
+ * @param {object} _opts
  *   - port {number} port number
  *   - component {string, object}
  *     - name {string}
@@ -93,44 +93,45 @@ function createApp (_opts) {
   return app
 }
 
-function coerceOpts (opts) {
-  const fullOpts = {}
+function coerceOpts (_opts) {
+  const opts = {}
 
-  if (isPositiveNumeric(opts.port)) {
-    fullOpts.port = Number(opts.port)
+  if (isPositiveNumeric(_opts.port)) {
+    opts.port = Number(_opts.port)
   } else {
     throw new Error('invalid port number')
   }
 
-  fullOpts.debug = !!opts.debug
-  fullOpts._browserWindowOpts = {}
+  opts.debug = !!_opts.debug
+  opts._browserWindowOpts = {}
 
-  const components = Array.isArray(opts.component) ? opts.component : [opts.component]
+  const _components = Array.isArray(_opts.component) ? _opts.component : [_opts.component]
   const componentLookup = {}
-  fullOpts.component = []
+  opts.component = []
 
-  components.forEach((comp) => {
-    const fullComp = coerceComponent(comp, fullOpts.debug)
+  _components.forEach((_comp) => {
+    const comp = coerceComponent(_comp, opts.debug)
 
-    if (fullComp) {
-      fullComp.route = isNonEmptyString(comp.route) ? comp.route : comp.name
+    if (comp) {
+      const route = isNonEmptyString(_comp.route) ? _comp.route : _comp.name
+      comp.route = route.charAt(0) === '/' ? route : '/' + route
 
       if (componentLookup[comp.route]) {
         throw new Error('trying to register multiple components on same route')
       }
 
-      componentLookup[comp.route] = fullComp
-      fullOpts.component.push(fullComp)
+      componentLookup[comp.route] = comp
+      opts.component.push(comp)
     }
   })
 
-  if (fullOpts.component.length === 0) {
+  if (opts.component.length === 0) {
     throw new Error('no valid component registered')
   }
 
-  fullOpts._componentLookup = componentLookup
+  opts._componentLookup = componentLookup
 
-  return fullOpts
+  return opts
 }
 
 function createServer (app, win, opts) {
@@ -139,7 +140,7 @@ function createServer (app, win, opts) {
   return http.createServer((req, res) => {
     const timer = createTimer()
     const id = uuid()
-    const route = req.url.substr(1)
+    const route = req.url
 
     // initialize 'full' info object
     //   which accumulates parse, render, convert results
@@ -171,7 +172,7 @@ function createServer (app, win, opts) {
     req.socket.on('timeout', () => simpleReply(522))
     req.socket.setTimeout(REQUEST_TIMEOUT)
 
-    if (route === 'ping') {
+    if (route === '/ping') {
       return simpleReply(200)
     }
 
