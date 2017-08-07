@@ -37,7 +37,6 @@ function inject () {
       throw new Error('Provided path to plotly.js bundle does not exist and does not correspond to a release version')
     }
   } else {
-    // TODO fallback here?
     parts.push(script(cdnSrc('latest')))
   }
 
