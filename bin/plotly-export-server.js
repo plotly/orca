@@ -4,13 +4,14 @@ const pkg = require('../package.json')
 const subarg = require('subarg')
 
 const ARGS_CONFIG = {
-  'boolean': ['debug', 'help', 'version', 'quiet'],
+  'boolean': ['debug', 'help', 'version', 'quiet', 'keep-alive'],
   'string': ['port'],
 
   'alias': {
     'port': ['p'],
     'help': ['h'],
-    'version': ['v']
+    'version': ['v'],
+    'keep-alive': ['keepAlive']
   },
 
   'default': {
@@ -115,8 +116,11 @@ app.on('export-error', (info) => {
 
 process.on('uncaughtException', (err) => {
   console.warn(err)
-  console.log('... relaunching')
-  launch()
+
+  if (argv.keepAlive) {
+    console.log('... relaunching')
+    launch()
+  }
 })
 
 function launch () {
