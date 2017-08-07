@@ -51,27 +51,22 @@ function createApp (_opts) {
       win = null
     })
 
-    process.on('exit', () => {
-      if (win) {
-        win.close()
-      }
-    })
-
-    createIndex(opts, (pathToIndex) => {
+    createIndex(opts.component, (err, pathToIndex) => {
+      if (err) throw err
       win.loadURL(`file://${pathToIndex}`)
     })
 
     win.webContents.once('did-finish-load', () => {
       run(app, win, opts)
     })
+  })
 
-    ipcMain.on('renderer-error', (event, info) => {
-      const code = 501
-      app.emit('renderer-error', {
-        code: code,
-        msg: STATUS_MSG[code],
-        error: info
-      })
+  ipcMain.on('renderer-error', (event, info) => {
+    const code = 501
+    app.emit('renderer-error', {
+      code: code,
+      msg: STATUS_MSG[code],
+      error: info
     })
   })
 

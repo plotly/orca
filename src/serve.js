@@ -19,6 +19,7 @@ const STATUS_MSG = {
   404: 'invalid route',
   422: 'json parse error',
   501: 'renderer error',
+  504: 'window for given route does not exist',
   522: 'client socket timeout'
 }
 
@@ -37,56 +38,57 @@ const STATUS_MSG = {
 function createApp (_opts) {
   const opts = coerceOpts(_opts)
 
+  const server = createServer(app, opts)
   let timer = createTimer()
-  let server = null
-  let win = null
+  let numberOfWindowstYetToBeLoaded = opts.component.length
 
   // to render WebGL in headless environments
   app.commandLine.appendSwitch('ignore-gpu-blacklist')
 
   app.on('ready', () => {
-    win = new BrowserWindow(opts._browserWindowOpts)
-    server = createServer(app, win, opts)
+    opts.component.forEach((comp) => {
+      let win = new BrowserWindow(opts._browserWindowOpts)
+      comp._win = win
 
-    if (opts.debug) {
-      win.openDevTools()
-    }
-
-    win.on('closed', () => {
-      server.close()
-      win = null
-    })
-
-    process.on('exit', () => {
-      server.close()
-      if (win) {
-        win.close()
+      if (opts.debug) {
+        win.openDevTools()
       }
-    })
 
-    createIndex(opts, (pathToIndex) => {
-      win.loadURL(`file://${pathToIndex}`)
-    })
+      win.on('closed', () => {
+        win = null
+      })
 
-    win.webContents.once('did-finish-load', () => {
-      server.listen(opts.port, (err) => {
+      createIndex(comp, (err, pathToIndex) => {
         if (err) throw err
+        win.loadURL(`file://${pathToIndex}`)
+      })
 
-        app.emit('after-connect', {
-          port: opts.port,
-          startupTime: timer.end(),
-          openRoutes: Object.keys(opts._componentLookup).map((r) => '/' + r)
-        })
+      win.webContents.once('did-finish-load', () => {
+        if (--numberOfWindowstYetToBeLoaded === 0) {
+          server.listen(opts.port, (err) => {
+            if (err) throw err
+
+            app.emit('after-connect', {
+              port: opts.port,
+              startupTime: timer.end(),
+              openRoutes: opts.component.map((comp) => comp.route)
+            })
+          })
+        }
       })
     })
+  })
 
-    ipcMain.on('renderer-error', (event, info) => {
-      const code = 501
-      app.emit('renderer-error', {
-        code: code,
-        msg: STATUS_MSG[code],
-        error: info
-      })
+  process.on('exit', () => {
+    server.close()
+  })
+
+  ipcMain.on('renderer-error', (event, info) => {
+    const code = 501
+    app.emit('renderer-error', {
+      code: code,
+      msg: STATUS_MSG[code],
+      error: info
     })
   })
 
@@ -134,7 +136,7 @@ function coerceOpts (_opts) {
   return opts
 }
 
-function createServer (app, win, opts) {
+function createServer (app, opts) {
   let pending = 0
 
   return http.createServer((req, res) => {
@@ -182,6 +184,9 @@ function createServer (app, win, opts) {
       return errorReply(404)
     }
 
+    if (!comp._win) {
+      return errorReply(504)
+    }
 
     // setup parse callback
     const sendToRenderer = (errorCode, parseInfo) => {
