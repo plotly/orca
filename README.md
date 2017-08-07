@@ -71,7 +71,7 @@ app.on('after-export', (info) => {
   fs.writeFile('output.png', info.body, (err) => console.warn(err))
 })
 
-app.on('done', () => {})
+app.on('after-export-all', () => {})
 app.on('export-error', () => {})
 app.on('renderer-error', () => {})
 ```

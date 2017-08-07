@@ -206,9 +206,7 @@ function run (app, win, opts) {
   parallelLimit(tasks, opts.parallelLimit, (err) => {
     const code = (err || pending !== 0) ? 500 : 200
 
-    // TODO maybe a more descriptive event name?
-    // e.g. 'after-export-all'
-    app.emit('done', {
+    app.emit('after-export-all', {
       code: code,
       msg: STATUS_MSG[code],
       totalProcessingTime: totalTimer.end()

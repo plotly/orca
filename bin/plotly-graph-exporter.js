@@ -160,7 +160,7 @@ getStdin().then((txt) => {
     }
   })
 
-  app.on('done', (info) => {
+  app.on('after-export-all', (info) => {
     const msg = `done with code ${info.code} in ${info.totalProcessingTime} ms - ${info.msg}`
 
     if (info.code === 200) {
