@@ -1,30 +1,8 @@
 const plotlyExporter = require('../')
-const makeFormatAliases = require('../src/util/make-format-aliases')
+const args = require('./args')
 const pkg = require('../package.json')
-const subarg = require('subarg')
 
-const ARGS_CONFIG = {
-  'boolean': ['debug', 'help', 'version', 'quiet', 'keep-alive'],
-  'string': ['port'],
-
-  'alias': {
-    'port': ['p'],
-    'help': ['h'],
-    'version': ['v'],
-    'keep-alive': ['keepAlive']
-  },
-
-  'default': {
-    'port': 9091,
-    'debug': false,
-    'help': false,
-    'version': false,
-    'quiet': false
-  }
-}
-
-const argv = subarg(process.argv.slice(2), ARGS_CONFIG)
-const formatAliases = makeFormatAliases(ARGS_CONFIG)
+const argv = args.getServerArgs()
 const showLogs = !argv.quiet
 
 if (argv.version) {
@@ -33,31 +11,7 @@ if (argv.version) {
 }
 
 if (argv.help) {
-  console.log(`plotly-export-server
-
-  Usage:
-
-    $ plotly-export-server {options}
-
-  Options:
-
-  --port ${formatAliases('port')}
-    Sets the server's port number.
-
-  --help ${formatAliases('help')}
-    Displays this message.
-
-  --version ${formatAliases('version')}
-    Displays package version.
-
-  --verbose
-    Turn on verbose logging on stdout.
-
-  --keep-alive (?)
-
-  --debug
-    Starts app in debug mode and turn on verbose logs on stdout.
-  `)
+  console.log(args.getServerHelpMsg())
   process.exit(0)
 }
 
@@ -72,19 +26,20 @@ const opts = {
   component: [{
     name: 'plotly-graph',
     route: '/',
-    plotlyJS: `${__dirname}/../../plotly.js/build/plotly.js`,
-    mapboxAccessToken: 'pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ',
-    mathjax: `${__dirname}/../../plotly.js/dist/extras/mathjax/MathJax.js`,
-    topojson: `${__dirname}/../../plotly.js/dist/plotly-geo-assets.js`
+    plotlyJS: argv.plotlyJS,
+    mapboxAccessToken: argv['mapbox-access-token'],
+    mathjax: argv.mathjax,
+    topojson: argv.topojson
   }, {
     name: 'plotly-dashboard',
     route: '/dashboard'
   }, {
     name: 'plotly-thumbnail',
     route: '/thumbnail',
-    plotlyJS: `${__dirname}/../../plotly.js/build/plotly.js`,
-    mapboxAccessToken: 'pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ',
-    topojson: `${__dirname}/../../plotly.js/dist/plotly-geo-assets.js`
+    plotlyJS: argv.plotlyJS,
+    mapboxAccessToken: argv['mapbox-access-token'],
+    mathjax: argv.mathjax,
+    topojson: argv.topojson
   }]
 }
 
