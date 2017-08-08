@@ -43,17 +43,32 @@ function coerceComponent (_comp, debug) {
     return null
   }
 
-  if (isModuleValid(comp)) {
-    if (Array.isArray(comp.availableOptions) && isPlainObj(_comp)) {
+  if (!isModuleValid(comp)) {
+    if (debug) console.warn(`invalid component module ${comp.path}`)
+    return null
+  }
+
+  if (isPlainObj(_comp)) {
+    if ('route' in _comp) {
+      const route = isNonEmptyString(_comp.route) ? _comp.route : _comp.name
+      comp.route = route.charAt(0) === '/' ? route : '/' + route
+    }
+
+    if (Array.isArray(comp.availableOptions)) {
       comp.availableOptions.forEach((k) => {
-        if (_comp[k] !== undefined) {
+        if (k in _comp) {
           comp[k] = _comp[k]
         }
       })
     }
-  } else {
-    if (debug) console.warn(`invalid component module ${comp.path}`)
-    return null
+
+    if (debug) {
+      Object.keys(_comp).forEach((k) => {
+        if (!(k in comp)) {
+          console.log(`${k} is not an available option for component ${comp.name}`)
+        }
+      })
+    }
   }
 
   return comp

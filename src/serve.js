@@ -8,7 +8,6 @@ const createIndex = require('./util/create-index')
 const createTimer = require('./util/create-timer')
 const coerceComponent = require('./util/coerce-component')
 const isPositiveNumeric = require('./util/is-positive-numeric')
-const isNonEmptyString = require('./util/is-non-empty-string')
 
 const BUFFER_OVERFLOW_LIMIT = 1e9
 const REQUEST_TIMEOUT = 50000
@@ -115,9 +114,6 @@ function coerceOpts (_opts) {
     const comp = coerceComponent(_comp, opts.debug)
 
     if (comp) {
-      const route = isNonEmptyString(_comp.route) ? _comp.route : _comp.name
-      comp.route = route.charAt(0) === '/' ? route : '/' + route
-
       if (componentLookup[comp.route]) {
         throw new Error('trying to register multiple components on same route')
       }
