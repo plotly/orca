@@ -60,6 +60,8 @@ function coerceComponent (_comp, debug) {
           comp[k] = _comp[k]
         }
       })
+    } else {
+      comp.availableOptions = []
     }
 
     if (debug) {

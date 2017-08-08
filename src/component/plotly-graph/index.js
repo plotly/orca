@@ -1,7 +1,7 @@
 module.exports = {
   name: 'plotly-graph',
   availableOptions: [
-    'plotlyJS', 'mathjax', 'topojson',
+    'plotlyJS', 'mapboxAccessToken', 'mathjax', 'topojson',
     'format', 'scale', 'width', 'height'
   ],
   inject: require('./inject'),

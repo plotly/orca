@@ -1,13 +1,13 @@
 const fs = require('fs')
 const path = require('path')
 
-const COMPONENT_GLOBAL = 'PlotlyExporterComponents'
+const COMPONENT_GLOBAL = 'PlotlyExporterComponent'
 const PATH_TO_BUILD = path.join(__dirname, '..', '..', 'build')
 const PATH_TO_INIT_RENDERERS = path.join(__dirname, 'init-renderers.js')
 
 /** Create HTML index file
  *
- * @param {object} comp (full) component option object
+ * @param {object} comp (full) component object
  *  - name
  *  - path
  *  - inject
@@ -18,6 +18,13 @@ const PATH_TO_INIT_RENDERERS = path.join(__dirname, 'init-renderers.js')
 function createIndex (comp, cb) {
   const pathToIndex = path.join(PATH_TO_BUILD, `index-${comp.name}.html`)
 
+  // make options available to render `this` object
+  const bind = () => {
+    return comp.availableOptions
+      .map(opt => `${COMPONENT_GLOBAL}['${opt}'] = ${JSON.stringify(comp[opt])}`)
+      .join('\n        ')
+  }
+
   const html = `<!DOCTYPE html>
   <html>
     <head>
@@ -27,8 +34,9 @@ function createIndex (comp, cb) {
     </head>
     <body>
       <script>
-        ${COMPONENT_GLOBAL} = [require('${comp.path}')]
-        require('${PATH_TO_INIT_RENDERERS}')(${COMPONENT_GLOBAL})
+        ${COMPONENT_GLOBAL} = require('${comp.path}')
+        ${bind()}
+        require('${PATH_TO_INIT_RENDERERS}')([${COMPONENT_GLOBAL}])
       </script>
     </body>
   </html>`
