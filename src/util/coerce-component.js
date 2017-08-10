@@ -2,12 +2,9 @@ const path = require('path')
 const isPlainObj = require('is-plain-obj')
 const isNonEmptyString = require('./is-non-empty-string')
 
-const REQUIRED_METHODS = ['inject', 'parse', 'render', 'convert']
+const REQUIRED_METHODS = ['parse', 'render', 'convert']
 const PATH_TO_COMPONENT = path.join(__dirname, '..', 'component')
-
-// TODO:
-// - probably 'inject' should be made optional?
-// - maybe all methods should be optional? Would that make sense?
+const NOOP = function () {}
 
 /** Coerce component options
  *
@@ -18,6 +15,8 @@ const PATH_TO_COMPONENT = path.join(__dirname, '..', 'component')
  *  full component option object or null (if component is invalid)
  */
 function coerceComponent (_comp, opts) {
+  opts = opts || {}
+
   const debug = opts.debug
   const comp = {}
 
@@ -51,12 +50,17 @@ function coerceComponent (_comp, opts) {
   }
 
   if (isPlainObj(_comp)) {
-    if ('route' in _comp) {
-      const route = isNonEmptyString(_comp.route) ? _comp.route : _comp.name
-      comp.route = route.charAt(0) === '/' ? route : '/' + route
-    }
+    const r = isNonEmptyString(_comp.route) ? _comp.route : comp.name
+    comp.route = r.charAt(0) === '/' ? r : '/' + r
 
     comp.options = isPlainObj(_comp.options) ? _comp.options : {}
+  } else {
+    comp.route = '/' + comp.name
+    comp.options = {}
+  }
+
+  if (typeof comp._module.inject !== 'function') {
+    comp._module.inject = NOOP
   }
 
   return comp
