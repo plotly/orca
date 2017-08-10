@@ -70,7 +70,7 @@ function parse (body, _opts, sendToRenderer) {
 
   result.figure = {}
 
-  if (figure.data) {
+  if ('data' in figure) {
     if (Array.isArray(figure.data)) {
       result.figure.data = figure.data
     } else {
@@ -80,7 +80,7 @@ function parse (body, _opts, sendToRenderer) {
     result.figure.data = []
   }
 
-  if (figure.layout) {
+  if ('layout' in figure) {
     if (isPlainObj(figure.layout)) {
       result.figure.layout = figure.layout
     } else {
