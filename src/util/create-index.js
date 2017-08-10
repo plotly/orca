@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const uuid = require('uuid/v4')
+const isNonEmptyString = require('./is-non-empty-string')
 
 const COMPONENT_GLOBAL = 'PlotlyExporterComponent'
 const PATH_TO_BUILD = path.join(__dirname, '..', '..', 'build')
@@ -20,16 +21,30 @@ const PATH_TO_INIT_RENDERERS = path.join(__dirname, 'init-renderers.js')
  *  - pathToIndex {string}
  */
 function createIndex (comp, opts, cb) {
+  opts = opts || {}
+
   const debug = opts.debug
   const uid = uuid()
   const pathToIndex = path.join(PATH_TO_BUILD, `index-${uid}.html`)
+
+  const inject = () => {
+    const parts = comp._module.inject(comp.options)
+
+    if (isNonEmptyString(parts)) {
+      return parts
+    } else if (Array.isArray(parts)) {
+      return parts.join('\n      ')
+    } else {
+      return ''
+    }
+  }
 
   const html = `<!DOCTYPE html>
   <html>
     <head>
       <meta charset="UTF-8">
       <title>plotly image exporter - component ${comp.name} (${uid})</title>
-      ${comp._module.inject(comp.options)}
+      ${inject()}
     </head>
     <body>
       <script>

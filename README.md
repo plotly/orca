@@ -37,11 +37,12 @@ streambed-only. Therefore, this package defines a _component_ framework. See
 
 Each component has an `inject`, a `parse`, a `render` and a `convert` method:
 
-- `inject` (main process) returns a string which is injected in the head of the
-  app's HTML index file (e.g `<script src="plotly.js">`)
-- `parse` (main process) takes in a request body and coerces its options.
-- `render` (renderer process) takes options and return image data
-- `convert` (main process) converts image data to output head and body
+- `inject` (optional, main process) returns a string or an array of strings
+  which is injected in the head of the app's HTML index file
+  (e.g `<script src="plotly.js"></script>`)
+- `parse` (required, main process) takes in a request body and coerces its options.
+- `render` (required, renderer process) takes options and return image data
+- `convert` (required, main process) converts image data to output head and body
 
 ### Logging
 
