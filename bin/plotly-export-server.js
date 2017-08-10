@@ -26,20 +26,24 @@ const opts = {
   component: [{
     name: 'plotly-graph',
     route: '/',
-    plotlyJS: argv.plotlyJS,
-    mapboxAccessToken: argv['mapbox-access-token'],
-    mathjax: argv.mathjax,
-    topojson: argv.topojson
+    options: {
+      plotlyJS: argv.plotlyJS,
+      mapboxAccessToken: argv['mapbox-access-token'],
+      mathjax: argv.mathjax,
+      topojson: argv.topojson
+    }
   }, {
     name: 'plotly-dashboard',
     route: '/dashboard'
   }, {
     name: 'plotly-thumbnail',
     route: '/thumbnail',
-    plotlyJS: argv.plotlyJS,
-    mapboxAccessToken: argv['mapbox-access-token'],
-    mathjax: argv.mathjax,
-    topojson: argv.topojson
+    options: {
+      plotlyJS: argv.plotlyJS,
+      mapboxAccessToken: argv['mapbox-access-token'],
+      mathjax: argv.mathjax,
+      topojson: argv.topojson
+    }
   }]
 }
 

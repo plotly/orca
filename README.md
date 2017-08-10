@@ -91,10 +91,12 @@ var app = plotlyExporter.serve({
     route: /* default to same as ${name} */,
 
     // other options passed to component methods
-    plotlyJS: '',
-    mathjax: '',
-    topojson: '',
-    mapboxAccessToken: ''
+    options: {
+      plotlyJS: '',
+      mathjax: '',
+      topojson: '',
+      mapboxAccessToken: ''
+    }
   }, {
     // other component
   }, {
@@ -174,14 +176,12 @@ Test:
 - renderer to converter (`evt: ${uid}` sendToMain)
 - converter to request (or caller, reply)
 
-```
-comp.inject = function () {
-  // this === comp
-}
-comp[/* parse, render, convert */] = function (info, cb) {
-  // this === comp
-}
+```js
+comp.inject = function (opts) { }
+
+comp[/* parse, render, convert */] = function (info, opts, cb) { }
 
 // with
+opts // => component options container
 cb = (errorCode, result) => {}
 ```

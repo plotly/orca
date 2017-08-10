@@ -36,6 +36,7 @@ function createApp (_opts) {
   const opts = coerceOptions(_opts)
 
   let win = null
+  let pathToIndex
 
   // to render WebGL in headless environments
   app.commandLine.appendSwitch('ignore-gpu-blacklist')
@@ -51,8 +52,8 @@ function createApp (_opts) {
       win = null
     })
 
-    createIndex(opts.component, (err, pathToIndex) => {
-      if (err) throw err
+    createIndex(opts.component, opts, (_pathToIndex) => {
+      pathToIndex = _pathToIndex
       win.loadURL(`file://${pathToIndex}`)
     })
 
@@ -68,6 +69,10 @@ function createApp (_opts) {
       msg: STATUS_MSG[code],
       error: info
     })
+  })
+
+  process.on('exit', () => {
+    fs.unlinkSync(pathToIndex)
   })
 
   return app
@@ -113,6 +118,7 @@ function coerceOptions (_opts) {
 function run (app, win, opts) {
   const input = opts.input
   const comp = opts.component
+  const compOpts = comp.options
   const totalTimer = createTimer()
 
   let pending = input.length
@@ -147,7 +153,7 @@ function run (app, win, opts) {
         return errorOut(errorCode)
       }
 
-      win.webContents.send(comp.name, id, fullInfo)
+      win.webContents.send(comp.name, id, fullInfo, compOpts)
     }
 
     // setup convert callback
@@ -183,7 +189,7 @@ function run (app, win, opts) {
         body = _body
       }
 
-      comp.parse(body, sendToRenderer)
+      comp._module.parse(body, compOpts, sendToRenderer)
     })
 
     // convert on render message -> emit 'after-export'
@@ -194,7 +200,7 @@ function run (app, win, opts) {
         return errorOut(errorCode)
       }
 
-      comp.convert(fullInfo, reply)
+      comp._module.convert(fullInfo, compOpts, reply)
     })
   })
 

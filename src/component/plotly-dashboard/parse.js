@@ -1,16 +1,17 @@
 const isNonEmptyString = require('../../util/is-non-empty-string')
 
 /**
- * @param {object} body
+ * @param {object} body : JSON-parsed request body
  *  - url
  *  - width
  *  - height
  *  - fid
+ * @param {object} opts : component options
  * @param {function} sendToRenderer
  *  - errorCode
  *  - result
  */
-function parse (body, sendToRenderer) {
+function parse (body, opts, sendToRenderer) {
   const result = {}
 
   const errorOut = (code) => {

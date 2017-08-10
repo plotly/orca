@@ -3,23 +3,25 @@
 const cst = require('./constants')
 
 /**
- * @param {object} info
+ * @param {object} info : info object
  *  - figure
  *  - format
  *  - width
  *  - height
  *  - scale
+ * @param {object} opts : component options
+ *  - mapboxAccessToken
  * @param {function} sendToMain
  *  - errorCode
  *  - result
  *    - imgData
  */
-function render (info, sendToMain) {
+function render (info, opts, sendToMain) {
   const figure = info.figure
   const format = info.format
 
   const config = Object.assign({},
-    {mapboxAccessToken: this.mapboxAccessToken},
+    {mapboxAccessToken: opts.mapboxAccessToken || ''},
     figure.config
   )
 

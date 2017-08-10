@@ -5,7 +5,7 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
 
 /** plotly-graph parse
  *
- * @param {object} body : request body
+ * @param {object} body : JSON-parsed request body
  *  - figure
  *  - format
  *  - encoded (?)
@@ -16,11 +16,16 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
  * 0r:
  *  - data
  *  - layout
+ * @param {object} _opts : component options
+ *  - format
+ *  - scale
+ *  - width
+ *  - height
  * @param {function} sendToRenderer
- * - errorCode
- * - result
+ *  - errorCode
+ *  - result
  */
-function parse (body, sendToRenderer) {
+function parse (body, _opts, sendToRenderer) {
   const result = {}
 
   const errorOut = (code, extra) => {
@@ -38,7 +43,7 @@ function parse (body, sendToRenderer) {
     opts = body
   } else {
     figure = body
-    opts = this
+    opts = _opts
   }
 
   result.encoded = !!opts.encoded

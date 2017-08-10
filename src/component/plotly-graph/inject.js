@@ -4,12 +4,16 @@ const semverRegex = require('semver-regex')
 
 /** plotly-graph inject
  *
+ * @param {object} opts : component options
+ *  - plotlyJS
+ *  - mathjax
+ *  - topojson
  * @return {string}
  */
-function inject () {
-  const plotlyJS = this.plotlyJS
-  const mathjax = this.mathjax
-  const topojson = this.topojson
+function inject (opts) {
+  const plotlyJS = opts.plotlyJS
+  const mathjax = opts.mathjax
+  const topojson = opts.topojson
   const parts = []
 
   if (mathjax) {

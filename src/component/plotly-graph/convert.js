@@ -2,9 +2,11 @@ const cst = require('./constants')
 
 /** plotly-graph convert
  *
- * @param {object} info
+ * @param {object} info : info object
  *  - format {string} (from parse)
  *  - imgData {string} (from render)
+ * @param {object} opts : component options
+ *  - pathToBatik (maybe?)
  * @param {function} reply
  *  - errorCode {number or null}
  *  - result {object}
@@ -12,7 +14,7 @@ const cst = require('./constants')
  *    - body
  *    - bodyLength
  */
-function convert (info, reply) {
+function convert (info, opts, reply) {
   const imgData = info.imgData
   const format = info.format
 

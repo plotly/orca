@@ -1,6 +1,7 @@
 const {app, BrowserWindow} = require('electron')
 const {ipcMain} = require('electron')
 const http = require('http')
+const fs = require('fs')
 const textBody = require('body')
 const uuid = require('uuid/v4')
 
@@ -37,15 +38,16 @@ const STATUS_MSG = {
 function createApp (_opts) {
   const opts = coerceOpts(_opts)
 
+  const components = opts.component
   const server = createServer(app, opts)
   let timer = createTimer()
-  let numberOfWindowstYetToBeLoaded = opts.component.length
+  let numberOfWindowstYetToBeLoaded = components.length
 
   // to render WebGL in headless environments
   app.commandLine.appendSwitch('ignore-gpu-blacklist')
 
   app.on('ready', () => {
-    opts.component.forEach((comp) => {
+    components.forEach((comp) => {
       let win = new BrowserWindow(opts._browserWindowOpts)
       comp._win = win
 
@@ -57,20 +59,18 @@ function createApp (_opts) {
         win = null
       })
 
-      createIndex(comp, (err, pathToIndex) => {
-        if (err) throw err
+      createIndex(comp, opts, (pathToIndex) => {
         win.loadURL(`file://${pathToIndex}`)
+        comp._pathToIndex = pathToIndex
       })
 
       win.webContents.once('did-finish-load', () => {
         if (--numberOfWindowstYetToBeLoaded === 0) {
-          server.listen(opts.port, (err) => {
-            if (err) throw err
-
+          server.listen(opts.port, () => {
             app.emit('after-connect', {
               port: opts.port,
               startupTime: timer.end(),
-              openRoutes: opts.component.map((comp) => comp.route)
+              openRoutes: components.map((comp) => comp.route)
             })
           })
         }
@@ -78,8 +78,14 @@ function createApp (_opts) {
     })
   })
 
+  server.on('error', (err) => {
+    console.error(err)
+    app.quit()
+  })
+
   process.on('exit', () => {
     server.close()
+    components.forEach((comp) => fs.unlinkSync(comp._pathToIndex))
   })
 
   ipcMain.on('renderer-error', (event, info) => {
@@ -184,6 +190,8 @@ function createServer (app, opts) {
       return errorReply(504)
     }
 
+    const compOpts = comp.options
+
     // setup parse callback
     const sendToRenderer = (errorCode, parseInfo) => {
       Object.assign(fullInfo, parseInfo)
@@ -192,7 +200,7 @@ function createServer (app, opts) {
         return errorReply(errorCode)
       }
 
-      comp._win.webContents.send(comp.name, id, fullInfo)
+      comp._win.webContents.send(comp.name, id, fullInfo, compOpts)
     }
 
     // setup convert callback
@@ -234,7 +242,7 @@ function createServer (app, opts) {
       }
 
       pending++
-      comp.parse(body, sendToRenderer)
+      comp._module.parse(body, compOpts, sendToRenderer)
     })
 
     // convert on render message -> end response
@@ -245,7 +253,7 @@ function createServer (app, opts) {
         return errorReply(errorCode)
       }
 
-      comp.convert(fullInfo, reply)
+      comp._module.convert(fullInfo, compOpts, reply)
     })
   })
 }

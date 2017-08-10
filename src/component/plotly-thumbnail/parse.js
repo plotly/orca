@@ -1,13 +1,14 @@
 const plotlyGraphParse = require('../plotly-graph/parse')
 
 /**
- * @param {object} body (passed to plotly-graph/parse.js)
+ * @param {object} body : JSON-parsed request body
+ * @param {object} opts : component options
  * @param {function} sendToRenderer
  * - errorCode
  * - result
  */
-function parse (body, sendToRenderer) {
-  plotlyGraphParse(body, (errorCode, result) => {
+function parse (body, opts, sendToRenderer) {
+  plotlyGraphParse(body, opts, (errorCode, result) => {
     result.format = 'png'
     overrideFigure(result.figure)
     sendToRenderer(errorCode, result)

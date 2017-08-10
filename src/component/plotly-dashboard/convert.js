@@ -1,12 +1,12 @@
 /**
- * @param {object} info
+ * @param {object} info : info object
  *  - imgData
+ * @param {object} opts : component options
  * @param {function} reply
- *  - head
- *  - body
- *  - bodyLength
+ *  - errorCode
+ *  - result
  */
-function convert (info, reply) {
+function convert (info, opts, reply) {
   const result = {}
 
   result.head = {}

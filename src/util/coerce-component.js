@@ -12,11 +12,13 @@ const PATH_TO_COMPONENT = path.join(__dirname, '..', 'component')
 /** Coerce component options
  *
  * @param {object} _comp : user component option object
- * @param {boolean} debug : debug flag
+ * @param {object} opts : app options
+ *  - debug
  * @return {object or null} :
  *  full component option object or null (if component is invalid)
  */
-function coerceComponent (_comp, debug) {
+function coerceComponent (_comp, opts) {
+  const debug = opts.debug
   const comp = {}
 
   if (isNonEmptyString(_comp)) {
@@ -36,14 +38,14 @@ function coerceComponent (_comp, debug) {
   }
 
   try {
-    const _module = require(comp.path)
-    Object.assign(comp, _module)
+    comp._module = require(comp.path)
+    comp.name = comp._module.name
   } catch (e) {
     if (debug) console.warn(e)
     return null
   }
 
-  if (!isModuleValid(comp)) {
+  if (!isModuleValid(comp._module)) {
     if (debug) console.warn(`invalid component module ${comp.path}`)
     return null
   }
@@ -54,23 +56,7 @@ function coerceComponent (_comp, debug) {
       comp.route = route.charAt(0) === '/' ? route : '/' + route
     }
 
-    if (Array.isArray(comp.availableOptions)) {
-      comp.availableOptions.forEach((k) => {
-        if (k in _comp) {
-          comp[k] = _comp[k]
-        }
-      })
-    } else {
-      comp.availableOptions = []
-    }
-
-    if (debug) {
-      Object.keys(_comp).forEach((k) => {
-        if (!(k in comp)) {
-          console.log(`${k} is not an available option for component ${comp.name}`)
-        }
-      })
-    }
+    comp.options = isPlainObj(_comp.options) ? _comp.options : {}
   }
 
   return comp
