@@ -21,7 +21,7 @@ function convert (info, opts, reply) {
   let errorCode = null
 
   const result = {
-    head: {'Content-Type': cst[format]}
+    head: {'Content-Type': cst.contentFormat[format]}
   }
 
   // TODO
