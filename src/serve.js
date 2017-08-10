@@ -80,6 +80,9 @@ function createApp (_opts) {
 
   server.on('error', (err) => {
     console.error(err)
+
+    // quit if port is in used,
+    // might be better way to do this?
     app.quit()
   })
 

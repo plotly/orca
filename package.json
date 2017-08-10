@@ -6,10 +6,12 @@
   "main": "src/index.js",
   "scripts": {
     "start:server": "electron bin/plotly-export-server --debug",
-    "start:runner": "electron bin/plotly-graph-exporter --debug",
+    "start:runner": "electron bin/plotly-graph-exporter --debug --plotly=../plotly.js/build/plotly.js",
     "test:lint": "standard | snazzy",
-    "test:server": "node test/test-server.js",
-    "test": "npm run test:lint",
+    "test:integration": "tap test/integration/*_test.js",
+    "test:unit": "tap test/unit/*_test.js",
+    "test": "npm run test:lint && npm run test:unit && npm run test:integration",
+    "cover": "npm run test:unit -- --cov",
     "lint": "standard --fix"
   },
   "author": "Plotly, Inc.",
@@ -35,6 +37,8 @@
   },
   "devDependencies": {
     "snazzy": "^7.0.0",
-    "standard": "^10.0.2"
+    "spectron": "^3.7.2",
+    "standard": "^10.0.2",
+    "tap": "^10.7.1"
   }
 }
