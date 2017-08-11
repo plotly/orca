@@ -24,7 +24,7 @@ function parse (body, opts, sendToRenderer) {
   if (isNonEmptyString(body.url)) {
     result.url = body.url
   } else {
-    errorOut(400)
+    return errorOut(400)
   }
 
   result.width = body.width || 800
