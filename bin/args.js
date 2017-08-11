@@ -11,7 +11,7 @@ const PLOTLYJS_ALIAS = {
 
 const PLOTLYJS_DEFAULT = {
   'plotly': '',
-  'mapbox-access-token': process.env.mapboxAccessToken || '',
+  'mapbox-access-token': process.env.MAPBOX_ACCESS_TOKEN || '',
   'topojson': '',
   'mathjax': ''
 }
