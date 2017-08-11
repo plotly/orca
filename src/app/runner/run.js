@@ -74,7 +74,7 @@ function run (app, win, ipcMain, opts) {
       done()
     }
 
-    // convert on render message -> emit 'after-export'
+    // setup convert on render message -> emit 'after-export'
     ipcMain.once(id, (event, errorCode, renderInfo) => {
       Object.assign(fullInfo, renderInfo)
 
@@ -85,7 +85,7 @@ function run (app, win, ipcMain, opts) {
       comp._module.convert(fullInfo, compOpts, reply)
     })
 
-    // parse -> send to renderer!
+    // parse -> send to renderer GO!
     getBody(item, (err, _body) => {
       let body
 

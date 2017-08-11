@@ -107,7 +107,18 @@ function createServer (app, ipcMain, opts) {
       }
     }
 
-    // parse -> send to renderer!
+    // setup convert on render message -> end response
+    ipcMain.once(id, (event, errorCode, renderInfo) => {
+      Object.assign(fullInfo, renderInfo)
+
+      if (errorCode) {
+        return errorReply(errorCode)
+      }
+
+      comp._module.convert(fullInfo, compOpts, reply)
+    })
+
+    // parse -> send to renderer GO!
     textBody(req, {limit: BUFFER_OVERFLOW_LIMIT}, (err, _body) => {
       let body
 
@@ -123,17 +134,6 @@ function createServer (app, ipcMain, opts) {
 
       pending++
       comp._module.parse(body, compOpts, sendToRenderer)
-    })
-
-    // convert on render message -> end response
-    ipcMain.once(id, (event, errorCode, renderInfo) => {
-      Object.assign(fullInfo, renderInfo)
-
-      if (errorCode) {
-        return errorReply(errorCode)
-      }
-
-      comp._module.convert(fullInfo, compOpts, reply)
     })
   })
 
