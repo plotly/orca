@@ -4,9 +4,13 @@
   "description": "Plotly's image exporting utility",
   "license": "MIT",
   "main": "src/index.js",
+  "bin": {
+    "plotly-graph-exporter": "./bin/plotly-graph-exporter.js",
+    "plotly-export-server": "./bin/plotly-export-server.js"
+  },
   "scripts": {
-    "start:server": "electron bin/plotly-export-server --debug",
-    "start:runner": "electron bin/plotly-graph-exporter --debug --plotly=../plotly.js/build/plotly.js",
+    "start:server": "./bin/plotly-export-server.js --debug --plotly=../plotly.js/build/plotly.js",
+    "start:runner": "./bin/plotly-graph-exporter.js --debug --plotly=../plotly.js/build/plotly.js",
     "test:lint": "standard | snazzy",
     "test:integration": "tap test/integration/*_test.js",
     "test:unit": "tap test/unit/*_test.js",
