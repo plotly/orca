@@ -67,7 +67,12 @@ getStdin().then((txt) => {
   })
 
   app.on('after-export-all', (info) => {
-    const msg = `done with code ${info.code} in ${info.totalProcessingTime} ms - ${info.msg}`
+    const time = info.totalProcessingTime
+    const timeStr = time > 6e4 ? `${(time / 6e4).toFixed(2)} min`
+      : time > 1e3 ? `${(time / 1e3).toFixed(2)} sec`
+      : `${time.toFixed(2)} ms`
+
+    const msg = `done with code ${info.code} in ${timeStr} - ${info.msg}`
 
     if (info.code === 200) {
       console.log('\n' + msg)
