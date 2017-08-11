@@ -3,7 +3,7 @@ const isPositiveNumeric = require('../../util/is-positive-numeric')
 
 /** Coerce server options
  *
- * @param {object} _opts : server options container
+ * @param {object} _opts : (user) server options container
  * @return {object} coerce options including:
  *  - _browserWindowOpts {object}
  *  - _componentLookup {object}

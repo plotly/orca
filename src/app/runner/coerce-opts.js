@@ -1,14 +1,13 @@
 const glob = require('glob')
-
 const coerceComponent = require('../../util/coerce-component')
 const isPositiveNumeric = require('../../util/is-positive-numeric')
-
 const cst = require('./constants')
 
-/**
+/** Coerce runner options
  *
- * @param {object} _opts : ...
- *
+ * @param {object} _opts : (user) runner options container
+ * @return {object} coerce options including:
+ *  - _browserWindowOpts {object}
  */
 function coerceOpts (_opts) {
   const opts = {}
@@ -41,6 +40,10 @@ function coerceOpts (_opts) {
       input = input.concat(matches)
     }
   })
+
+  if (input.length === 0) {
+    throw new Error('no valid input given')
+  }
 
   opts.input = input
 
