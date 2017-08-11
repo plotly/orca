@@ -3,7 +3,7 @@ const args = require('./args')
 const pkg = require('../package.json')
 
 const argv = args.getServerArgs()
-const showLogs = !argv.quiet
+const SHOW_LOGS = !argv.quiet
 
 if (argv.version) {
   console.log(pkg.version)
@@ -50,20 +50,20 @@ const opts = {
 launch()
 
 app.on('after-connect', (info) => {
-  if (showLogs) {
+  if (SHOW_LOGS) {
     console.log(`Listening on port ${info.port} after a ${info.startupTime} ms bootup`)
     console.log(`Open routes: ${info.openRoutes.join(' ')}`)
   }
 })
 
 app.on('after-export', (info) => {
-  if (showLogs) {
+  if (SHOW_LOGS) {
     console.log(`after-export, fig: ${info.fid} in ${info.processingTime} ms`)
   }
 })
 
 app.on('export-error', (info) => {
-  if (showLogs) {
+  if (SHOW_LOGS) {
     console.log(`export error ${info.code} - ${info.msg}`)
   }
 })
@@ -72,7 +72,9 @@ process.on('uncaughtException', (err) => {
   console.warn(err)
 
   if (argv.keepAlive) {
-    console.log('... relaunching')
+    if (SHOW_LOGS) {
+      console.log('... relaunching')
+    }
     launch()
   }
 })

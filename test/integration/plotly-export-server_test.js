@@ -1,6 +1,5 @@
 const tap = require('tap')
 const Application = require('spectron').Application
-const electronPath = require('electron')
 
 const path = require('path')
 const request = require('request')
@@ -10,17 +9,15 @@ const SERVER_URL = `http://localhost:${PORT}`
 const ROOT_PATH = path.join(__dirname, '..', '..')
 
 // TODO
-// - how to test events??
-//   + https://github.com/electron/spectron#clientgetmainprocesslogs
-//   + mock server / runner app to log to file?
 // - maybe just firing `plotly-export-server` in a child process would be enough?
 //   + I don't see any spectron feature that could be useful to use
 //     (they are mostly useful to inspect the app's window)
+// - though checking window creation/deletion might be nice
+//   for `plotly-dashboard` component
 
 const app = new Application({
-  path: electronPath,
+  path: path.join(ROOT_PATH, 'bin', 'plotly-export-server.js'),
   args: [
-    path.join(ROOT_PATH, 'bin', 'plotly-export-server'),
     '--port', PORT,
     '--plotly', path.join(ROOT_PATH, '..', 'plotly.js', 'build', 'plotly.js')
   ]
@@ -46,8 +43,8 @@ tap.test('should reply pong to ping POST', t => {
   request.post(SERVER_URL + '/ping', (err, res, body) => {
     if (err) t.fail(err)
 
-    t.equal(res.statusCode, 200)
-    t.equal(body, 'pong')
+    t.equal(res.statusCode, 200, 'code')
+    t.equal(body, 'pong', 'body')
     t.end()
   })
 })
@@ -64,7 +61,8 @@ tap.test('should work for *plotly-graph* component', t => {
   }, (err, res, body) => {
     if (err) t.fail(err)
 
-    t.equal(res.statusCode, 200)
+    t.equal(res.statusCode, 200, 'code')
+    t.type(body, 'string')
     t.end()
   })
 })
