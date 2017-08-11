@@ -44,5 +44,11 @@
     "spectron": "^3.7.2",
     "standard": "^10.0.2",
     "tap": "^10.7.1"
+  },
+  "nyc": {
+    "exclude": [
+      "build",
+      "test"
+    ]
   }
 }
