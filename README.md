@@ -25,6 +25,15 @@ browser scripts (call the **renderer** process). Compared to `nw.js`, creating
 electron apps requires a little more boiler plate, but electron makes it much
 easier to know what globals you have available.
 
+Electron creates an executable environment. That is, `require('electron')` does
+not do the same when executed as `node index.js` and `electron index.js`. So, to
+write good unit tests, it becomes important to split logic that only runs in
+electron from other things that can be run in node. That's why in `src/app/*`,
+only `index.js` requires electron modules. The other modules are _pure_
+node.js and are tested in `test/unit/` using [TAP](http://www.node-tap.org/).
+The electron logic is itself tested using
+[spectron](https://github.com/electron/spectron) which is much slower.
+
 ### Components
 
 This project has a larger scope than the current image server.
@@ -41,8 +50,11 @@ Each component has an `inject`, a `parse`, a `render` and a `convert` method:
   which is injected in the head of the app's HTML index file
   (e.g `<script src="plotly.js"></script>`)
 - `parse` (required, main process) takes in a request body and coerces its options.
-- `render` (required, renderer process) takes options and return image data
+- `render` (required, renderer process) takes options and returns image data
 - `convert` (required, main process) converts image data to output head and body
+
+Component modules are _just_ plain objects, listing methods. Components aren't
+instantiated, their methods shouldn't depend on any `this`.
 
 ### Logging
 
@@ -57,9 +69,11 @@ an electron `app` object (which is an event listener/emitter).
 
 ### `run`
 
-Creates a _runner_ app (code in `src/run.js`):
+Creates a _runner_ app (code in `src/app/runner/`):
 
 ```js
+// main.js
+
 var plotlyExporter = require('plotly-exporter')
 
 var app = plotlyExporter.run({
@@ -77,11 +91,15 @@ app.on('export-error', () => {})
 app.on('renderer-error', () => {})
 ```
 
+and launch it with `electron main.js`.
+
 ### `serve`
 
-Creates a _server_ app (code in `src/serve.js`):
+Creates a _server_ app (code in `src/app/server/`):
 
 ```js
+// main.js
+
 var plotlyExporter = require('plotly-exporter')
 
 var app = plotlyExporter.serve({
@@ -115,6 +133,8 @@ app.on('after-connect', () => {})
 app.on('export-error', () => {})
 app.on('renderer-error', () => {})
 ```
+
+and launch it with `electron main.js`.
 
 ## CLI
 
@@ -166,10 +186,6 @@ Perf:
 + https://github.com/electron/asar
 + https://github.com/pixijs/pixi.js/issues/2233
 + https://github.com/pixijs/pixi.js/pull/2481/files
-
-Test:
-
-+ https://github.com/electron/spectron
 
 ## Nomenclature
 
