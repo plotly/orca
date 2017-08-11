@@ -1,12 +1,11 @@
 const tap = require('tap')
-const coerceComponent = require('../../src/util/coerce-component')
-const comp = coerceComponent('plotly-graph')
+const _module = require('../../src/component/plotly-graph')
 
 // TODO
 // + figure out best way to test `render` in isolation (maybe jsdom?)
 
 tap.test('inject:', t => {
-  const fn = comp._module.inject
+  const fn = _module.inject
 
   t.test('should fill in defaults', t => {
     const out = fn()
@@ -48,7 +47,7 @@ tap.test('inject:', t => {
 
   t.test('should accept plotly.js version to be specify via url', t => {
     const out = fn({plotlyJS: 'http://dummy.url'})
-    
+
     t.same(out, ['<script src="http://dummy.url"></script>'])
     t.end()
   })
@@ -72,7 +71,7 @@ tap.test('inject:', t => {
 })
 
 tap.test('parse:', t => {
-  const fn = comp._module.parse
+  const fn = _module.parse
 
   t.test('should fill in defaults', t => {
     const body = {
@@ -309,7 +308,7 @@ tap.test('parse:', t => {
 })
 
 tap.only('convert:', t => {
-  const fn = comp._module.convert
+  const fn = _module.convert
 
   t.test('should convert image data to buffer', t => {
     const formats = ['png', 'webp', 'jpeg']
