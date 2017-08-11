@@ -18,7 +18,9 @@ const PATH_TO_INIT_RENDERERS = path.join(__dirname, 'init-renderers.js')
  *  - debug
  * @param {function} cb callback
  *  - err
- *  - pathToIndex {string}
+ *  - index {object}
+ *    - path {string}
+ *    - destroy {function}
  */
 function createIndex (comp, opts, cb) {
   opts = opts || {}
@@ -61,7 +63,12 @@ function createIndex (comp, opts, cb) {
       console.log(`created ${path.basename(pathToIndex)} for ${comp.name} component`)
     }
 
-    cb(pathToIndex)
+    const index = {
+      path: pathToIndex,
+      destroy: () => fs.unlinkSync(pathToIndex)
+    }
+
+    cb(index)
   })
 }
 
