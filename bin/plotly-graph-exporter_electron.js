@@ -1,14 +1,14 @@
 const plotlyExporter = require('../')
-const args = require('./args')
+const { getExporterArgs, getExporterHelpMsg } = require('./args')
 const pkg = require('../package.json')
 
-const getStdin = require('get-stdin')
 const fs = require('fs')
 const path = require('path')
+const getStdin = require('get-stdin')
+const str = require('string-to-stream')
 
-const argv = args.getExporterArgs()
+const argv = getExporterArgs()
 const DEBUG = argv.debug
-const SHOW_LOGS = DEBUG || argv.verbose
 const DEBUG_INFO = '\n  leaving window open for debugging'
 
 if (argv.version) {
@@ -17,25 +17,29 @@ if (argv.version) {
 }
 
 if (argv.help) {
-  console.log(args.getExporterHelpMsg())
+  console.log(getExporterHelpMsg())
   process.exit(0)
+}
+
+if (!fs.existsSync(argv.outputDir)) {
+  fs.mkdirSync(argv.outputDir)
 }
 
 getStdin().then((txt) => {
   const hasStdin = !!txt
-
-  const getItemName = hasStdin
-    ? (info) => info.figure.layout.title.replace(/\s/g, '-') || 'stdin'
-    : (info) => path.parse(argv._[info.itemIndex]).name
+  const pipeToStdOut = hasStdin && !argv.output && !argv.outputDir
+  const showLogs = !pipeToStdOut && (DEBUG || argv.verbose)
+  const input = hasStdin ? argv._.concat([txt]) : argv._
+  const getItemName = makeGetItemName(input)
 
   const app = plotlyExporter.run({
-    input: hasStdin ? argv._.concat([txt]) : argv._,
+    input: input,
     debug: DEBUG,
     parallelLimit: argv.parallelLimit,
     component: {
       name: 'plotly-graph',
       options: {
-        plotlyJS: path.resolve(argv.plotly),
+        plotlyJS: argv.plotly,
         mapboxAccessToken: argv['mapbox-access-token'],
         mathjax: argv.mathjax,
         topojson: argv.topojson,
@@ -49,20 +53,25 @@ getStdin().then((txt) => {
 
   app.on('after-export', (info) => {
     const itemName = getItemName(info)
+    const outPath = path.resolve(argv.outputDir, `${itemName}.${info.format}`)
 
-    if (SHOW_LOGS) {
+    if (showLogs) {
       console.log(`exported ${itemName}, in ${info.processingTime} ms`)
     }
 
-    fs.writeFile(`${itemName}.${info.format}`, info.body, (err) => {
-      if (err) throw err
-    })
+    if (pipeToStdOut) {
+      str(info.body).pipe(process.stdout)
+    } else {
+      fs.writeFile(outPath, info.body, (err) => {
+        if (err) console.warn(err)
+      })
+    }
   })
 
   app.on('export-error', (info) => {
     const itemName = getItemName(info)
 
-    if (SHOW_LOGS) {
+    if (showLogs) {
       console.warn(`export error ${info.code} for ${itemName} - ${info.msg}`)
       console.warn(`  ${info.error}`)
     }
@@ -77,7 +86,7 @@ getStdin().then((txt) => {
     const msg = `done with code ${info.code} in ${timeStr} - ${info.msg}`
 
     if (info.code === 200) {
-      if (SHOW_LOGS) {
+      if (showLogs) {
         console.log('\n' + msg)
       }
       if (DEBUG) {
@@ -93,7 +102,7 @@ getStdin().then((txt) => {
   })
 
   app.on('renderer-error', (info) => {
-    if (SHOW_LOGS) {
+    if (showLogs) {
       console.warn(`${info.msg} - ${info.error}`)
     }
   })
@@ -105,3 +114,24 @@ getStdin().then((txt) => {
     })
   }
 })
+
+function makeGetItemName (input) {
+  const output = argv.output
+  const hasMultipleInput = input.length > 1
+
+  if (output) {
+    const outputName = path.parse(output).name
+    return hasMultipleInput
+      ? (info) => `${outputName}_${info.itemIndex}`
+      : () => outputName
+  } else {
+    return (info) => {
+      const item = argv._[info.itemIndex]
+      return fs.existsSync(item)
+        ? path.parse(item).name
+        : hasMultipleInput
+          ? `fig_${info.itemIndex}`
+          : 'fig'
+    }
+  }
+}

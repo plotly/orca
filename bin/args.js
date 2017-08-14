@@ -37,6 +37,7 @@ const DESCRIPTION = {
 const EXPORTER_MINIMIST_CONFIG = {
   'boolean': ['debug', 'help', 'version', 'verbose'],
   'string': [].concat(
+    'output-dir',
     PLOTLYJS_STRING,
     ['format', 'scale', 'width', 'height'],
     'parallel-limit'
@@ -44,7 +45,9 @@ const EXPORTER_MINIMIST_CONFIG = {
 
   'alias': Object.assign({
     'help': ['h'],
-    'version': ['v']
+    'version': ['v'],
+    'output-dir': ['d', 'outputDir'],
+    'output': ['o']
   }, PLOTLYJS_ALIAS, {
     'format': ['f'],
     'parallel-limit': ['parallelLimit']
@@ -54,7 +57,9 @@ const EXPORTER_MINIMIST_CONFIG = {
     'debug': false,
     'help': false,
     'version': false,
-    'verbose': false
+    'verbose': false,
+    'output-dir': process.cwd(),
+    'output': ''
   }, PLOTLYJS_DEFAULT, {
     'format': '',
     'scale': '',
@@ -109,7 +114,7 @@ exports.getExporterHelpMsg = function () {
 
     $ plotly-graph-exporter [path/to/json/file(s), URL(s), glob(s), '{"data":[],"layout":{}}'] {options}
 
-    $ cat plot.json | plotly-graph-exporter {options}
+    $ cat plot.json | plotly-graph-exporter {options} > plot.png
 
   Options:
 
@@ -118,6 +123,12 @@ exports.getExporterHelpMsg = function () {
 
   --version ${formatAliases('version')}
     ${DESCRIPTION.version}
+
+  --output-dir ${formatAliases('output-dir')}
+    Sets output directory for the generated images. Defaults to the current working directory
+
+  --output ${formatAliases('output')}
+    Sets output filename. If multiple inputs are provided, then their item index will be appended to the filename.
 
   --plotly ${formatAliases('plotly')}
     ${DESCRIPTION.plotly}
@@ -148,12 +159,6 @@ exports.getExporterHelpMsg = function () {
 
   --verbose
     Turn on verbose logging on stdout.
-
-  --output (??)
-
-  --output-dir (??)
-
-  --overwrite (??)
 
   --debug
     ${DESCRIPTION.debug}
