@@ -1,6 +1,7 @@
 /* global Plotly:false */
 
 const cst = require('./constants')
+const semver = require('semver')
 
 /**
  * @param {object} info : info object
@@ -42,27 +43,58 @@ function render (info, opts, sendToMain) {
   // - handle thumbnails here? or in a separate component?
   // - does webp (via batik) support transparency now?
 
-  Plotly.toImage({
-    data: figure.data,
-    layout: figure.layout,
-    config: config
-  }, {
+  const imgOpts = {
     format: format,
     width: info.scale * info.width,
     height: info.scale * info.height,
     // return image data w/o the leading 'data:image' spec
     imageDataOnly: true,
     // blend jpeg background color as jpeg does not support transparency
-    setBackground: format === 'jpeg' ? 'blend' : ''
-  })
-  .then((imgData) => {
+    setBackground: format === 'jpeg' ? 'opaque' : ''
+  }
+
+  let promise
+
+  if (semver.gte(Plotly.version, '1.30.0')) {
+    promise = Plotly.toImage({
+      data: figure.data,
+      layout: figure.layout,
+      config: config
+    }, imgOpts)
+  } else if (semver.gte(Plotly.version, '1.11.0')) {
+    const gd = document.createElement('div')
+
+    promise = Plotly
+      .newPlot(gd, figure.data, figure.layout, config)
+      .then(() => Plotly.toImage(gd, imgOpts))
+      .then((imgData) => {
+        Plotly.purge(gd)
+
+        switch (format) {
+          case 'png':
+          case 'jpeg':
+          case 'webp':
+            return imgData.replace(cst.imgPrefix.base64, '')
+          case 'svg':
+          case 'pdf':
+          case 'eps':
+            return decodeURIComponent(imgData.replace(cst.imgPrefix.svg, ''))
+        }
+      })
+  } else {
+    errorCode = 526
+    result.error = `plotly.js version: ${Plotly.version}`
+    return done()
+  }
+
+  promise.then((imgData) => {
     result.imgData = imgData
-    done()
+    return done()
   })
   .catch((err) => {
     errorCode = 525
     result.error = JSON.stringify(err, ['message', 'arguments', 'type', 'name'])
-    done()
+    return done()
   })
 }
 

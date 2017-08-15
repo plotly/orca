@@ -3,6 +3,7 @@ const _module = require('../../src/component/plotly-graph')
 
 // TODO
 // + figure out best way to test `render` in isolation (maybe jsdom?)
+// + maybe using https://github.com/electron/spectron#webcontents ??
 
 tap.test('inject:', t => {
   const fn = _module.inject

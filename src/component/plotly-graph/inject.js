@@ -1,6 +1,8 @@
 const fs = require('fs')
+const path = require('path')
 const isUrl = require('is-url')
-const semverRegex = require('semver-regex')
+const semver = require('semver')
+const isNonEmptyString = require('../../util/is-non-empty-string')
 const cst = require('./constants')
 
 /** plotly-graph inject
@@ -19,26 +21,29 @@ function inject (opts) {
   const topojson = opts.topojson
   const parts = []
 
-  if (mathjax) {
-    if (fs.existsSync(mathjax) || isUrl(mathjax)) {
-      parts.push(script(mathjax + cst.mathJaxConfigQuery))
+  if (isNonEmptyString(mathjax)) {
+    let src = resolve(mathjax)
+    if (src) {
+      parts.push(script(src + cst.mathJaxConfigQuery))
     } else {
       throw new Error('Provided path to MathJax files does not exists')
     }
   }
 
-  if (topojson) {
-    if (fs.existsSync(topojson) || isUrl(topojson)) {
-      parts.push(script(topojson))
+  if (isNonEmptyString(topojson)) {
+    let src = resolve(topojson)
+    if (src) {
+      parts.push(script(src))
     } else {
       throw new Error('Provided path to topojson files does not exists')
     }
   }
 
-  if (plotlyJS) {
-    if (fs.existsSync(plotlyJS) || isUrl(plotlyJS)) {
-      parts.push(script(plotlyJS))
-    } else if (plotlyJS === 'latest' || semverRegex().test(plotlyJS)) {
+  if (isNonEmptyString(plotlyJS)) {
+    let src = resolve(plotlyJS)
+    if (src) {
+      parts.push(script(src))
+    } else if (plotlyJS === 'latest' || semver.valid(plotlyJS)) {
       parts.push(script(cdnSrc(plotlyJS)))
     } else {
       throw new Error('Provided path to plotly.js bundle does not exist and does not correspond to a release version')
@@ -48,6 +53,15 @@ function inject (opts) {
   }
 
   return parts
+}
+
+function resolve (v) {
+  if (isUrl(v)) {
+    return v
+  } else {
+    const p = path.resolve(v)
+    return fs.existsSync(p) ? p : false
+  }
 }
 
 function script (src) {
