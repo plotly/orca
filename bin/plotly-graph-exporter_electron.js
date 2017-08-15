@@ -10,6 +10,8 @@ const str = require('string-to-stream')
 const argv = getExporterArgs()
 const DEBUG = argv.debug
 const DEBUG_INFO = '\n  leaving window open for debugging'
+const CHROME_VERSION = process.versions.chrome
+const ELECTRON_VERSION = process.versions.electron
 
 if (argv.version) {
   console.log(pkg.version)
@@ -83,34 +85,32 @@ getStdin().then((txt) => {
       : time > 1e3 ? `${(time / 1e3).toFixed(2)} sec`
       : `${time.toFixed(2)} ms`
 
-    const msg = `done with code ${info.code} in ${timeStr} - ${info.msg}`
+    if (DEBUG) console.log(DEBUG_INFO)
+
+    const msg = `\ndone with code ${info.code} in ${timeStr} - ${info.msg}`
 
     if (info.code === 200) {
       if (showLogs) {
-        console.log('\n' + msg)
-      }
-      if (DEBUG) {
-        console.log(DEBUG_INFO)
+        console.log(msg)
       }
     } else {
-      if (DEBUG) {
-        console.error('\n' + msg)
-      } else {
-        throw new Error(msg)
-      }
+      console.warn(msg)
+      if (!DEBUG) process.exit(1)
     }
   })
 
   app.on('renderer-error', (info) => {
     if (showLogs) {
-      console.warn(`${info.msg} - ${info.error}`)
+      console.warn(`${info.msg} - ${info.error}
+        Chrome version ${CHROME_VERSION}
+        Electron version ${ELECTRON_VERSION}`)
     }
   })
 
   if (DEBUG) {
     process.on('uncaughtException', (err) => {
       console.warn(err)
-      console.log(DEBUG_INFO)
+      console.warn(DEBUG_INFO)
     })
   }
 })

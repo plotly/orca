@@ -117,10 +117,7 @@ function run (app, win, ipcMain, opts) {
     })
 
     // do not close window to look for unlogged console errors
-    if (!opts.debug) {
-      win.close()
-      app.quit()
-    }
+    if (!opts.debug) app.quit()
   })
 }
 
