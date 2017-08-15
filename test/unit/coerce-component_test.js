@@ -1,4 +1,5 @@
 const tap = require('tap')
+const sinon = require('sinon')
 const path = require('path')
 const fs = require('fs')
 const uuid = require('uuid/v4')
@@ -91,7 +92,7 @@ tap.test('should return null if module is invalid', t => {
     render: () => {},
     convert: () => {}
   }`
-  content['missing render'] = `module.export = {
+  content['missing render'] = `module.exports = {
     name: 'n',
     parse: () => {},
     convert: () => {}
@@ -144,4 +145,53 @@ tap.test('should set *inject* in noop if not set', t => {
 
     t.type(comp._module.inject, 'function')
   })
+})
+
+tap.only('should log info on debug', t => {
+  t.beforeEach((done) => {
+    sinon.stub(console, 'warn')
+    done()
+  })
+
+  t.afterEach((done) => {
+    console.warn.restore()
+    done()
+  })
+
+  t.test('should log when non-string/non-object component are passed', t => {
+    coerceComponent(null, {debug: true})
+    t.ok(console.warn.calledOnce)
+    t.match(console.warn.args[0], /^non-string, non-object component passed/)
+    t.end()
+  })
+
+  t.test('should log when path to component is not set', t => {
+    coerceComponent({nopath: 'p'}, {debug: true})
+    t.ok(console.warn.calledOnce)
+    t.match(console.warn.args[0], /^path to component not found/)
+    t.end()
+  })
+
+  t.test('should log MODULE_NOT_FOUND error when *require(comp.path)* fails', t => {
+    coerceComponent({path: 'not/gonna/work'}, {debug: true})
+    t.ok(console.warn.calledOnce)
+    t.match(console.warn.args[0][0].code, /MODULE_NOT_FOUND/)
+    t.end()
+  })
+
+  t.test('should log *invalid component module* when a required method is missing', t => {
+    const content = `module.exports = {
+      name: 'n',
+      render: () => {},
+      convert: () => {}
+    }`
+
+    testMockComponentModule(t, content, (comp) => {
+      coerceComponent(comp, {debug: true})
+      t.ok(console.warn.calledOnce)
+      t.match(console.warn.args[0], /^invalid component module/)
+    })
+  })
+
+  t.end()
 })
