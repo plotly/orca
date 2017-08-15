@@ -9,13 +9,11 @@
     "plotly-export-server": "./bin/plotly-export-server.js"
   },
   "scripts": {
-    "start:server": "./bin/plotly-export-server.js --debug --plotly=../plotly.js/build/plotly.js",
-    "start:runner": "./bin/plotly-graph-exporter.js --debug --plotly=../plotly.js/build/plotly.js",
     "test:lint": "standard | snazzy",
     "test:unit": "tap test/unit/*_test.js",
     "test:integration": "tap test/integration/*_test.js",
     "test": "npm run test:lint && npm run test:unit && npm run test:integration",
-    "cover": "npm run test:unit -- --cov",
+    "coverage": "npm run test:unit -- --cov",
     "lint": "standard --fix"
   },
   "author": "Plotly, Inc.",
@@ -27,7 +25,7 @@
   ],
   "dependencies": {
     "body": "^5.1.0",
-    "electron": "^1.6.11",
+    "electron": "^1.7.5",
     "fast-isnumeric": "^1.1.1",
     "get-stdin": "^5.0.1",
     "glob": "^7.1.2",
