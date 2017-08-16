@@ -3,16 +3,16 @@ module.exports = {
     png: 'image/png',
     jpeg: 'image/jpeg',
     webp: 'image/webp',
-    pdf: 'application/pdf',
     svg: 'image/svg+xml',
+    pdf: 'application/pdf',
     eps: 'application/postscript'
   },
 
   statusMsg: {
     400: 'invalid or malformed request syntax',
-    530: 'image conversion error',
     525: 'plotly.js error',
-    526: 'plotly.js version 1.11.0 or up required'
+    526: 'plotly.js version 1.11.0 or up required',
+    530: 'image conversion error'
   },
 
   dflt: {
