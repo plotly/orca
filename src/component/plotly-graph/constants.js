@@ -11,7 +11,8 @@ module.exports = {
   statusMsg: {
     400: 'invalid or malformed request syntax',
     530: 'image conversion error',
-    525: 'plotly.js error'
+    525: 'plotly.js error',
+    526: 'plotly.js version 1.11.0 or up required'
   },
 
   dflt: {
@@ -21,8 +22,10 @@ module.exports = {
     height: 500
   },
 
-  plotConfig: {
-    staticPlot: true
+  // only used in render for plotly.js < v1.30.0
+  imgPrefix: {
+    base64: /^data:image\/\w+;base64,/,
+    svg: /^data:image\/svg\+xml,/
   },
 
   mathJaxConfigQuery: '?config=TeX-AMS-MML_SVG'

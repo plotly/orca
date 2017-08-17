@@ -9,13 +9,11 @@
     "plotly-export-server": "./bin/plotly-export-server.js"
   },
   "scripts": {
-    "start:server": "./bin/plotly-export-server.js --debug --plotly=../plotly.js/build/plotly.js",
-    "start:runner": "./bin/plotly-graph-exporter.js --debug --plotly=../plotly.js/build/plotly.js",
     "test:lint": "standard | snazzy",
-    "test:integration": "tap test/integration/*_test.js",
     "test:unit": "tap test/unit/*_test.js",
+    "test:integration": "tap test/integration/*_test.js",
     "test": "npm run test:lint && npm run test:unit && npm run test:integration",
-    "cover": "npm run test:unit -- --cov",
+    "coverage": "npm run test:unit -- --cov",
     "lint": "standard --fix"
   },
   "author": "Plotly, Inc.",
@@ -27,7 +25,7 @@
   ],
   "dependencies": {
     "body": "^5.1.0",
-    "electron": "^1.6.11",
+    "electron": "^1.7.5",
     "fast-isnumeric": "^1.1.1",
     "get-stdin": "^5.0.1",
     "glob": "^7.1.2",
@@ -36,14 +34,19 @@
     "minimist": "^1.2.0",
     "request": "^2.81.0",
     "run-parallel-limit": "^1.0.3",
-    "semver-regex": "^1.0.0",
+    "semver": "^5.4.1",
+    "string-to-stream": "^1.1.0",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
+    "sinon": "^3.2.0",
     "snazzy": "^7.0.0",
     "spectron": "^3.7.2",
-    "standard": "^10.0.2",
-    "tap": "^10.7.1"
+    "standard": "^10.0.3",
+    "tap": "^10.7.2"
+  },
+  "engines": {
+    "node": ">=6.0.0"
   },
   "nyc": {
     "exclude": [

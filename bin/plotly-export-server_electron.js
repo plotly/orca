@@ -1,8 +1,8 @@
 const plotlyExporter = require('../')
-const args = require('./args')
+const { getServerArgs, getServerHelpMsg } = require('./args')
 const pkg = require('../package.json')
 
-const argv = args.getServerArgs()
+const argv = getServerArgs()
 const SHOW_LOGS = !argv.quiet
 
 if (argv.version) {
@@ -11,7 +11,7 @@ if (argv.version) {
 }
 
 if (argv.help) {
-  console.log(args.getServerHelpMsg())
+  console.log(getServerHelpMsg())
   process.exit(0)
 }
 

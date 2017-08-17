@@ -53,7 +53,9 @@ function coerceComponent (_comp, opts) {
     const r = isNonEmptyString(_comp.route) ? _comp.route : comp.name
     comp.route = r.charAt(0) === '/' ? r : '/' + r
 
-    comp.options = isPlainObj(_comp.options) ? _comp.options : {}
+    comp.options = isPlainObj(_comp.options)
+      ? Object.assign({}, _comp.options)
+      : {}
   } else {
     comp.route = '/' + comp.name
     comp.options = {}

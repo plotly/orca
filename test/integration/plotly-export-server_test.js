@@ -2,6 +2,7 @@ const tap = require('tap')
 const Application = require('spectron').Application
 
 const path = require('path')
+const fs = require('fs')
 const request = require('request')
 
 const PORT = 9109
@@ -17,15 +18,11 @@ const ROOT_PATH = path.join(__dirname, '..', '..')
 
 const app = new Application({
   path: path.join(ROOT_PATH, 'bin', 'plotly-export-server.js'),
-  args: [
-    '--port', PORT,
-    '--plotly', path.join(ROOT_PATH, '..', 'plotly.js', 'build', 'plotly.js')
-  ]
+  args: ['--port', PORT]
 })
 
 tap.tearDown(() => {
   if (app && app.isRunning()) {
-    console.log('teardown, app is still running')
     app.stop()
   }
 })
@@ -65,6 +62,8 @@ tap.test('should work for *plotly-graph* component', t => {
     t.type(body, 'string')
     t.end()
   })
+
+  // more tests using: https://github.com/image-size/image-size
 })
 
 tap.test('should work for *plotly-thumbnail* component', t => {
@@ -79,28 +78,61 @@ tap.test('should work for *plotly-thumbnail* component', t => {
   }, (err, res, body) => {
     if (err) t.fail(err)
 
-    t.equal(res.statusCode, 200)
+    t.equal(res.statusCode, 200, 'code')
+    t.type(body, 'string', 'body type')
     t.end()
   })
 })
 
-tap.test('should work for *plotly-dashboard* component', {timeout: 1e4}, t => {
-  request({
-    method: 'POST',
-    url: SERVER_URL + '/dashboard',
-    body: JSON.stringify({
-      fid: 'some-fid',
-      url: 'https://plot.ly/dashboard/jackp:17872/embed',
-      format: 'pdf'
-    })
-  }, (err, res, body) => {
-    if (err) t.fail(err)
+tap.test('should work for *plotly-dashboard* component', {timeout: 1e5}, t => {
+  t.test('responding with correct status code and body type', t => {
+    request({
+      method: 'POST',
+      url: SERVER_URL + '/dashboard',
+      body: JSON.stringify({
+        fid: 'some-fid',
+        url: 'https://plot.ly/dashboard/jackp:17872/embed',
+        format: 'pdf'
+      })
+    }, (err, res, body) => {
+      if (err) t.fail(err)
 
-    t.equal(res.statusCode, 200)
-    t.end()
+      t.equal(res.statusCode, 200, 'code')
+      t.type(body, 'string', 'body type')
+      t.end()
+    })
   })
+
+  t.test('piping info write stream', t => {
+    const outPath = path.join(ROOT_PATH, 'build', 'dashboard.pdf')
+    const ws = fs.createWriteStream(outPath)
+
+    request({
+      method: 'POST',
+      url: SERVER_URL + '/dashboard',
+      body: JSON.stringify({
+        fid: 'some-fid',
+        url: 'https://plot.ly/dashboard/jackp:17872/embed',
+        format: 'pdf'
+      })
+    })
+    .on('error', t.fail)
+    .pipe(ws)
+
+    ws.on('error', t.fail)
+    ws.on('finish', () => {
+      const size = fs.statSync(outPath).size
+      t.ok(size > 1e4, 'min pdf file size')
+      t.ok(size < 2e4, 'max pdf file size')
+      t.end()
+    })
+  })
+
+  t.end()
 })
 
 tap.test('should teardown', t => {
-  app.stop().then(t.end)
+  app.stop()
+    .catch(t.fail)
+    .then(t.end)
 })
