@@ -23,7 +23,8 @@ class Batik {
     this.bg = '255.255.255.255'
     this.dpi = '300'
     this.javaBase = 'java -jar -XX:+UseParallelGC -server'
-    this.cmdBase = `${this.javaBase} ${this.batikJar}`
+    this.batikBase = `${this.javaBase} ${this.batikJar}`
+    this.pdftopsBase = 'pdftops'
   }
 
   /** Convert svg input
@@ -77,9 +78,10 @@ class Batik {
         args = `-m application/pdf`
         break
       default:
-        args = `-bg ${this.bg} -dpi ${this.dpi}`
-        if (width) args += `-w ${width}`
-        if (height) args += `-h ${height}`
+        args = `-bg ${this.bg} -dpi ${this.dpi} `
+        if (width) args += `-w ${width} `
+        if (height) args += `-h ${height} `
+        break
     }
 
     const done = (err, out) => parallel(destroyTasks, (err2) => {
@@ -107,15 +109,19 @@ class Batik {
         return done(new Error('problem while initializing temporary files'))
       }
 
-      exec(`${this.cmdBase} ${args} -d ${lookup.out.path} ${lookup.svg.path}`, (err) => {
+      const batikCmd = `${this.batikBase} ${args} -d ${lookup.out.path} ${lookup.svg.path}`
+
+      childProcess.exec(batikCmd, (err) => {
         if (err) {
           return done(new Error('problem while executing batik command'))
         }
 
         if (isEPS) {
-          exec(`pdftops -eps ${lookup.out.path} ${lookup.eps.path}`, (err) => {
+          const pdftopsCmd = `${this.pdftopsBase} -eps ${lookup.out.path} ${lookup.eps.path}`
+
+          childProcess.exec(pdftopsCmd, (err) => {
             if (err) {
-              return done(new Error('problem with executing pdtops command'))
+              return done(new Error('problem while executing pdftops command'))
             }
             toBuffer(lookup.eps.path)
           })
