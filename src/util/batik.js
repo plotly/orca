@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const { exec, execSync } = require('child_process')
+const childProcess = require('child_process')
 const parallel = require('run-parallel')
 const uuid = require('uuid/v4')
 
@@ -138,7 +138,7 @@ class Batik {
    */
   static isJavaInstalled () {
     try {
-      execSync('java -version', {stdio: 'silent'})
+      childProcess.execSync('java -version', {stdio: 'ignore'})
     } catch (e) {
       return false
     }
@@ -150,7 +150,7 @@ class Batik {
    */
   static isPdftopsInstalled () {
     try {
-      execSync('pdftops', {stdio: 'silent'})
+      childProcess.execSync('pdftops -v', {stdio: 'ignore'})
     } catch (e) {
       return false
     }

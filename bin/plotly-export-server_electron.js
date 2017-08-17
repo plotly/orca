@@ -23,8 +23,12 @@ let app
 let batik
 
 if (argv.batik) {
-  if (Batik.isJavaInstalled() && Batik.isPdftopsInstalled()) {
-    console.warn('Missing binaries for PDF and EPS exports')
+  if (!Batik.isJavaInstalled()) {
+    console.warn('Missing binaries for PDF exports')
+    process.exit(1)
+  }
+  if (!Batik.isPdftopsInstalled()) {
+    console.warn('Missing binaries for EPS exports')
     process.exit(1)
   }
 
