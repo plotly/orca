@@ -308,7 +308,7 @@ tap.test('parse:', t => {
   t.end()
 })
 
-tap.only('convert:', t => {
+tap.test('convert:', t => {
   const fn = _module.convert
 
   t.test('should convert image data to buffer', t => {

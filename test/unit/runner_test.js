@@ -41,7 +41,7 @@ tap.test('getBody:', t => {
   t.end()
 })
 
-tap.only('run:', t => {
+tap.test('run:', t => {
   const ipc = new EventEmitter()
 
   const win = {
