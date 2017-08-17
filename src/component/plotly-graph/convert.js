@@ -41,13 +41,13 @@ function convert (info, opts, reply) {
     case 'png':
     case 'jpeg':
     case 'webp':
-      result.bodyLength = result.head['Content-Length'] = imgData.length
-      result.body = Buffer.from(imgData, 'base64')
+      const body = result.body = Buffer.from(imgData, 'base64')
+      result.bodyLength = result.head['Content-Length'] = body.length
       return done()
     case 'svg':
       // see http://stackoverflow.com/a/12205668/800548
-      result.bodyLength = encodeURI(imgData).split(/%..|./).length - 1
       result.body = imgData
+      result.bodyLength = encodeURI(imgData).split(/%..|./).length - 1
       return done()
     case 'pdf':
     case 'eps':
@@ -68,7 +68,7 @@ function convert (info, opts, reply) {
           return done()
         }
 
-        result.bodyLength = result.head['Content-Length'] = Buffer.byteLength(buf)
+        result.bodyLength = result.head['Content-Length'] = buf.length
         result.body = buf
         done()
       })
