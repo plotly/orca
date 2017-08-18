@@ -1,6 +1,7 @@
 const tap = require('tap')
-const _module = require('../../src/component/plotly-graph')
 
+const _module = require('../../src/component/plotly-graph')
+const { paths } = require('../common')
 // TODO
 // + figure out best way to test `render` in isolation (maybe jsdom?)
 // + maybe using https://github.com/electron/spectron#webcontents ??
@@ -50,6 +51,13 @@ tap.test('inject:', t => {
     const out = fn({plotlyJS: 'http://dummy.url'})
 
     t.same(out, ['<script src="http://dummy.url"></script>'])
+    t.end()
+  })
+
+  t.test('should accept path to plotly.js bundle', t => {
+    const out = fn({plotlyJS: paths.readme})
+
+    t.match(out[0], /README.md/)
     t.end()
   })
 
