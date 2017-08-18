@@ -1,0 +1,15 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: imageserver
+spec:
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: imageserver
+  # Set this to 3x "min-nodes":
+  minReplicas: 3
+  # Set this to 3x "max-nodes":
+  maxReplicas: 9
+  # This should be raised to 80 for production:
+  targetCPUUtilizationPercentage: 50

@@ -1,0 +1,34 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: imageserver
+  labels:
+    app: imageserver
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: imageserver
+        tier: frontend
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                    - imageserver
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: imageserver-app
+        image: gcr.io/jody-imageserver-test/imageserver
+        # This setting makes nodes pull the docker image every time before
+        # starting the pod. This is useful when debugging, but should be turned
+        # off in production.
+        imagePullPolicy: Always
+        ports:
+        - name: http-server
+          containerPort: 9091
