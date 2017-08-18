@@ -1,5 +1,6 @@
 const coerceComponent = require('../../util/coerce-component')
 const isPositiveNumeric = require('../../util/is-positive-numeric')
+const cst = require('./constants')
 
 /** Coerce server options
  *
@@ -16,6 +17,10 @@ function coerceOpts (_opts = {}) {
   } else {
     throw new Error('invalid port number')
   }
+
+  opts.maxNumberOfWindows = isPositiveNumeric(_opts.maxNumberOfWindows)
+    ? Number(_opts.maxNumberOfWindows)
+    : cst.dflt.maxNumberOfWindows
 
   opts.debug = !!_opts.debug
   opts._browserWindowOpts = {}

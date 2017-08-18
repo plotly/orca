@@ -18,7 +18,7 @@ const STATUS_MSG = cst.statusMsg
  *  - _componentLookup
  *    - _win
  */
-function createServer (app, ipcMain, opts) {
+function createServer (app, BrowserWindow, ipcMain, opts) {
   let pending = 0
 
   const server = http.createServer((req, res) => {
@@ -69,6 +69,10 @@ function createServer (app, ipcMain, opts) {
 
     if (!comp._win) {
       return errorReply(504)
+    }
+
+    if (BrowserWindow.getAllWindows().length > opts.maxNumberOfWindows) {
+      return errorReply(402)
     }
 
     const compOpts = comp.options

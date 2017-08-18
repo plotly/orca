@@ -24,7 +24,7 @@ function createApp (_opts) {
 
   const opts = coerceOpts(_opts)
   const components = opts.component
-  const server = createServer(app, ipcMain, opts)
+  const server = createServer(app, BrowserWindow, ipcMain, opts)
 
   let timer = createTimer()
   let numberOfWindowstYetToBeLoaded = components.length

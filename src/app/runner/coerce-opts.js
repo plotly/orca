@@ -19,7 +19,7 @@ function coerceOpts (_opts = {}) {
 
   opts.parallelLimit = isPositiveNumeric(_opts.parallelLimit)
     ? Number(_opts.parallelLimit)
-    : cst.parallelLimitDflt
+    : cst.dflt.parallelLimit
 
   const _comp = Array.isArray(_opts.component) ? _opts.component[0] : _opts.component
   const comp = coerceComponent(_comp, opts.debug)

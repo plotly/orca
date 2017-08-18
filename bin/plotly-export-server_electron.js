@@ -50,6 +50,7 @@ const plotlyJsOpts = {
 
 const opts = {
   port: argv.port,
+  maxNumberOfWindows: argv.maxNumberOfWindows,
   debug: argv.debug,
   component: [{
     name: 'plotly-graph',
