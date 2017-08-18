@@ -23,9 +23,7 @@ const PATH_TO_INIT_RENDERERS = path.join(__dirname, 'init-renderers.js')
  *    - destroy {function}
  */
 function createIndex (comp, opts, cb) {
-  opts = opts || {}
-
-  const debug = opts.debug
+  const debug = (opts || {}).debug
   const uid = uuid()
   const pathToIndex = path.join(PATH_TO_BUILD, `index-${uid}.html`)
 
