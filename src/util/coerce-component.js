@@ -14,9 +14,7 @@ const NOOP = function () {}
  * @return {object or null} :
  *  full component option object or null (if component is invalid)
  */
-function coerceComponent (_comp, opts) {
-  opts = opts || {}
-
+function coerceComponent (_comp, opts = {}) {
   const debug = opts.debug
   const comp = {}
 

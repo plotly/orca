@@ -8,9 +8,7 @@ const isPositiveNumeric = require('../../util/is-positive-numeric')
  *  - _browserWindowOpts {object}
  *  - _componentLookup {object}
  */
-function coerceOpts (_opts) {
-  _opts = _opts || {}
-
+function coerceOpts (_opts = {}) {
   const opts = {}
 
   if (isPositiveNumeric(_opts.port)) {
