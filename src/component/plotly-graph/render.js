@@ -44,7 +44,7 @@ function render (info, opts, sendToMain) {
   // - does webp (via batik) support transparency now?
 
   const imgOpts = {
-    format: format,
+    format: (format === 'pdf' || format === 'eps') ? 'svg' : format,
     width: info.scale * info.width,
     height: info.scale * info.height,
     // return image data w/o the leading 'data:image' spec
@@ -70,14 +70,12 @@ function render (info, opts, sendToMain) {
       .then((imgData) => {
         Plotly.purge(gd)
 
-        switch (format) {
+        switch (imgOpts.format) {
           case 'png':
           case 'jpeg':
           case 'webp':
             return imgData.replace(cst.imgPrefix.base64, '')
           case 'svg':
-          case 'pdf':
-          case 'eps':
             return decodeURIComponent(imgData.replace(cst.imgPrefix.svg, ''))
         }
       })

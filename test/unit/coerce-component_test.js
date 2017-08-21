@@ -147,7 +147,7 @@ tap.test('should set *inject* in noop if not set', t => {
   })
 })
 
-tap.only('should log info on debug', t => {
+tap.test('should log info on debug', t => {
   t.beforeEach((done) => {
     sinon.stub(console, 'warn')
     done()

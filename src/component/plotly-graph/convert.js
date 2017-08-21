@@ -1,3 +1,4 @@
+const Batik = require('../../util/batik')
 const cst = require('./constants')
 
 /** plotly-graph convert
@@ -6,7 +7,7 @@ const cst = require('./constants')
  *  - format {string} (from parse)
  *  - imgData {string} (from render)
  * @param {object} opts : component options
- *  - pathToBatik (maybe?)
+ *  - batik {string or instance of Batik}
  * @param {function} reply
  *  - errorCode {number or null}
  *  - result {object}
@@ -18,10 +19,17 @@ function convert (info, opts, reply) {
   const imgData = info.imgData
   const format = info.format
 
-  let errorCode = null
-
   const result = {
     head: {'Content-Type': cst.contentFormat[format]}
+  }
+
+  let errorCode = null
+
+  const done = () => {
+    if (errorCode) {
+      result.msg = cst.statusMsg[errorCode]
+    }
+    reply(errorCode, result)
   }
 
   // TODO
@@ -33,16 +41,38 @@ function convert (info, opts, reply) {
     case 'png':
     case 'jpeg':
     case 'webp':
-      result.bodyLength = result.head['Content-Length'] = imgData.length
-      result.body = Buffer.from(imgData, 'base64')
-      break
+      const body = result.body = Buffer.from(imgData, 'base64')
+      result.bodyLength = result.head['Content-Length'] = body.length
+      return done()
     case 'svg':
       // see http://stackoverflow.com/a/12205668/800548
-      result.bodyLength = encodeURI(imgData).split(/%..|./).length - 1
       result.body = imgData
-  }
+      result.bodyLength = encodeURI(imgData).split(/%..|./).length - 1
+      return done()
+    case 'pdf':
+    case 'eps':
+      if (!opts.batik) {
+        errorCode = 530
+        result.error = new Error('path to batik-rasterizer jar not given')
+        return done()
+      }
 
-  reply(errorCode, result)
+      const batik = opts.batik instanceof Batik
+        ? opts.batik
+        : new Batik(opts.batik)
+
+      batik.convertSVG(info.imgData, {format: format}, (err, buf) => {
+        if (err) {
+          errorCode = 530
+          result.error = err
+          return done()
+        }
+
+        result.bodyLength = result.head['Content-Length'] = buf.length
+        result.body = buf
+        done()
+      })
+  }
 }
 
 module.exports = convert

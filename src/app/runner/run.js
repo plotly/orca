@@ -34,7 +34,8 @@ function run (app, win, ipcMain, opts) {
     //   which accumulates parse, render, convert results
     //   and is emitted on 'export-error' and 'after-export'
     const fullInfo = {
-      itemIndex: i
+      itemIndex: i,
+      id: id
     }
 
     const errorOut = (code) => {

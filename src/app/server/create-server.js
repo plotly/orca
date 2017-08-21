@@ -30,7 +30,8 @@ function createServer (app, ipcMain, opts) {
     //   which accumulates parse, render, convert results
     //   and is emitted on 'export-error' and 'after-export'
     const fullInfo = {
-      port: opts.port
+      port: opts.port,
+      id: id
     }
 
     const simpleReply = (code, msg) => {

@@ -33,12 +33,14 @@
     "is-url": "^1.2.2",
     "minimist": "^1.2.0",
     "request": "^2.81.0",
+    "run-parallel": "^1.1.6",
     "run-parallel-limit": "^1.0.3",
     "semver": "^5.4.1",
     "string-to-stream": "^1.1.0",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
+    "image-size": "^0.6.1",
     "sinon": "^3.2.0",
     "snazzy": "^7.0.0",
     "spectron": "^3.7.2",
