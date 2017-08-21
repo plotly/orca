@@ -1,9 +1,8 @@
 const tap = require('tap')
-const _module = require('../../src/component/plotly-graph')
+const sinon = require('sinon')
 
-// TODO
-// + figure out best way to test `render` in isolation (maybe jsdom?)
-// + maybe using https://github.com/electron/spectron#webcontents ??
+const _module = require('../../src/component/plotly-graph')
+const { paths } = require('../common')
 
 tap.test('inject:', t => {
   const fn = _module.inject
@@ -50,6 +49,13 @@ tap.test('inject:', t => {
     const out = fn({plotlyJS: 'http://dummy.url'})
 
     t.same(out, ['<script src="http://dummy.url"></script>'])
+    t.end()
+  })
+
+  t.test('should accept path to plotly.js bundle', t => {
+    const out = fn({plotlyJS: paths.readme})
+
+    t.match(out[0], /README.md/)
     t.end()
   })
 
@@ -335,6 +341,156 @@ tap.test('convert:', t => {
       t.equal(result.head['Content-Type'], 'image/svg+xml')
       t.equal(result.body, '<svg></svg>')
       t.equal(result.bodyLength, 11)
+      t.end()
+    })
+  })
+
+  t.test('should convert image data to pdf', t => {
+    const info = {imgData: '<svg></svg>', format: 'pdf'}
+    const opts = {batik: paths.batik}
+
+    fn(info, opts, (errorCode, result) => {
+      t.equal(errorCode, null)
+      t.equal(result.head['Content-Type'], 'application/pdf')
+      t.type(result.body, Buffer)
+      t.end()
+    })
+  })
+
+  t.end()
+})
+
+tap.test('render:', t => {
+  const fn = (info, opts, cb) => {
+    const baseInfo = {
+      format: 'png',
+      figure: { data: [{ y: [1, 2, 1] }] }
+    }
+    _module.render(Object.assign({}, baseInfo, info), opts, cb)
+  }
+
+  let Plotly
+  let document
+
+  t.beforeEach((done) => {
+    global.Plotly = Plotly = {}
+    global.document = document = {}
+    done()
+  })
+
+  t.afterEach((done) => {
+    delete global.Plotly
+    delete global.document
+    done()
+  })
+
+  const mock130 = () => {
+    Plotly.version = '1.30.0'
+    Plotly.toImage = sinon.stub().returns(new Promise(resolve => {
+      resolve('image data')
+    }))
+  }
+
+  const mock110 = () => {
+    Plotly.version = '1.11.0'
+    Plotly.toImage = sinon.stub().returns(new Promise(resolve => {
+      resolve('image data')
+    }))
+    Plotly.newPlot = sinon.stub().returns(new Promise(resolve => {
+      resolve({})
+    }))
+    Plotly.purge = sinon.stub()
+    document.createElement = sinon.stub()
+  }
+
+  t.test('v1.30.0 and up', t => {
+    mock130()
+
+    fn({}, {}, (errorCode, result) => {
+      t.equal(result.imgData, 'image data')
+      t.ok(Plotly.toImage.calledOnce)
+      t.end()
+    })
+  })
+
+  t.test('v1.11.0 <= versions < v1.30.0', t => {
+    t.test('(format png)', t => {
+      mock110()
+
+      fn({}, {}, (errorCode, result) => {
+        t.equal(result.imgData, 'image data')
+        t.ok(document.createElement.calledOnce)
+        t.ok(Plotly.newPlot.calledOnce)
+        t.ok(Plotly.toImage.calledOnce)
+        t.ok(Plotly.purge.calledOnce)
+        t.end()
+      })
+    })
+
+    t.test('(format svg)', t => {
+      mock110()
+      global.decodeURIComponent = sinon.stub().returns('decoded image data')
+
+      fn({format: 'svg'}, {}, (errorCode, result) => {
+        t.equal(result.imgData, 'decoded image data')
+        t.ok(document.createElement.calledOnce)
+        t.ok(Plotly.newPlot.calledOnce)
+        t.ok(Plotly.toImage.calledOnce)
+        t.ok(Plotly.purge.calledOnce)
+        t.ok(global.decodeURIComponent)
+
+        delete global.decodeURIComponent
+        t.end()
+      })
+    })
+
+    t.end()
+  })
+
+  t.test('other versions should return error code', t => {
+    Plotly.version = '1.1.0'
+
+    fn({}, {}, (errorCode) => {
+      t.equal(errorCode, 526)
+      t.end()
+    })
+  })
+
+  t.test('should return error code on plotly.js errors', t => {
+    Plotly.version = '1.30.0'
+    Plotly.toImage = sinon.stub().returns(new Promise((resolve, reject) => {
+      reject(new Error('oops'))
+    }))
+
+    fn({}, {}, (errorCode) => {
+      t.equal(errorCode, 525)
+      t.end()
+    })
+  })
+
+  t.test('should generate svg for format pdf and eps', t => {
+    const formats = ['pdf', 'eps']
+
+    formats.forEach(f => {
+      t.test(`(format ${f})`, t => {
+        mock130()
+        fn({format: f}, {}, () => {
+          t.ok(Plotly.toImage.calledOnce)
+          t.equal(Plotly.toImage.args[0][1].format, 'svg')
+          t.end()
+        })
+      })
+    })
+
+    t.end()
+  })
+
+  t.test('should set setBackground to opaque for jpeg format', t => {
+    mock130()
+
+    fn({format: 'jpeg'}, {}, () => {
+      t.ok(Plotly.toImage.calledOnce)
+      t.equal(Plotly.toImage.args[0][1].setBackground, 'opaque')
       t.end()
     })
   })

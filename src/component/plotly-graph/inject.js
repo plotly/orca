@@ -13,9 +13,7 @@ const cst = require('./constants')
  *  - topojson
  * @return {array}
  */
-function inject (opts) {
-  opts = opts || {}
-
+function inject (opts = {}) {
   const plotlyJS = opts.plotlyJS
   const mathjax = opts.mathjax
   const topojson = opts.topojson

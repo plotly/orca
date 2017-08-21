@@ -6,13 +6,12 @@ const childProcess = require('child_process')
 const imageSize = require('image-size')
 const Batik = require('../../src/util/batik')
 
-const PATH_TO_BUILD = path.join(__dirname, '..', '..', 'build')
-const PATH_TO_JAR = path.join(PATH_TO_BUILD, 'batik-1.7', 'batik-rasterizer.jar')
-const SVG_MOCK = fs.readFileSync(path.join(PATH_TO_BUILD, '20.svg'))
+const { paths } = require('../common')
+const SVG_MOCK = fs.readFileSync(path.join(paths.build, '20.svg'))
 
 tap.test('Batik constructor:', t => {
   t.test('', t => {
-    const batik = new Batik(PATH_TO_JAR)
+    const batik = new Batik(paths.batik)
     t.type(batik.convertSVG, 'function')
     t.end()
   })
@@ -22,8 +21,8 @@ tap.test('Batik constructor:', t => {
 
 tap.test('batik.convertSVG', t => {
   t.test('should convert svg to pdf', t => {
-    const batik = new Batik(PATH_TO_JAR)
-    const outPath = path.join(PATH_TO_BUILD, 'batik-test.pdf')
+    const batik = new Batik(paths.batik)
+    const outPath = path.join(paths.build, 'batik-test.pdf')
 
     batik.convertSVG(SVG_MOCK, {format: 'pdf'}, (err, result) => {
       if (err) t.fail(err)
@@ -41,8 +40,8 @@ tap.test('batik.convertSVG', t => {
   })
 
   t.test('should convert svg to eps', t => {
-    const batik = new Batik(PATH_TO_JAR)
-    const outPath = path.join(PATH_TO_BUILD, 'batik-test.eps')
+    const batik = new Batik(paths.batik)
+    const outPath = path.join(paths.build, 'batik-test.eps')
 
     batik.convertSVG(SVG_MOCK, {format: 'eps'}, (err, result) => {
       if (err) t.fail(err)
@@ -60,8 +59,8 @@ tap.test('batik.convertSVG', t => {
   })
 
   t.test('should convert svg to png', t => {
-    const batik = new Batik(PATH_TO_JAR)
-    const outPath = path.join(PATH_TO_BUILD, 'batik-test.png')
+    const batik = new Batik(paths.batik)
+    const outPath = path.join(paths.build, 'batik-test.png')
 
     batik.convertSVG(SVG_MOCK, {format: 'png'}, (err, result) => {
       if (err) t.fail(err)
@@ -79,8 +78,8 @@ tap.test('batik.convertSVG', t => {
   })
 
   t.test('should rescale svg into png', t => {
-    const batik = new Batik(PATH_TO_JAR)
-    const outPath = path.join(PATH_TO_BUILD, 'batik-test.png')
+    const batik = new Batik(paths.batik)
+    const outPath = path.join(paths.build, 'batik-test.png')
 
     batik.convertSVG(SVG_MOCK, {format: 'png', width: 200, height: 200}, (err, result) => {
       if (err) t.fail(err)
@@ -98,7 +97,7 @@ tap.test('batik.convertSVG', t => {
   })
 
   t.test('should error out when batik command fails', t => {
-    const batik = new Batik(PATH_TO_JAR)
+    const batik = new Batik(paths.batik)
     batik.batikBase = 'not gonna work'
 
     batik.convertSVG(SVG_MOCK, {}, (err) => {
@@ -108,7 +107,7 @@ tap.test('batik.convertSVG', t => {
   })
 
   t.test('should error out when pdftops command fails', t => {
-    const batik = new Batik(PATH_TO_JAR)
+    const batik = new Batik(paths.batik)
     batik.pdftopsBase = 'not gonna work'
 
     batik.convertSVG(SVG_MOCK, {format: 'eps'}, (err) => {
@@ -120,9 +119,9 @@ tap.test('batik.convertSVG', t => {
   t.test('should error out when something goes wrong when initializing files', t => {
     sinon.stub(fs, 'writeFile').yields(true)
 
-    const batik = new Batik(PATH_TO_JAR)
-    const outPath = path.join(PATH_TO_BUILD, 'tmp-out')
-    const svgPath = path.join(PATH_TO_BUILD, 'tmp-svg')
+    const batik = new Batik(paths.batik)
+    const outPath = path.join(paths.build, 'tmp-out')
+    const svgPath = path.join(paths.build, 'tmp-svg')
 
     batik.convertSVG(SVG_MOCK, {id: 'tmp'}, (err) => {
       t.throws(() => { throw err }, /problem while initializing temporary files/)
@@ -137,9 +136,9 @@ tap.test('batik.convertSVG', t => {
   t.test('should error out when something goes wrong when reading output files', t => {
     sinon.stub(fs, 'readFile').yields(true)
 
-    const batik = new Batik(PATH_TO_JAR)
-    const outPath = path.join(PATH_TO_BUILD, 'tmp-out')
-    const svgPath = path.join(PATH_TO_BUILD, 'tmp-svg')
+    const batik = new Batik(paths.batik)
+    const outPath = path.join(paths.build, 'tmp-out')
+    const svgPath = path.join(paths.build, 'tmp-svg')
 
     batik.convertSVG(SVG_MOCK, {id: 'tmp'}, (err) => {
       t.throws(() => { throw err }, /problem while reading output file/)
@@ -154,9 +153,9 @@ tap.test('batik.convertSVG', t => {
   t.test('should error out when something goes wrong when removing temporary files', t => {
     sinon.stub(fs, 'unlink').yields(true)
 
-    const batik = new Batik(PATH_TO_JAR)
-    const outPath = path.join(PATH_TO_BUILD, 'tmp-out')
-    const svgPath = path.join(PATH_TO_BUILD, 'tmp-svg')
+    const batik = new Batik(paths.batik)
+    const outPath = path.join(paths.build, 'tmp-out')
+    const svgPath = path.join(paths.build, 'tmp-svg')
 
     batik.convertSVG(SVG_MOCK, {id: 'tmp'}, (err) => {
       t.throws(() => { throw err }, /problem while removing temporary files/)
@@ -178,7 +177,7 @@ tap.test('batik.convertSVG', t => {
 
 tap.test('doesBatikJarExist:', t => {
   t.test('should return true when it does exists', t => {
-    const batik = new Batik(PATH_TO_BUILD)
+    const batik = new Batik(paths.batik)
     t.ok(batik.doesBatikJarExist())
     t.end()
   })

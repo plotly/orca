@@ -15,6 +15,11 @@ function render (info, opts, sendToMain) {
   // Cannot require 'remote' in the module scope
   // as this file gets required in main process first
   // during the coerce-component step
+  //
+  // TODO
+  // - maybe require this in <html> from create-index,
+  //   so that we don't have to worry about requiring it
+  //   inside the function body AND to make mockable for testing
   const {BrowserWindow} = require('electron').remote
 
   let win = new BrowserWindow({

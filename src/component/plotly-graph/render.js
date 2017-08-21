@@ -40,7 +40,6 @@ function render (info, opts, sendToMain) {
   // - figure out if we still need this:
   //   https://github.com/plotly/streambed/blob/7311d4386d80d45999797e87992f43fb6ecf48a1/image_server/server_app/main.js#L224-L229
   // - increase pixel ratio images (scale up here, scale down in convert) ??
-  // - handle thumbnails here? or in a separate component?
   // - does webp (via batik) support transparency now?
 
   const imgOpts = {

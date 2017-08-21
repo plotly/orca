@@ -15,11 +15,10 @@ function getBody (item, cb) {
     fs.readFile(item + '.json', 'utf-8', cb)
   } else if (isUrl(item)) {
     request.get(item, (err, res, body) => {
-      if (res.statusCode === 200) {
-        cb(null, body)
-      } else {
-        cb(err)
+      if (err) {
+        return cb(err)
       }
+      cb(null, body)
     })
   } else {
     cb(null, item)

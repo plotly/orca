@@ -1,6 +1,8 @@
 const glob = require('glob')
+const isPlainObj = require('is-plain-obj')
 const coerceComponent = require('../../util/coerce-component')
 const isPositiveNumeric = require('../../util/is-positive-numeric')
+const isNonEmptyString = require('../../util/is-non-empty-string')
 const cst = require('./constants')
 
 /** Coerce runner options
@@ -9,7 +11,7 @@ const cst = require('./constants')
  * @return {object} coerce options including:
  *  - _browserWindowOpts {object}
  */
-function coerceOpts (_opts) {
+function coerceOpts (_opts = {}) {
   const opts = {}
 
   opts.debug = !!_opts.debug
@@ -17,7 +19,7 @@ function coerceOpts (_opts) {
 
   opts.parallelLimit = isPositiveNumeric(_opts.parallelLimit)
     ? Number(_opts.parallelLimit)
-    : cst.parallelLimitDflt
+    : cst.dflt.parallelLimit
 
   const _comp = Array.isArray(_opts.component) ? _opts.component[0] : _opts.component
   const comp = coerceComponent(_comp, opts.debug)
@@ -32,12 +34,16 @@ function coerceOpts (_opts) {
   let input = []
 
   _input.forEach((item) => {
-    const matches = glob.sync(item)
+    if (isNonEmptyString(item)) {
+      const matches = glob.sync(item)
 
-    if (matches.length === 0) {
+      if (matches.length === 0) {
+        input.push(item)
+      } else {
+        input = input.concat(matches)
+      }
+    } else if (isPlainObj(item)) {
       input.push(item)
-    } else {
-      input = input.concat(matches)
     }
   })
 

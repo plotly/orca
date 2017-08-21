@@ -74,21 +74,27 @@ const EXPORTER_MINIMIST_CONFIG = {
 
 const SERVER_MINIMIST_CONFIG = {
   'boolean': ['debug', 'help', 'version', 'quiet'],
-  'string': [].concat('port', PLOTLYJS_STRING),
+  'string': [].concat(
+    ['port', 'window-max-number'],
+    PLOTLYJS_STRING
+  ),
 
   'alias': Object.assign({
     'port': ['p'],
     'help': ['h'],
     'version': ['v'],
-    'keep-alive': ['keepAlive']
+    'keep-alive': ['keepAlive'],
+    'window-max-number': ['windowMaxNumber', 'maxNumberOfWindows']
   }, PLOTLYJS_ALIAS),
 
   'default': Object.assign({
-    'port': 9091,
+    'port': process.env.PLOTLY_EXPORT_SERVER_PORT || 9091,
     'debug': false,
     'help': false,
     'version': false,
-    'quiet': false
+    'quiet': false,
+    'keep-alive': false,
+    'window-max-number': ''
   }, PLOTLYJS_DEFAULT)
 }
 
@@ -194,8 +200,12 @@ exports.getServerHelpMsg = function () {
   --quite
     Suppress all logging info.
 
-  --keep-alive
+  --keep-alive ${formatAliases('keep-alive')}
     Turn on keep-alive mode, where server app is restart on uncaught exceptions.
+
+  --window-max-number ${formatAliases('window-max-number')}
+    Set the maximum number of opened windows allowed.
+    Request sent when max number of window is reached will return an error code.
 
   --plotly ${formatAliases('plotly')}
     ${DESCRIPTION.plotly}
