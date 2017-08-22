@@ -1,8 +1,10 @@
 const tap = require('tap')
 const sinon = require('sinon')
+const EventEmitter = require('events')
 
 const _module = require('../../src/component/plotly-graph')
-const { paths } = require('../common')
+const remote = require('../../src/util/remote')
+const { paths, createMockWindow } = require('../common')
 
 tap.test('inject:', t => {
   const fn = _module.inject
@@ -318,13 +320,13 @@ tap.test('convert:', t => {
   const fn = _module.convert
 
   t.test('should convert image data to buffer', t => {
-    const formats = ['png', 'webp', 'jpeg']
+    const formats = ['png', 'webp', 'jpeg', 'pdf']
 
     formats.forEach(f => {
       t.test(`for format ${f}`, t => {
         fn({imgData: 'asdfDFDASFsafadsf', format: f}, {}, (errorCode, result) => {
           t.equal(errorCode, null)
-          t.equal(result.head['Content-Type'], `image/${f}`)
+          t.match(result.head['Content-Type'], f)
           t.type(result.body, Buffer)
           t.type(result.bodyLength, 'number')
           t.end()
@@ -345,7 +347,7 @@ tap.test('convert:', t => {
     })
   })
 
-  t.test('should convert image data to pdf', t => {
+  t.test('should convert image data to pdf when *batik* option is set', t => {
     const info = {imgData: '<svg></svg>', format: 'pdf'}
     const opts = {batik: paths.batik}
 
@@ -355,6 +357,22 @@ tap.test('convert:', t => {
       t.type(result.body, Buffer)
       t.end()
     })
+  })
+
+  t.test('should pass batik errors', t => {
+    const info = {imgData: '<svg></svg>', format: 'pdf'}
+    const opts = {batik: 'not-gonna-work'}
+
+    fn(info, opts, (errorCode, result) => {
+      t.equal(errorCode, 530)
+      t.match(result.msg, 'image conversion error')
+      t.end()
+    })
+  })
+
+  t.test('should image data to eps', t => {
+    // TODO
+    t.end()
   })
 
   t.end()
@@ -371,51 +389,112 @@ tap.test('render:', t => {
 
   let Plotly
   let document
+  let window
 
   t.beforeEach((done) => {
     global.Plotly = Plotly = {}
     global.document = document = {}
+    global.window = window = {}
     done()
   })
 
   t.afterEach((done) => {
     delete global.Plotly
     delete global.document
+    delete global.window
     done()
   })
 
   const mock130 = () => {
     Plotly.version = '1.30.0'
-    Plotly.toImage = sinon.stub().returns(new Promise(resolve => {
-      resolve('image data')
-    }))
+    Plotly.toImage = sinon.stub().returns(
+      new Promise(resolve => resolve('image data'))
+    )
   }
 
   const mock110 = () => {
     Plotly.version = '1.11.0'
-    Plotly.toImage = sinon.stub().returns(new Promise(resolve => {
-      resolve('image data')
-    }))
-    Plotly.newPlot = sinon.stub().returns(new Promise(resolve => {
-      resolve({})
-    }))
+    Plotly.toImage = sinon.stub().resolves(
+      new Promise(resolve => resolve('image data'))
+    )
+    Plotly.newPlot = sinon.stub().resolves(
+      new Promise(resolve => resolve({}))
+    )
     Plotly.purge = sinon.stub()
+  }
+
+  const mockBrowser = () => {
+    document.body = {
+      appendChild: sinon.stub(),
+      removeChild: sinon.stub()
+    }
     document.createElement = sinon.stub()
+    window.getSelection = sinon.stub().returns({selectAllChildren: sinon.stub()})
+    window.decodeURIComponent = sinon.stub().returns('decoded image data')
+  }
+
+  const mockElements = () => {
+    const div = {appendChild: sinon.stub()}
+    document.createElement.withArgs('div').returns(div)
+
+    const img = new EventEmitter()
+    document.createElement.withArgs('img').returns(img)
+    img.addEventListener = img.addListener
+
+    return {
+      div: div,
+      img: img
+    }
+  }
+
+  const mockWindow = () => {
+    const win = createMockWindow()
+    sinon.stub(remote, 'getCurrentWindow').returns(win)
+
+    return {
+      win: win,
+      restore: () => remote.getCurrentWindow.restore()
+    }
   }
 
   t.test('v1.30.0 and up', t => {
-    mock130()
+    t.test('(format png)', t => {
+      mock130()
 
-    fn({}, {}, (errorCode, result) => {
-      t.equal(result.imgData, 'image data')
-      t.ok(Plotly.toImage.calledOnce)
-      t.end()
+      fn({}, {}, (errorCode, result) => {
+        t.equal(result.imgData, 'image data')
+        t.ok(Plotly.toImage.calledOnce)
+        t.end()
+      })
     })
+
+    t.test('(format pdf)', t => {
+      mock130()
+      mockBrowser()
+      const {img} = mockElements()
+      const {win, restore} = mockWindow()
+      win.webContents.printToPDF.yields(null, 'pdf data')
+
+      fn({format: 'pdf'}, {}, (errorCode, result) => {
+        t.equal(errorCode, null)
+        t.equal(result.imgData, 'pdf data')
+        t.equal(document.createElement.callCount, 2, 'createElement calls')
+        t.equal(document.body.appendChild.callCount, 1, 'body.appendChild calls')
+        t.equal(document.body.removeChild.callCount, 1, 'body.removeChild calls')
+
+        restore()
+        t.end()
+      })
+      setTimeout(() => img.emit('load'))
+    })
+
+    t.end()
   })
 
   t.test('v1.11.0 <= versions < v1.30.0', t => {
     t.test('(format png)', t => {
       mock110()
+      mockBrowser()
 
       fn({}, {}, (errorCode, result) => {
         t.equal(result.imgData, 'image data')
@@ -429,7 +508,7 @@ tap.test('render:', t => {
 
     t.test('(format svg)', t => {
       mock110()
-      global.decodeURIComponent = sinon.stub().returns('decoded image data')
+      mockBrowser()
 
       fn({format: 'svg'}, {}, (errorCode, result) => {
         t.equal(result.imgData, 'decoded image data')
@@ -437,11 +516,45 @@ tap.test('render:', t => {
         t.ok(Plotly.newPlot.calledOnce)
         t.ok(Plotly.toImage.calledOnce)
         t.ok(Plotly.purge.calledOnce)
-        t.ok(global.decodeURIComponent)
-
-        delete global.decodeURIComponent
         t.end()
       })
+    })
+
+    t.test('(format pdf)', t => {
+      mock110()
+      mockBrowser()
+      const {img} = mockElements()
+      const {win, restore} = mockWindow()
+      win.webContents.printToPDF.yields(null, 'pdf data')
+
+      fn({format: 'pdf'}, {}, (errorCode, result) => {
+        t.equal(errorCode, null)
+        t.equal(result.imgData, 'pdf data')
+        t.equal(document.createElement.callCount, 3, 'createElement calls')
+        t.equal(document.body.appendChild.callCount, 1, 'body.appendChild calls')
+        t.equal(document.body.removeChild.callCount, 1, 'body.removeChild calls')
+
+        restore()
+        t.end()
+      })
+      setTimeout(() => img.emit('load'))
+    })
+
+    t.test('(format pdf with batik support)', t => {
+      mock110()
+      mockBrowser()
+      const {img} = mockElements()
+      const {win, restore} = mockWindow()
+      win.webContents.printToPDF.yields(null, 'pdf data')
+
+      fn({format: 'pdf'}, {batik: 'path-to-batik'}, (errorCode, result) => {
+        t.equal(errorCode, null)
+        t.equal(result.imgData, 'decoded image data')
+
+        restore()
+        t.end()
+      })
+      setTimeout(() => img.emit('load'))
     })
 
     t.end()
@@ -466,6 +579,41 @@ tap.test('render:', t => {
       t.equal(errorCode, 525)
       t.end()
     })
+  })
+
+  t.test('should return error code on printToPDF errors', t => {
+    mock130()
+    mockBrowser()
+    const {img} = mockElements()
+    const {win, restore} = mockWindow()
+    win.webContents.printToPDF.yields(new Error('oops'))
+
+    fn({format: 'pdf'}, {}, (errorCode, result) => {
+      t.equal(errorCode, 525)
+      t.match(result.error, /electron print to PDF error/, 'error')
+      t.ok(document.body.removeChild.calledOnce)
+
+      restore()
+      t.end()
+    })
+    setTimeout(() => img.emit('load'))
+  })
+
+  t.test('should return error code on createElement(\'img\') errors', t => {
+    mock130()
+    mockBrowser()
+    const {img} = mockElements()
+    const {restore} = mockWindow()
+
+    fn({format: 'pdf'}, {}, (errorCode, result) => {
+      t.equal(errorCode, 525)
+      t.match(result.error, /image failed to load/, 'error')
+      t.ok(document.body.removeChild.calledOnce)
+
+      restore()
+      t.end()
+    })
+    setTimeout(() => img.emit('error'))
   })
 
   t.test('should generate svg for format pdf and eps', t => {

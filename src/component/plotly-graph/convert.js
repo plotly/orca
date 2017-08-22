@@ -32,46 +32,58 @@ function convert (info, opts, reply) {
     reply(errorCode, result)
   }
 
+  const toBuffer = () => {
+    const body = result.body = Buffer.from(imgData, 'base64')
+    result.bodyLength = result.head['Content-Length'] = body.length
+    return done()
+  }
+
+  const convertSVG = () => {
+    const batik = opts.batik instanceof Batik
+      ? opts.batik
+      : new Batik(opts.batik)
+
+    batik.convertSVG(imgData, {format: format}, (err, buf) => {
+      if (err) {
+        errorCode = 530
+        result.error = err
+        return done()
+      }
+
+      result.bodyLength = result.head['Content-Length'] = buf.length
+      result.body = buf
+      return done()
+    })
+  }
+
   // TODO
-  // - should pdf and eps format be part of a streambed-only component?
-  // - should we use batik for that or something?
+  const pdf2eps = () => {}
+
+  // TODO
   // - is the 'encoded' option still relevant?
 
   switch (format) {
     case 'png':
     case 'jpeg':
     case 'webp':
-      const body = result.body = Buffer.from(imgData, 'base64')
-      result.bodyLength = result.head['Content-Length'] = body.length
-      return done()
+      return toBuffer()
     case 'svg':
       // see http://stackoverflow.com/a/12205668/800548
       result.body = imgData
       result.bodyLength = encodeURI(imgData).split(/%..|./).length - 1
       return done()
     case 'pdf':
-    case 'eps':
-      if (!opts.batik) {
-        errorCode = 530
-        result.error = new Error('path to batik-rasterizer jar not given')
-        return done()
+      if (opts.batik) {
+        return convertSVG()
+      } else {
+        return toBuffer()
       }
-
-      const batik = opts.batik instanceof Batik
-        ? opts.batik
-        : new Batik(opts.batik)
-
-      batik.convertSVG(info.imgData, {format: format}, (err, buf) => {
-        if (err) {
-          errorCode = 530
-          result.error = err
-          return done()
-        }
-
-        result.bodyLength = result.head['Content-Length'] = buf.length
-        result.body = buf
-        done()
-      })
+    case 'eps':
+      if (opts.batik) {
+        return convertSVG()
+      } else {
+        return pdf2eps()
+      }
   }
 }
 
