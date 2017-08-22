@@ -1,4 +1,6 @@
 const path = require('path')
+const EventEmitter = require('events')
+const sinon = require('sinon')
 
 const paths = {}
 const urls = {}
@@ -13,7 +15,30 @@ paths.glob = path.join(paths.root, 'src', 'util', '*')
 urls.dummy = 'http://dummy.url'
 urls.plotlyGraphMock = 'https://raw.githubusercontent.com/plotly/plotly.js/master/test/image/mocks/20.json'
 
+function createMockWindow (opts = {}) {
+  const win = new EventEmitter()
+  const webContents = new EventEmitter()
+
+  webContents.printToPDF = sinon.stub()
+
+  Object.assign(win, opts, {
+    webContents: webContents,
+    loadURL: () => { webContents.emit('did-finish-load') },
+    close: sinon.stub()
+  })
+
+  return win
+}
+
+function stubProp (obj, key, newVal) {
+  const oldVal = obj[key]
+  obj[key] = newVal
+  return () => { obj[key] = oldVal }
+}
+
 module.exports = {
   paths: paths,
-  urls: urls
+  urls: urls,
+  createMockWindow: createMockWindow,
+  stubProp: stubProp
 }

@@ -1,4 +1,5 @@
-const IFRAME_LOAD_TIMEOUT = 5000
+const remote = require('../../util/remote')
+const cst = require('./constants')
 
 /**
  * @param {object} info : info object
@@ -12,34 +13,27 @@ const IFRAME_LOAD_TIMEOUT = 5000
  *    - imgData
  */
 function render (info, opts, sendToMain) {
-  // Cannot require 'remote' in the module scope
-  // as this file gets required in main process first
-  // during the coerce-component step
-  //
-  // TODO
-  // - maybe require this in <html> from create-index,
-  //   so that we don't have to worry about requiring it
-  //   inside the function body AND to make mockable for testing
-  const {BrowserWindow} = require('electron').remote
-
-  let win = new BrowserWindow({
+  let win = remote.createBrowserWindow({
     width: info.width,
     height: info.height
   })
 
+  const contents = win.webContents
   const result = {}
-  let contents = win.webContents
+  let errorCode = null
 
   const done = () => {
     win.close()
+
+    if (errorCode) {
+      result.msg = cst.statusMsg[errorCode]
+    }
+    sendToMain(errorCode, result)
   }
 
   win.on('closed', () => {
     win = null
   })
-
-  // ... or plain index.html + `win.executeJavascript`
-  win.loadURL(info.url)
 
   // TODO
   // - find better solution than IFRAME_LOAD_TIMEOUT
@@ -51,17 +45,17 @@ function render (info, opts, sendToMain) {
     setTimeout(() => {
       contents.printToPDF({}, (err, imgData) => {
         if (err) {
-          result.msg = 'print to PDF error'
-          sendToMain(525, result)
+          errorCode = 525
           return done()
         }
 
         result.imgData = imgData
-        sendToMain(null, result)
-        done()
+        return done()
       })
-    }, IFRAME_LOAD_TIMEOUT)
+    }, cst.iframeLoadDelay)
   })
+
+  win.loadURL(info.url)
 }
 
 module.exports = render
