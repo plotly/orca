@@ -41,17 +41,16 @@ function render (info, opts, sendToMain) {
   // TODO
   // - figure out if we still need this:
   //   https://github.com/plotly/streambed/blob/7311d4386d80d45999797e87992f43fb6ecf48a1/image_server/server_app/main.js#L224-L229
-  // - increase pixel ratio images (scale up here, scale down in convert) ??
-  //   + scale down using https://github.com/oliver-moran/jimp ??
-  // - does webp (via batik) support transparency now?
 
   const PDF_OR_EPS = (format === 'pdf' || format === 'eps')
   const PRINT_TO_PDF = PDF_OR_EPS && !opts.batik
 
   const imgOpts = {
     format: PDF_OR_EPS ? 'svg' : format,
-    width: info.scale * info.width,
-    height: info.scale * info.height,
+    width: info.width,
+    height: info.height,
+    // works as of https://github.com/plotly/plotly.js/compare/to-image-scale
+    scale: info.scale,
     // return image data w/o the leading 'data:image' spec
     imageDataOnly: !PRINT_TO_PDF,
     // blend jpeg background color as jpeg does not support transparency
