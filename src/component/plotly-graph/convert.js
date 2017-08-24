@@ -1,4 +1,5 @@
 const Batik = require('../../util/batik')
+const Pdftops = require('../../util/pdftops')
 const cst = require('./constants')
 
 /** plotly-graph convert
@@ -24,40 +25,48 @@ function convert (info, opts, reply) {
   }
 
   let errorCode = null
+  let body
+  let bodyLength
 
   const done = () => {
     if (errorCode) {
       result.msg = cst.statusMsg[errorCode]
+    } else {
+      result.body = body
+      result.bodyLength = result.head['Content-Length'] = bodyLength
     }
     reply(errorCode, result)
   }
 
-  const toBuffer = () => {
-    const body = result.body = Buffer.from(imgData, 'base64')
-    result.bodyLength = result.head['Content-Length'] = body.length
-    return done()
-  }
-
-  const convertSVG = () => {
+  const svg2pdf = (svg, cb) => {
     const batik = opts.batik instanceof Batik
       ? opts.batik
       : new Batik(opts.batik)
 
-    batik.convertSVG(imgData, {format: format}, (err, buf) => {
+    batik.svg2pdf(svg, {id: info.id}, (err, pdf) => {
       if (err) {
         errorCode = 530
         result.error = err
         return done()
       }
-
-      result.bodyLength = result.head['Content-Length'] = buf.length
-      result.body = buf
-      return done()
+      cb(pdf)
     })
   }
 
-  // TODO
-  const pdf2eps = () => {}
+  const pdf2eps = (pdf, cb) => {
+    const pdftops = opts.pdftops instanceof Pdftops
+      ? opts.pdftops
+      : new Pdftops(opts.pdftops)
+
+    pdftops.pdf2eps(pdf, {id: info.id}, (err, eps) => {
+      if (err) {
+        errorCode = 530
+        result.error = err
+        return done()
+      }
+      cb(eps)
+    })
+  }
 
   // TODO
   // - is the 'encoded' option still relevant?
@@ -66,24 +75,42 @@ function convert (info, opts, reply) {
     case 'png':
     case 'jpeg':
     case 'webp':
-      return toBuffer()
+      body = Buffer.from(imgData, 'base64')
+      bodyLength = body.length
+      return done()
     case 'svg':
       // see http://stackoverflow.com/a/12205668/800548
-      result.body = imgData
-      result.bodyLength = encodeURI(imgData).split(/%..|./).length - 1
+      body = imgData
+      bodyLength = encodeURI(imgData).split(/%..|./).length - 1
       return done()
     case 'pdf':
       if (opts.batik) {
-        return convertSVG()
+        svg2pdf(imgData, (pdf) => {
+          body = pdf
+          bodyLength = body.length
+          return done()
+        })
       } else {
-        return toBuffer()
+        body = Buffer.from(imgData, 'base64')
+        bodyLength = body.length
+        return done()
       }
+      break
     case 'eps':
       if (opts.batik) {
-        return convertSVG()
+        svg2pdf(imgData, (pdf) => pdf2eps(pdf, (eps) => {
+          body = eps
+          bodyLength = body.length
+          return done()
+        }))
       } else {
-        return pdf2eps()
+        pdf2eps(imgData, (eps) => {
+          body = eps
+          bodyLength = body.length
+          return done()
+        })
       }
+      break
   }
 }
 

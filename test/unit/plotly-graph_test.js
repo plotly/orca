@@ -4,7 +4,7 @@ const EventEmitter = require('events')
 
 const _module = require('../../src/component/plotly-graph')
 const remote = require('../../src/util/remote')
-const { paths, createMockWindow } = require('../common')
+const { paths, mocks, createMockWindow } = require('../common')
 
 tap.test('inject:', t => {
   const fn = _module.inject
@@ -347,32 +347,67 @@ tap.test('convert:', t => {
     })
   })
 
-  t.test('should convert image data to pdf when *batik* option is set', t => {
-    const info = {imgData: '<svg></svg>', format: 'pdf'}
+  t.test('when *batik* option is set', t => {
     const opts = {batik: paths.batik}
 
-    fn(info, opts, (errorCode, result) => {
+    t.test('should convert svg data to pdf', t => {
+      const info = {imgData: '<svg></svg>', format: 'pdf'}
+
+      fn(info, opts, (errorCode, result) => {
+        t.equal(errorCode, null)
+        t.equal(result.head['Content-Type'], 'application/pdf')
+        t.type(result.body, Buffer)
+        t.end()
+      })
+    })
+
+    t.test('should convert svg data to eps', t => {
+      const info = {imgData: mocks.svg, format: 'eps'}
+
+      fn(info, opts, (errorCode, result) => {
+        t.equal(errorCode, null)
+        t.equal(result.head['Content-Type'], 'application/postscript')
+        t.type(result.body, Buffer)
+        t.end()
+      })
+    })
+
+    t.test('should pass batik errors', t => {
+      const info = {imgData: '<svg></svg>', format: 'pdf'}
+      opts.batik = 'not-gonna-work'
+
+      fn(info, opts, (errorCode, result) => {
+        t.equal(errorCode, 530)
+        t.match(result.msg, 'image conversion error')
+        t.match(result.error.message, 'Command failed')
+        t.end()
+      })
+    })
+
+    t.end()
+  })
+
+  t.test('should convert pdf data to eps', t => {
+    const info = {imgData: mocks.pdf, format: 'eps'}
+
+    fn(info, {}, (errorCode, result) => {
       t.equal(errorCode, null)
-      t.equal(result.head['Content-Type'], 'application/pdf')
+      t.equal(result.head['Content-Type'], 'application/postscript')
       t.type(result.body, Buffer)
       t.end()
     })
   })
 
-  t.test('should pass batik errors', t => {
-    const info = {imgData: '<svg></svg>', format: 'pdf'}
-    const opts = {batik: 'not-gonna-work'}
+  t.test('should pass pdftops errors', t => {
+    const info = {imgData: mocks.pdf, format: 'eps'}
+    const opts = {pdftops: 'not gonna work'}
 
     fn(info, opts, (errorCode, result) => {
       t.equal(errorCode, 530)
       t.match(result.msg, 'image conversion error')
+      t.match(result.error.message, 'Command failed')
       t.end()
     })
-  })
-
-  t.test('should image data to eps', t => {
-    // TODO
-    t.end()
   })
 
   t.end()
