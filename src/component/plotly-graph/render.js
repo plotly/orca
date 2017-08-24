@@ -121,6 +121,8 @@ function decodeSVG (imgData) {
  */
 function toPDF (imgData, imgOpts, info) {
   const win = remote.getCurrentWindow()
+  const w1 = imgOpts.scale * imgOpts.width
+  const h1 = imgOpts.scale * imgOpts.height
 
   // TODO
   // - how to (robustly) get pixel to microns (for pageSize) conversion factor
@@ -132,14 +134,17 @@ function toPDF (imgData, imgOpts, info) {
     marginsType: 1,
     printSelectionOnly: true,
     pageSize: {
-      width: (imgOpts.width) / 0.0035,
-      height: (imgOpts.height) / 0.0035
+      width: w1 / 0.0035,
+      height: h1 / 0.0035
     }
   }
 
   return new Promise((resolve, reject) => {
     const div = document.createElement('div')
     const img = document.createElement('img')
+
+    img.width = w1
+    img.height = h1
 
     document.body.appendChild(div)
     div.appendChild(img)
