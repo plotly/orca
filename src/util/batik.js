@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const childProcess = require('child_process')
 const parallel = require('run-parallel')
+const series = require('run-series')
 const uuid = require('uuid/v4')
 
 const PATH_TO_BUILD = path.join(__dirname, '..', '..', 'build')
@@ -19,32 +20,24 @@ class Batik {
    */
   constructor (batikJar) {
     this.batikJar = path.resolve(batikJar)
-
-    this.bg = '255.255.255.255'
-    this.dpi = '300'
     this.javaBase = 'java -jar -XX:+UseParallelGC -server'
     this.batikBase = `${this.javaBase} ${this.batikJar}`
-    this.pdftopsBase = 'pdftops'
   }
 
-  /** Convert svg input
+  /** Convert svg to pdf
    *
    * @param {string} svg : svg string to convert
    * @param {object} opts :
    *  - id {string}
-   *  - format {string}
-   *  - width {numeric}
-   *  - height {numeric}
    * @param {function} cb
    *  - err {null || error}
    *  - result {buffer}
    */
-  convertSVG (svg, opts, cb) {
+  svg2pdf (svg, opts, cb) {
     const id = opts.id || uuid()
-    const format = opts.format || 'pdf'
-    const width = opts.width
-    const height = opts.height
-    const isEPS = format === 'eps'
+    const inPath = path.join(PATH_TO_BUILD, id + '-svg')
+    const outPath = path.join(PATH_TO_BUILD, id + '-out')
+    const cmd = `${this.batikBase} -m application/pdf -d ${outPath} ${inPath}`
 
     // TODO old batik wrapper had:
     //
@@ -56,78 +49,25 @@ class Batik {
     //
     // find out why, and check if it's still needed.
 
-    const lookup = {
-      out: tmpFile(id + '-out', ''),
-      // TODO do we still need this `\ufeff` addition?
-      svg: tmpFile(id + '-svg', '\ufeff' + svg)
-    }
+    // TODO do we still need this `\ufeff` addition?
 
-    if (isEPS) {
-      lookup.eps = tmpFile(id + '-eps', '')
-    }
+    const createTmpFiles = (cb) => parallel([
+      (cb) => fs.writeFile(inPath, '\ufeff' + svg, cb),
+      (cb) => fs.writeFile(outPath, '', cb)
+    ], cb)
 
-    const fileNames = Object.keys(lookup)
-    const createTasks = fileNames.map(k => lookup[k].create)
-    const destroyTasks = fileNames.map(k => lookup[k].destroy)
+    const destroyTmpFiles = (cb) => parallel([
+      (cb) => fs.unlink(inPath, cb),
+      (cb) => fs.unlink(outPath, cb)
+    ], cb)
 
-    let args
-
-    switch (format) {
-      case 'pdf':
-      case 'eps':
-        args = `-m application/pdf`
-        break
-      default:
-        args = `-bg ${this.bg} -dpi ${this.dpi} `
-        if (width) args += `-w ${width} `
-        if (height) args += `-h ${height} `
-        break
-    }
-
-    const done = (err, out) => parallel(destroyTasks, (err2) => {
-      if (err) {
-        return cb(err)
-      }
-      if (err2) {
-        return cb(new Error('problem while removing temporary files'))
-      }
-      cb(null, out)
-    })
-
-    const toBuffer = (outPath) => {
-      fs.readFile(outPath, (err, buf) => {
-        if (err) {
-          return done(new Error('problem while reading output file'))
-        }
-        done(null, buf)
-      })
-    }
-
-    // go!
-    parallel(createTasks, (err) => {
-      if (err) {
-        return done(new Error('problem while initializing temporary files'))
-      }
-
-      const batikCmd = `${this.batikBase} ${args} -d ${lookup.out.path} ${lookup.svg.path}`
-
-      childProcess.exec(batikCmd, (err) => {
-        if (err) {
-          return done(new Error('problem while executing batik command'))
-        }
-
-        if (isEPS) {
-          const pdftopsCmd = `${this.pdftopsBase} -eps ${lookup.out.path} ${lookup.eps.path}`
-
-          childProcess.exec(pdftopsCmd, (err) => {
-            if (err) {
-              return done(new Error('problem while executing pdftops command'))
-            }
-            toBuffer(lookup.eps.path)
-          })
-        } else {
-          toBuffer(lookup.out.path)
-        }
+    series([
+      createTmpFiles,
+      (cb) => childProcess.exec(cmd, cb),
+      (cb) => fs.readFile(outPath, cb)
+    ], (err, result) => {
+      destroyTmpFiles(() => {
+        cb(err, result[2])
       })
     })
   }
@@ -149,28 +89,6 @@ class Batik {
       return false
     }
     return true
-  }
-
-  /** Is pdftops installed?
-   * @return {boolean}
-   */
-  static isPdftopsInstalled () {
-    try {
-      childProcess.execSync('pdftops -v', {stdio: 'ignore'})
-    } catch (e) {
-      return false
-    }
-    return true
-  }
-}
-
-function tmpFile (fileName, content) {
-  var pathToFile = path.join(PATH_TO_BUILD, fileName)
-
-  return {
-    path: pathToFile,
-    create: (cb) => fs.writeFile(pathToFile, content, 'utf8', cb),
-    destroy: (cb) => fs.unlink(pathToFile, cb)
   }
 }
 
