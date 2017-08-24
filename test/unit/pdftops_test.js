@@ -5,15 +5,14 @@ const fs = require('fs')
 const childProcess = require('child_process')
 const Pdftops = require('../../src/util/pdftops')
 
-const { paths } = require('../common')
-const PDF_MOCK = fs.readFileSync(path.join(paths.build, '20.pdf'))
+const { paths, mocks } = require('../common')
 
 tap.test('pdftops.pdf2eps', t => {
   t.test('should convert pdf to eps', t => {
     const pdftops = new Pdftops()
     const outPath = path.join(paths.build, 'pdftops-test.eps')
 
-    pdftops.pdf2eps(PDF_MOCK, {}, (err, result) => {
+    pdftops.pdf2eps(mocks.pdf, {}, (err, result) => {
       if (err) t.fail(err)
       t.type(result, Buffer)
 
@@ -21,8 +20,8 @@ tap.test('pdftops.pdf2eps', t => {
         if (err) t.fail(err)
 
         const size = fs.statSync(outPath).size
-        t.ok(size > 1e6, 'min pdf file size')
-        t.ok(size < 2e6, 'max pdf file size')
+        t.ok(size > 5e4, 'min pdf file size')
+        t.ok(size < 6e4, 'max pdf file size')
         t.end()
       })
     })
@@ -33,7 +32,7 @@ tap.test('pdftops.pdf2eps', t => {
     const tmpOutPath = path.join(paths.build, 'tmp-eps')
     const tmpSvgPath = path.join(paths.build, 'tmp-pdf')
 
-    pdftops.pdf2eps(PDF_MOCK, {id: 'tmp'}, (err, result) => {
+    pdftops.pdf2eps(mocks.pdf, {id: 'tmp'}, (err, result) => {
       if (err) t.fail(err)
 
       t.type(result, Buffer)
@@ -49,7 +48,7 @@ tap.test('pdftops.pdf2eps', t => {
     const tmpOutPath = path.join(paths.build, 'tmp-eps')
     const tmpSvgPath = path.join(paths.build, 'tmp-pdf')
 
-    pdftops.pdf2eps(PDF_MOCK, {id: 'tmp'}, (err) => {
+    pdftops.pdf2eps(mocks.pdf, {id: 'tmp'}, (err) => {
       t.throws(() => { throw err }, /Command failed/)
       t.notOk(fs.existsSync(tmpOutPath), 'clears tmp eps file')
       t.notOk(fs.existsSync(tmpSvgPath), 'clears tmp pdf file')
