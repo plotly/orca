@@ -51,6 +51,10 @@ function coerceOpts (_opts = {}) {
     throw new Error('no valid input given')
   }
 
+  opts.write = typeof _opts.write === 'function'
+    ? _opts.write
+    : false
+
   opts.input = input
 
   return opts

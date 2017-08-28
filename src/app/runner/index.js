@@ -34,6 +34,7 @@ function createApp (_opts) {
 
     win.on('closed', () => {
       win = null
+      index.destroy()
     })
 
     createIndex(opts.component, opts, (_index) => {
@@ -44,10 +45,6 @@ function createApp (_opts) {
     win.webContents.once('did-finish-load', () => {
       run(app, win, ipcMain, opts)
     })
-  })
-
-  process.on('exit', () => {
-    index.destroy()
   })
 
   return app

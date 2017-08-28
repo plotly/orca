@@ -1,4 +1,5 @@
 const uuid = require('uuid/v4')
+const isNumeric = require('fast-isnumeric')
 const parallelLimit = require('run-parallel-limit')
 
 const createTimer = require('../../util/create-timer')
@@ -25,8 +26,9 @@ function run (app, win, ipcMain, opts) {
   const totalTimer = createTimer()
 
   let pending = input.length
+  let failed = 0
 
-  const tasks = input.map((item, i) => (done) => {
+  const tasks = input.map((item, i) => (cb) => {
     const timer = createTimer()
     const id = uuid()
 
@@ -38,15 +40,30 @@ function run (app, win, ipcMain, opts) {
       id: id
     }
 
-    const errorOut = (code) => {
-      fullInfo.msg = fullInfo.msg || STATUS_MSG[code] || ''
+    // task callback wrapper:
+    // - emits 'export-error' if given error code or error obj/msg
+    // - emits 'after-export' if no argument is given
+    const done = (err) => {
+      fullInfo.pending = --pending
+      fullInfo.processingTime = timer.end()
 
-      app.emit('export-error', Object.assign(
-        {code: code},
-        fullInfo
-      ))
+      if (err) {
+        failed++
 
-      return done()
+        if (isNumeric(err)) {
+          fullInfo.code = err
+        } else {
+          fullInfo.code = 501
+          fullInfo.error = err
+        }
+
+        fullInfo.msg = fullInfo.msg || STATUS_MSG[fullInfo.code] || ''
+        app.emit('export-error', fullInfo)
+      } else {
+        app.emit('after-export', fullInfo)
+      }
+
+      cb()
     }
 
     // setup parse callback
@@ -54,7 +71,7 @@ function run (app, win, ipcMain, opts) {
       Object.assign(fullInfo, parseInfo)
 
       if (errorCode) {
-        return errorOut(errorCode)
+        return done(errorCode)
       }
 
       win.webContents.send(comp.name, id, fullInfo, compOpts)
@@ -65,14 +82,14 @@ function run (app, win, ipcMain, opts) {
       Object.assign(fullInfo, convertInfo)
 
       if (errorCode) {
-        return errorOut(errorCode)
+        return done(errorCode)
       }
 
-      fullInfo.pending = --pending
-      fullInfo.processingTime = timer.end()
-
-      app.emit('after-export', fullInfo)
-      done()
+      if (opts.write) {
+        opts.write(fullInfo, compOpts, done)
+      } else {
+        done()
+      }
     }
 
     // setup convert on render message -> emit 'after-export'
@@ -80,7 +97,7 @@ function run (app, win, ipcMain, opts) {
       Object.assign(fullInfo, renderInfo)
 
       if (errorCode) {
-        return errorOut(errorCode)
+        return done(errorCode)
       }
 
       comp._module.convert(fullInfo, compOpts, reply)
@@ -91,14 +108,14 @@ function run (app, win, ipcMain, opts) {
       let body
 
       if (err) {
-        return errorOut(422)
+        return done(422)
       }
 
       if (typeof _body === 'string') {
         try {
           body = JSON.parse(_body)
         } catch (e) {
-          return errorOut(422)
+          return done(422)
         }
       } else {
         body = _body
@@ -109,16 +126,18 @@ function run (app, win, ipcMain, opts) {
   })
 
   parallelLimit(tasks, opts.parallelLimit, (err) => {
-    const code = (err || pending !== 0) ? 500 : 200
+    const exitCode = (err || pending > 0 || failed > 0) ? 1 : 0
 
     app.emit('after-export-all', {
-      code: code,
-      msg: STATUS_MSG[code],
+      code: exitCode,
+      msg: STATUS_MSG[exitCode],
       totalProcessingTime: totalTimer.end()
     })
 
     // do not close window to look for unlogged console errors
-    if (!opts.debug) app.quit()
+    if (!opts.debug) {
+      app.exit(exitCode)
+    }
   })
 }
 
