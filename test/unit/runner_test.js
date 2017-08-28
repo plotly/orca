@@ -113,6 +113,18 @@ tap.test('getBody:', t => {
     })
   })
 
+  t.test('should accept and parse nested *figure* path', t => {
+    getBody({
+      figure: paths.pkg,
+      format: 'png'
+    }, (err, body) => {
+      t.equal(err, null, 'error')
+      t.type(body.figure, 'object')
+      t.equal(body.format, 'png', 'other stuff in item')
+      t.end()
+    })
+  })
+
   t.end()
 })
 
