@@ -29,7 +29,7 @@ if (!fs.existsSync(argv.outputDir)) {
 
 getStdin().then((txt) => {
   const hasStdin = !!txt
-  const pipeToStdOut = hasStdin && !argv.output && !argv.outputDir
+  const pipeToStdOut = hasStdin && !argv.output
   const showLogs = !pipeToStdOut && (DEBUG || argv.verbose)
   const input = hasStdin ? argv._.concat([txt]) : argv._
   const getItemName = makeGetItemName(input)
