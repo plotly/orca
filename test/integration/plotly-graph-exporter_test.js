@@ -59,7 +59,7 @@ tap.test('should print export info on success', t => {
 
   const matches = [
     /^exported fig/,
-    /done with code 200/
+    /done with code 0/
   ]
 
   let i = 0

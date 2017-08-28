@@ -113,6 +113,18 @@ tap.test('getBody:', t => {
     })
   })
 
+  t.test('should accept and parse nested *figure* path', t => {
+    getBody({
+      figure: paths.pkg,
+      format: 'png'
+    }, (err, body) => {
+      t.equal(err, null, 'error')
+      t.type(body.figure, 'object')
+      t.equal(body.format, 'png', 'other stuff in item')
+      t.end()
+    })
+  })
+
   t.end()
 })
 
@@ -141,7 +153,7 @@ tap.test('run:', t => {
     cases.forEach(c => {
       t.test(`(case ${c}`, t => {
         const app = new EventEmitter()
-        app.quit = t.end
+        app.exit = t.end
         app.once('after-export', t.fail)
 
         app.once('export-error', (info) => {
@@ -150,7 +162,7 @@ tap.test('run:', t => {
         })
 
         app.once('after-export-all', (info) => {
-          t.equal(info.code, 500, 'code')
+          t.equal(info.code, 1, 'code')
         })
 
         _run(app, c)
@@ -166,7 +178,7 @@ tap.test('run:', t => {
     cases.forEach(c => {
       t.test(`(case ${c}`, t => {
         const app = new EventEmitter()
-        app.quit = t.end
+        app.exit = t.end
         app.once('export-error', t.fail)
 
         app.once('after-export', (info) => {
@@ -178,7 +190,7 @@ tap.test('run:', t => {
 
         app.once('after-export-all', (info) => {
           t.equal(Object.keys(info).length, 3, '# of keys')
-          t.equal(info.code, 200, 'code')
+          t.equal(info.code, 0, 'code')
           t.equal(info.msg, 'all task(s) completed', 'msg')
           t.type(info.totalProcessingTime, 'number')
         })
@@ -206,7 +218,7 @@ tap.test('run:', t => {
         // return some dummy error code
         sinon.stub(opts.component._module, c).yields(555)
 
-        app.quit = () => {
+        app.exit = () => {
           opts.component._module[c].restore()
           t.end()
         }
@@ -216,7 +228,7 @@ tap.test('run:', t => {
         })
 
         app.once('after-export-all', (info) => {
-          t.equal(info.code, 500, 'code')
+          t.equal(info.code, 1, 'code')
         })
 
         run(app, win, ipc, opts)
@@ -235,7 +247,7 @@ tap.test('run:', t => {
 
       const app = new EventEmitter()
       app.once('after-export', t.fail)
-      app.quit = t.end
+      app.exit = t.end
 
       const opts = coerceOpts({
         component: 'plotly-graph',
@@ -247,7 +259,7 @@ tap.test('run:', t => {
       })
 
       app.once('after-export-all', (info) => {
-        t.equal(info.code, 500, 'code')
+        t.equal(info.code, 1, 'code')
       })
 
       run(app, win, ipc, opts)
@@ -258,7 +270,7 @@ tap.test('run:', t => {
 
   t.test('should not quit in debug mode', t => {
     const app = new EventEmitter()
-    app.quit = t.fail
+    app.exit = t.fail
 
     const opts = coerceOpts({
       component: 'plotly-graph',

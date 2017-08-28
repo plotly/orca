@@ -29,13 +29,26 @@ if (!fs.existsSync(argv.outputDir)) {
 
 getStdin().then((txt) => {
   const hasStdin = !!txt
-  const pipeToStdOut = hasStdin && !argv.output && !argv.outputDir
+  const pipeToStdOut = hasStdin && !argv.output
   const showLogs = !pipeToStdOut && (DEBUG || argv.verbose)
   const input = hasStdin ? argv._.concat([txt]) : argv._
   const getItemName = makeGetItemName(input)
 
+  const write = (info, _, done) => {
+    const itemName = getItemName(info)
+    const outPath = path.resolve(argv.outputDir, `${itemName}.${info.format}`)
+
+    if (pipeToStdOut) {
+      str(info.body)
+        .pipe(process.stdout.on('drain', done))
+    } else {
+      fs.writeFile(outPath, info.body, done)
+    }
+  }
+
   const app = plotlyExporter.run({
     input: input,
+    write: write,
     debug: DEBUG,
     parallelLimit: argv.parallelLimit,
     component: {
@@ -56,18 +69,9 @@ getStdin().then((txt) => {
 
   app.on('after-export', (info) => {
     const itemName = getItemName(info)
-    const outPath = path.resolve(argv.outputDir, `${itemName}.${info.format}`)
 
     if (showLogs) {
       console.log(`exported ${itemName}, in ${info.processingTime} ms`)
-    }
-
-    if (pipeToStdOut) {
-      str(info.body).pipe(process.stdout)
-    } else {
-      fs.writeFile(outPath, info.body, (err) => {
-        if (err) console.warn(err)
-      })
     }
   })
 
@@ -90,7 +94,7 @@ getStdin().then((txt) => {
 
     const msg = `\ndone with code ${info.code} in ${timeStr} - ${info.msg}`
 
-    if (info.code === 200) {
+    if (info.code === 0) {
       if (showLogs) {
         console.log(msg)
       }
