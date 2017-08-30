@@ -124,8 +124,16 @@ function toPDF (imgData, imgOpts, info) {
   const w1 = imgOpts.scale * imgOpts.width
   const h1 = imgOpts.scale * imgOpts.height
 
+  // printToPDF expects page size setting in micrometer (1e-6 m)
+  // - Px by micrometer factor is taken
+  //   from https://www.translatorscafe.com/unit-converter/en/length/13-110/micrometer-pixel/
+  // - Even under the `marginsType: 1` setting (meaning no margins), printToPDF still
+  //   output small margins. We need to take this into consideration so that the output PDF
+  //   does not span multiple pages. The offset value was found empirically via trial-and-error.
+  const pxByMicrometer = 0.00377957517575025
+  const inducedMarginOffset = 18
+
   // TODO
-  // - how to (robustly) get pixel to microns (for pageSize) conversion factor
   // - this work great, except runner app can't get all pdf to generate
   //   when parallelLimit > 1 ???
   //   + figure out why???
@@ -134,8 +142,8 @@ function toPDF (imgData, imgOpts, info) {
     marginsType: 1,
     printSelectionOnly: true,
     pageSize: {
-      width: w1 / 0.0035,
-      height: h1 / 0.0035
+      width: (w1 + inducedMarginOffset) / pxByMicrometer,
+      height: (h1 + inducedMarginOffset) / pxByMicrometer
     }
   }
 
@@ -143,8 +151,8 @@ function toPDF (imgData, imgOpts, info) {
     const div = document.createElement('div')
     const img = document.createElement('img')
 
-    img.width = w1
-    img.height = h1
+    div.style.width = img.width = w1
+    div.style.height = img.height = h1
 
     document.body.appendChild(div)
     div.appendChild(img)

@@ -469,7 +469,10 @@ tap.test('render:', t => {
   }
 
   const mockElements = () => {
-    const div = {appendChild: sinon.stub()}
+    const div = {
+      appendChild: sinon.stub(),
+      style: {}
+    }
     document.createElement.withArgs('div').returns(div)
 
     const img = new EventEmitter()
