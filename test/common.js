@@ -27,12 +27,17 @@ function createMockWindow (opts = {}) {
   const win = new EventEmitter()
   const webContents = new EventEmitter()
 
+  webContents.executeJavaScript = sinon.stub()
   webContents.printToPDF = sinon.stub()
 
   Object.assign(win, opts, {
     webContents: webContents,
-    loadURL: () => { webContents.emit('did-finish-load') },
-    close: sinon.stub()
+    loadURL: sinon.stub().callsFake(() => {
+      webContents.emit('did-finish-load')
+    }),
+    close: sinon.stub().callsFake(() => {
+      win.emit('closed')
+    })
   })
 
   return win

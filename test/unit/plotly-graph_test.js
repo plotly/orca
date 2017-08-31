@@ -1,6 +1,5 @@
 const tap = require('tap')
 const sinon = require('sinon')
-const EventEmitter = require('events')
 
 const _module = require('../../src/component/plotly-graph')
 const remote = require('../../src/util/remote')
@@ -459,39 +458,17 @@ tap.test('render:', t => {
   }
 
   const mockBrowser = () => {
-    document.body = {
-      appendChild: sinon.stub(),
-      removeChild: sinon.stub()
-    }
     document.createElement = sinon.stub()
-    window.getSelection = sinon.stub().returns({selectAllChildren: sinon.stub()})
     window.decodeURIComponent = sinon.stub().returns('decoded image data')
-  }
-
-  const mockElements = () => {
-    const div = {
-      appendChild: sinon.stub(),
-      style: {}
-    }
-    document.createElement.withArgs('div').returns(div)
-
-    const img = new EventEmitter()
-    document.createElement.withArgs('img').returns(img)
-    img.addEventListener = img.addListener
-
-    return {
-      div: div,
-      img: img
-    }
+    window.encodeURIComponent = sinon.stub().returns('encoded image data')
   }
 
   const mockWindow = () => {
     const win = createMockWindow()
-    sinon.stub(remote, 'getCurrentWindow').returns(win)
-
+    sinon.stub(remote, 'createBrowserWindow').returns(win)
     return {
       win: win,
-      restore: () => remote.getCurrentWindow.restore()
+      restore: () => remote.createBrowserWindow.restore()
     }
   }
 
@@ -509,21 +486,21 @@ tap.test('render:', t => {
     t.test('(format pdf)', t => {
       mock130()
       mockBrowser()
-      const {img} = mockElements()
       const {win, restore} = mockWindow()
+      win.webContents.executeJavaScript.returns(new Promise(resolve => resolve()))
       win.webContents.printToPDF.yields(null, 'pdf data')
 
       fn({format: 'pdf'}, {}, (errorCode, result) => {
         t.equal(errorCode, null)
         t.equal(result.imgData, 'pdf data')
-        t.equal(document.createElement.callCount, 2, 'createElement calls')
-        t.equal(document.body.appendChild.callCount, 1, 'body.appendChild calls')
-        t.equal(document.body.removeChild.callCount, 1, 'body.removeChild calls')
+        t.equal(window.encodeURIComponent.callCount, 1, 'encodeURIComponent calls')
+        t.equal(win.webContents.executeJavaScript.callCount, 1, 'executeJavaScript calls')
+        t.equal(win.webContents.printToPDF.callCount, 1, 'printToPDF calls')
+        t.ok(win.close.calledOnce)
 
         restore()
         t.end()
       })
-      setTimeout(() => img.emit('load'))
     })
 
     t.end()
@@ -551,6 +528,7 @@ tap.test('render:', t => {
       fn({format: 'svg'}, {}, (errorCode, result) => {
         t.equal(result.imgData, 'decoded image data')
         t.ok(document.createElement.calledOnce)
+        t.ok(window.decodeURIComponent.calledOnce)
         t.ok(Plotly.newPlot.calledOnce)
         t.ok(Plotly.toImage.calledOnce)
         t.ok(Plotly.purge.calledOnce)
@@ -561,38 +539,39 @@ tap.test('render:', t => {
     t.test('(format pdf)', t => {
       mock110()
       mockBrowser()
-      const {img} = mockElements()
       const {win, restore} = mockWindow()
+      win.webContents.executeJavaScript.returns(new Promise(resolve => resolve()))
       win.webContents.printToPDF.yields(null, 'pdf data')
 
       fn({format: 'pdf'}, {}, (errorCode, result) => {
         t.equal(errorCode, null)
         t.equal(result.imgData, 'pdf data')
-        t.equal(document.createElement.callCount, 3, 'createElement calls')
-        t.equal(document.body.appendChild.callCount, 1, 'body.appendChild calls')
-        t.equal(document.body.removeChild.callCount, 1, 'body.removeChild calls')
+        t.equal(document.createElement.callCount, 1, 'createElement calls')
+        t.equal(window.encodeURIComponent.callCount, 1, 'encodeURIComponent calls')
+        t.equal(win.webContents.executeJavaScript.callCount, 1, 'executeJavaScript calls')
+        t.equal(win.webContents.printToPDF.callCount, 1, 'printToPDF calls')
+        t.doesNotThrow(() => {
+          const gd = {
+            _fullLayout: {paper_bgcolor: 'some color'}
+          }
+          Plotly.toImage.args[0][1].setBackground(gd, 'some other color')
+        }, 'custom setBackground function')
 
         restore()
         t.end()
       })
-      setTimeout(() => img.emit('load'))
     })
 
     t.test('(format pdf with batik support)', t => {
       mock110()
       mockBrowser()
-      const {img} = mockElements()
-      const {win, restore} = mockWindow()
-      win.webContents.printToPDF.yields(null, 'pdf data')
 
       fn({format: 'pdf'}, {batik: 'path-to-batik'}, (errorCode, result) => {
         t.equal(errorCode, null)
         t.equal(result.imgData, 'decoded image data')
-
-        restore()
+        t.equal(window.decodeURIComponent.callCount, 1, 'decodeURIComponent calls')
         t.end()
       })
-      setTimeout(() => img.emit('load'))
     })
 
     t.end()
@@ -619,39 +598,39 @@ tap.test('render:', t => {
     })
   })
 
+  t.test('should return error code on executeJavaScript errors', t => {
+    mock130()
+    mockBrowser()
+    const {win, restore} = mockWindow()
+    win.webContents.executeJavaScript.returns(new Promise((resolve, reject) => {
+      reject(new Error('oh no!'))
+    }))
+
+    fn({format: 'pdf'}, {}, (errorCode, result) => {
+      t.equal(errorCode, 525)
+      t.match(result.error, /oh no/, 'error')
+      t.ok(win.close.calledOnce)
+
+      restore()
+      t.end()
+    })
+  })
+
   t.test('should return error code on printToPDF errors', t => {
     mock130()
     mockBrowser()
-    const {img} = mockElements()
     const {win, restore} = mockWindow()
+    win.webContents.executeJavaScript.returns(new Promise(resolve => resolve()))
     win.webContents.printToPDF.yields(new Error('oops'))
 
     fn({format: 'pdf'}, {}, (errorCode, result) => {
       t.equal(errorCode, 525)
-      t.match(result.error, /electron print to PDF error/, 'error')
-      t.ok(document.body.removeChild.calledOnce)
+      t.match(result.error, /oops/, 'error')
+      t.ok(win.close.calledOnce)
 
       restore()
       t.end()
     })
-    setTimeout(() => img.emit('load'))
-  })
-
-  t.test('should return error code on createElement(\'img\') errors', t => {
-    mock130()
-    mockBrowser()
-    const {img} = mockElements()
-    const {restore} = mockWindow()
-
-    fn({format: 'pdf'}, {}, (errorCode, result) => {
-      t.equal(errorCode, 525)
-      t.match(result.error, /image failed to load/, 'error')
-      t.ok(document.body.removeChild.calledOnce)
-
-      restore()
-      t.end()
-    })
-    setTimeout(() => img.emit('error'))
   })
 
   t.test('should generate svg for format pdf and eps', t => {

@@ -156,7 +156,7 @@ function toPDF (imgData, imgOpts, bgColor) {
       win = null
     })
 
-    const html = encodeURIComponent(`<!DOCTYPE html>
+    const html = window.encodeURIComponent(`<!DOCTYPE html>
     <html>
       <head>
         <meta charset="UTF-8">
