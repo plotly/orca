@@ -28,5 +28,8 @@ module.exports = {
     svg: /^data:image\/svg\+xml,/
   },
 
-  mathJaxConfigQuery: '?config=TeX-AMS-MML_SVG'
+  mathJaxConfigQuery: '?config=TeX-AMS-MML_SVG',
+
+  // time [in ms] after which printToPDF errors when image isn't loaded
+  pdfPageLoadImgTimeout: 2000
 }
