@@ -38,12 +38,15 @@ function render (info, opts, sendToMain) {
     sendToMain(errorCode, result)
   }
 
-  // TODO
-  // - figure out if we still need this:
-  //   https://github.com/plotly/streambed/blob/7311d4386d80d45999797e87992f43fb6ecf48a1/image_server/server_app/main.js#L224-L229
-
   const PDF_OR_EPS = (format === 'pdf' || format === 'eps')
   const PRINT_TO_PDF = PDF_OR_EPS && !opts.batik
+
+  // stash `paper_bgcolor` here in order to set the pdf window bg color
+  let bgColor
+  const pdfBackground = (gd, _bgColor) => {
+    if (!bgColor) bgColor = _bgColor
+    gd._fullLayout.paper_bgcolor = 'rgba(0,0,0,0)'
+  }
 
   const imgOpts = {
     format: PDF_OR_EPS ? 'svg' : format,
@@ -54,7 +57,9 @@ function render (info, opts, sendToMain) {
     // return image data w/o the leading 'data:image' spec
     imageDataOnly: !PRINT_TO_PDF,
     // blend jpeg background color as jpeg does not support transparency
-    setBackground: format === 'jpeg' ? 'opaque' : ''
+    setBackground: format === 'jpeg' ? 'opaque'
+      : PRINT_TO_PDF ? pdfBackground
+      : ''
   }
 
   let promise
@@ -64,7 +69,7 @@ function render (info, opts, sendToMain) {
       .toImage({data: figure.data, layout: figure.layout, config: config}, imgOpts)
       .then((imgData) => {
         if (PRINT_TO_PDF) {
-          return toPDF(imgData, imgOpts)
+          return toPDF(imgData, imgOpts, bgColor)
         } else {
           return imgData
         }
@@ -88,7 +93,7 @@ function render (info, opts, sendToMain) {
           case 'pdf':
           case 'eps':
             if (PRINT_TO_PDF) {
-              return toPDF(imgData, imgOpts, info)
+              return toPDF(imgData, imgOpts, bgColor)
             } else {
               return decodeSVG(imgData)
             }
@@ -115,67 +120,82 @@ function decodeSVG (imgData) {
   return window.decodeURIComponent(imgData.replace(cst.imgPrefix.svg, ''))
 }
 
-/**
- * See https://github.com/electron/electron/blob/master/docs/api/web-contents.md#contentsprinttopdfoptions-callback
- * for other available options
- */
-function toPDF (imgData, imgOpts, info) {
-  const win = remote.getCurrentWindow()
-  const w1 = imgOpts.scale * imgOpts.width
-  const h1 = imgOpts.scale * imgOpts.height
+function toPDF (imgData, imgOpts, bgColor) {
+  const wPx = imgOpts.scale * imgOpts.width
+  const hPx = imgOpts.scale * imgOpts.height
 
-  // printToPDF expects page size setting in micrometer (1e-6 m)
-  // - Px by micrometer factor is taken
-  //   from https://www.translatorscafe.com/unit-converter/en/length/13-110/micrometer-pixel/
-  // - Even under the `marginsType: 1` setting (meaning no margins), printToPDF still
-  //   output small margins. We need to take this into consideration so that the output PDF
-  //   does not span multiple pages. The offset value was found empirically via trial-and-error.
   const pxByMicrometer = 0.00377957517575025
-  const inducedMarginOffset = 18
+  const offset = 6
 
-  // TODO
-  // - this work great, except runner app can't get all pdf to generate
-  //   when parallelLimit > 1 ???
-  //   + figure out why???
-  //   + maybe restrict that in coerce-opts?
+  // See other available options:
+  // https://github.com/electron/electron/blob/master/docs/api/web-contents.md#contentsprinttopdfoptions-callback
   const printOpts = {
+    // no margins
     marginsType: 1,
-    printSelectionOnly: true,
+    // make bg (set to `paper_bgcolor` value) appear in export
+    printBackground: true,
+    // printToPDF expects page size setting in micrometer (1e-6 m)
+    // - Px by micrometer factor is taken from
+    //   https://www.translatorscafe.com/unit-converter/en/length/13-110/micrometer-pixel/
+    // - Even under the `marginsType: 1` setting (meaning no margins), printToPDF still
+    //   outputs small margins. We need to take this into consideration so that the output PDF
+    //   does not span multiple pages. The offset value was found empirically via trial-and-error.
     pageSize: {
-      width: (w1 + inducedMarginOffset) / pxByMicrometer,
-      height: (h1 + inducedMarginOffset) / pxByMicrometer
+      width: (wPx + offset) / pxByMicrometer,
+      height: (hPx + offset) / pxByMicrometer
     }
   }
 
   return new Promise((resolve, reject) => {
-    const div = document.createElement('div')
-    const img = document.createElement('img')
+    let win = remote.createBrowserWindow({
+      width: wPx,
+      height: hPx
+    })
 
-    div.style.width = img.width = w1
-    div.style.height = img.height = h1
+    win.on('closed', () => {
+      win = null
+    })
 
-    document.body.appendChild(div)
-    div.appendChild(img)
+    const html = encodeURIComponent(`<!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <style> body {
+            margin: 0;
+            padding: 0;
+            background-color: ${bgColor}
+          }
+        </style>
+      </head>
+      <body><img/></body>
+    </html>`)
 
-    img.addEventListener('load', () => {
-      window.getSelection().selectAllChildren(div)
+    // we can't set image src into html as chromium has a 2MB URL limit
+    // https://craignicol.wordpress.com/2016/07/19/excellent-export-and-the-chrome-url-limit/
 
+    win.loadURL(`data:text/html,${html}`)
+
+    win.webContents.executeJavaScript(`new Promise((resolve, reject) => {
+      const img = document.body.firstChild
+      img.onload = resolve
+      img.onerror = reject
+      img.src = "${imgData}"
+      setTimeout(() => reject(new Error('too long to load image')), 2000)
+    })`)
+    .then(() => {
       win.webContents.printToPDF(printOpts, (err, pdfData) => {
-        document.body.removeChild(div)
-
         if (err) {
-          return reject(new Error('electron print to PDF error'))
+          reject(err)
+        } else {
+          resolve(pdfData)
         }
-        return resolve(pdfData)
+        win.close()
       })
     })
-
-    img.addEventListener('error', () => {
-      document.body.removeChild(div)
-      return reject(new Error('image failed to load'))
+    .catch((err) => {
+      win.close()
+      reject(err)
     })
-
-    img.src = imgData
   })
 }
 
