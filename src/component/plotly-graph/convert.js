@@ -7,6 +7,7 @@ const cst = require('./constants')
  *  - format {string} (from parse)
  *  - imgData {string} (from render)
  * @param {object} opts : component options
+ *  - pdftops {string or instance of Pdftops)
  * @param {function} reply
  *  - errorCode {number or null}
  *  - result {object}
@@ -18,10 +19,7 @@ function convert (info, opts, reply) {
   const imgData = info.imgData
   const format = info.format
 
-  const result = {
-    head: {'Content-Type': cst.contentFormat[format]}
-  }
-
+  const result = {}
   let errorCode = null
   let body
   let bodyLength
@@ -31,7 +29,11 @@ function convert (info, opts, reply) {
       result.msg = cst.statusMsg[errorCode]
     } else {
       result.body = body
-      result.bodyLength = result.head['Content-Length'] = bodyLength
+      result.bodyLength = bodyLength
+      result.head = {
+        'Content-Type': cst.contentFormat[format],
+        'Content-Length': bodyLength
+      }
     }
     reply(errorCode, result)
   }

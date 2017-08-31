@@ -1,5 +1,6 @@
 const tap = require('tap')
 const sinon = require('sinon')
+const Pdftops = require('../../src/util/pdftops')
 
 const _module = require('../../src/component/plotly-graph')
 const remote = require('../../src/util/remote')
@@ -346,14 +347,22 @@ tap.test('convert:', t => {
     })
   })
 
-
-    })
-  })
-
   t.test('should convert pdf data to eps', t => {
     const info = {imgData: mocks.pdf, format: 'eps'}
 
     fn(info, {}, (errorCode, result) => {
+      t.equal(errorCode, null)
+      t.equal(result.head['Content-Type'], 'application/postscript')
+      t.type(result.body, Buffer)
+      t.end()
+    })
+  })
+
+  t.test('should convert pdf data to eps (while passing instance of Pdftops)', t => {
+    const info = {imgData: mocks.pdf, format: 'eps'}
+    const opts = {pdftops: new Pdftops()}
+
+    fn(info, opts, (errorCode, result) => {
       t.equal(errorCode, null)
       t.equal(result.head['Content-Type'], 'application/postscript')
       t.type(result.body, Buffer)
