@@ -9,8 +9,11 @@ const PATH_TO_BUILD = path.join(__dirname, '..', '..', 'build')
 
 /** Node wrapper for pdftops
  *
+ * $ apt-get poppler-utils
+ *
  * See:
  * - https://linux.die.net/man/1/pdftops
+ * - https://en.wikipedia.org/wiki/Poppler_(software)#poppler-utils
  */
 class Pdftops {
   constructor (pathToPdftops) {

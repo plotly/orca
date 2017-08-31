@@ -158,7 +158,8 @@ function toPDF (imgData, imgOpts, bgColor) {
     <html>
       <head>
         <meta charset="UTF-8">
-        <style> body {
+        <style>
+          body {
             margin: 0;
             padding: 0;
             background-color: ${bgColor}
