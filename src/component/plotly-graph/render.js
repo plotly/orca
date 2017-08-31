@@ -23,10 +23,10 @@ function render (info, opts, sendToMain) {
   const figure = info.figure
   const format = info.format
 
-  const config = Object.assign({},
-    {mapboxAccessToken: opts.mapboxAccessToken || ''},
-    figure.config
-  )
+  const config = Object.assign({
+    mapboxAccessToken: opts.mapboxAccessToken || '',
+    plotGlPixelRatio: cst.plotGlPixelRatio
+  }, figure.config)
 
   const result = {}
   let errorCode = null
