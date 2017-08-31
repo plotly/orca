@@ -346,44 +346,8 @@ tap.test('convert:', t => {
     })
   })
 
-  t.test('when *batik* option is set', t => {
-    const opts = {batik: paths.batik}
 
-    t.test('should convert svg data to pdf', t => {
-      const info = {imgData: '<svg></svg>', format: 'pdf'}
-
-      fn(info, opts, (errorCode, result) => {
-        t.equal(errorCode, null)
-        t.equal(result.head['Content-Type'], 'application/pdf')
-        t.type(result.body, Buffer)
-        t.end()
-      })
     })
-
-    t.test('should convert svg data to eps', t => {
-      const info = {imgData: mocks.svg, format: 'eps'}
-
-      fn(info, opts, (errorCode, result) => {
-        t.equal(errorCode, null)
-        t.equal(result.head['Content-Type'], 'application/postscript')
-        t.type(result.body, Buffer)
-        t.end()
-      })
-    })
-
-    t.test('should pass batik errors', t => {
-      const info = {imgData: '<svg></svg>', format: 'pdf'}
-      opts.batik = 'not-gonna-work'
-
-      fn(info, opts, (errorCode, result) => {
-        t.equal(errorCode, 530)
-        t.match(result.msg, 'image conversion error')
-        t.match(result.error.message, 'Command failed')
-        t.end()
-      })
-    })
-
-    t.end()
   })
 
   t.test('should convert pdf data to eps', t => {
@@ -558,18 +522,6 @@ tap.test('render:', t => {
         }, 'custom setBackground function')
 
         restore()
-        t.end()
-      })
-    })
-
-    t.test('(format pdf with batik support)', t => {
-      mock110()
-      mockBrowser()
-
-      fn({format: 'pdf'}, {batik: 'path-to-batik'}, (errorCode, result) => {
-        t.equal(errorCode, null)
-        t.equal(result.imgData, 'decoded image data')
-        t.equal(window.decodeURIComponent.callCount, 1, 'decodeURIComponent calls')
         t.end()
       })
     })

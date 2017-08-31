@@ -1,4 +1,3 @@
-const Batik = require('../../util/batik')
 const Pdftops = require('../../util/pdftops')
 const cst = require('./constants')
 
@@ -8,7 +7,6 @@ const cst = require('./constants')
  *  - format {string} (from parse)
  *  - imgData {string} (from render)
  * @param {object} opts : component options
- *  - batik {string or instance of Batik}
  * @param {function} reply
  *  - errorCode {number or null}
  *  - result {object}
@@ -38,21 +36,6 @@ function convert (info, opts, reply) {
     reply(errorCode, result)
   }
 
-  const svg2pdf = (svg, cb) => {
-    const batik = opts.batik instanceof Batik
-      ? opts.batik
-      : new Batik(opts.batik)
-
-    batik.svg2pdf(svg, {id: info.id}, (err, pdf) => {
-      if (err) {
-        errorCode = 530
-        result.error = err
-        return done()
-      }
-      cb(pdf)
-    })
-  }
-
   const pdf2eps = (pdf, cb) => {
     const pdftops = opts.pdftops instanceof Pdftops
       ? opts.pdftops
@@ -75,6 +58,7 @@ function convert (info, opts, reply) {
     case 'png':
     case 'jpeg':
     case 'webp':
+    case 'pdf':
       body = Buffer.from(imgData, 'base64')
       bodyLength = body.length
       return done()
@@ -83,33 +67,12 @@ function convert (info, opts, reply) {
       body = imgData
       bodyLength = encodeURI(imgData).split(/%..|./).length - 1
       return done()
-    case 'pdf':
-      if (opts.batik) {
-        svg2pdf(imgData, (pdf) => {
-          body = pdf
-          bodyLength = body.length
-          return done()
-        })
-      } else {
-        body = Buffer.from(imgData, 'base64')
+    case 'eps':
+      pdf2eps(imgData, (eps) => {
+        body = eps
         bodyLength = body.length
         return done()
-      }
-      break
-    case 'eps':
-      if (opts.batik) {
-        svg2pdf(imgData, (pdf) => pdf2eps(pdf, (eps) => {
-          body = eps
-          bodyLength = body.length
-          return done()
-        }))
-      } else {
-        pdf2eps(imgData, (eps) => {
-          body = eps
-          bodyLength = body.length
-          return done()
-        })
-      }
+      })
       break
   }
 }

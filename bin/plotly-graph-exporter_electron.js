@@ -58,7 +58,6 @@ getStdin().then((txt) => {
         mapboxAccessToken: argv['mapbox-access-token'],
         mathjax: argv.mathjax,
         topojson: argv.topojson,
-        batik: argv.batik,
         format: argv.format,
         scale: argv.scale,
         width: argv.width,

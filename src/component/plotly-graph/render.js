@@ -13,7 +13,6 @@ const cst = require('./constants')
  *  - scale
  * @param {object} opts : component options
  *  - mapboxAccessToken
- *  - batik
  * @param {function} sendToMain
  *  - errorCode
  *  - result
@@ -38,8 +37,7 @@ function render (info, opts, sendToMain) {
     sendToMain(errorCode, result)
   }
 
-  const PDF_OR_EPS = (format === 'pdf' || format === 'eps')
-  const PRINT_TO_PDF = PDF_OR_EPS && !opts.batik
+  const PRINT_TO_PDF = (format === 'pdf' || format === 'eps')
 
   // stash `paper_bgcolor` here in order to set the pdf window bg color
   let bgColor
@@ -49,7 +47,7 @@ function render (info, opts, sendToMain) {
   }
 
   const imgOpts = {
-    format: PDF_OR_EPS ? 'svg' : format,
+    format: PRINT_TO_PDF ? 'svg' : format,
     width: info.width,
     height: info.height,
     // works as of https://github.com/plotly/plotly.js/compare/to-image-scale

@@ -39,7 +39,6 @@ function render (info, opts, sendToMain) {
   // - find better solution than IFRAME_LOAD_TIMEOUT
   // - but really, we shouldn't be using iframes in embed view?
   // - use `content.capturePage` to render PNGs and JPEGs
-  // - or use batik?
 
   contents.once('did-finish-load', () => {
     setTimeout(() => {
