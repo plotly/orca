@@ -90,11 +90,7 @@ function render (info, opts, sendToMain) {
             return decodeSVG(imgData)
           case 'pdf':
           case 'eps':
-            if (PRINT_TO_PDF) {
-              return toPDF(imgData, imgOpts, bgColor)
-            } else {
-              return decodeSVG(imgData)
-            }
+            return toPDF(imgData, imgOpts, bgColor)
         }
       })
   } else {
