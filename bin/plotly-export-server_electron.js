@@ -1,5 +1,4 @@
 const plotlyExporter = require('../')
-const Batik = require('../src/util/batik')
 const { getServerArgs, getServerHelpMsg } = require('./args')
 const pkg = require('../package.json')
 
@@ -20,32 +19,12 @@ if (argv.help) {
 // - try https://github.com/indexzero/node-portfinder
 
 let app
-let batik
-
-if (argv.batik) {
-  if (!Batik.isJavaInstalled()) {
-    console.warn('Missing binaries for PDF exports')
-    process.exit(1)
-  }
-  if (!Batik.isPdftopsInstalled()) {
-    console.warn('Missing binaries for EPS exports')
-    process.exit(1)
-  }
-
-  batik = new Batik(argv.batik)
-
-  if (!batik.doesBatikJarExist()) {
-    console.warn('Path to batik-rasterizer jar file does not exist')
-    process.exit(1)
-  }
-}
 
 const plotlyJsOpts = {
   plotlyJS: argv.plotlyJS,
   mapboxAccessToken: argv['mapbox-access-token'],
   mathjax: argv.mathjax,
-  topojson: argv.topojson,
-  batik: batik
+  topojson: argv.topojson
 }
 
 const opts = {

@@ -52,24 +52,3 @@ tap.test('should print help message', t => {
 
   t.end()
 })
-
-tap.test('should print export info on success', t => {
-  const input = '{"data":[{"y":[1,2,1]}],"layout":{"title":"tester"}}'
-  const subprocess = _spawn(t, input)
-
-  const matches = [
-    /^exported fig/,
-    /done with code 0/
-  ]
-
-  let i = 0
-
-  subprocess.stdout.on('data', d => {
-    t.match(d.toString(), matches[i], `msg ${i}`)
-    i++
-  })
-
-  subprocess.stderr.on('data', d => {
-    t.fail(d, 'unwanted msg to stderr')
-  })
-})

@@ -1,8 +1,10 @@
 const tap = require('tap')
 const sinon = require('sinon')
+const Pdftops = require('../../src/util/pdftops')
 
 const _module = require('../../src/component/plotly-graph')
-const { paths } = require('../common')
+const remote = require('../../src/util/remote')
+const { paths, mocks, createMockWindow } = require('../common')
 
 tap.test('inject:', t => {
   const fn = _module.inject
@@ -318,13 +320,13 @@ tap.test('convert:', t => {
   const fn = _module.convert
 
   t.test('should convert image data to buffer', t => {
-    const formats = ['png', 'webp', 'jpeg']
+    const formats = ['png', 'webp', 'jpeg', 'pdf']
 
     formats.forEach(f => {
       t.test(`for format ${f}`, t => {
         fn({imgData: 'asdfDFDASFsafadsf', format: f}, {}, (errorCode, result) => {
           t.equal(errorCode, null)
-          t.equal(result.head['Content-Type'], `image/${f}`)
+          t.match(result.head['Content-Type'], f)
           t.type(result.body, Buffer)
           t.type(result.bodyLength, 'number')
           t.end()
@@ -345,14 +347,37 @@ tap.test('convert:', t => {
     })
   })
 
-  t.test('should convert image data to pdf', t => {
-    const info = {imgData: '<svg></svg>', format: 'pdf'}
-    const opts = {batik: paths.batik}
+  t.test('should convert pdf data to eps', t => {
+    const info = {imgData: mocks.pdf, format: 'eps'}
+
+    fn(info, {}, (errorCode, result) => {
+      t.equal(errorCode, null)
+      t.equal(result.head['Content-Type'], 'application/postscript')
+      t.type(result.body, Buffer)
+      t.end()
+    })
+  })
+
+  t.test('should convert pdf data to eps (while passing instance of Pdftops)', t => {
+    const info = {imgData: mocks.pdf, format: 'eps'}
+    const opts = {pdftops: new Pdftops()}
 
     fn(info, opts, (errorCode, result) => {
       t.equal(errorCode, null)
-      t.equal(result.head['Content-Type'], 'application/pdf')
+      t.equal(result.head['Content-Type'], 'application/postscript')
       t.type(result.body, Buffer)
+      t.end()
+    })
+  })
+
+  t.test('should pass pdftops errors', t => {
+    const info = {imgData: mocks.pdf, format: 'eps'}
+    const opts = {pdftops: 'not gonna work'}
+
+    fn(info, opts, (errorCode, result) => {
+      t.equal(errorCode, 530)
+      t.match(result.msg, 'image conversion error')
+      t.match(result.error.message, 'Command failed')
       t.end()
     })
   })
@@ -371,51 +396,93 @@ tap.test('render:', t => {
 
   let Plotly
   let document
+  let window
 
   t.beforeEach((done) => {
     global.Plotly = Plotly = {}
     global.document = document = {}
+    global.window = window = {}
     done()
   })
 
   t.afterEach((done) => {
     delete global.Plotly
     delete global.document
+    delete global.window
     done()
   })
 
   const mock130 = () => {
     Plotly.version = '1.30.0'
-    Plotly.toImage = sinon.stub().returns(new Promise(resolve => {
-      resolve('image data')
-    }))
+    Plotly.toImage = sinon.stub().returns(
+      new Promise(resolve => resolve('image data'))
+    )
   }
 
   const mock110 = () => {
     Plotly.version = '1.11.0'
-    Plotly.toImage = sinon.stub().returns(new Promise(resolve => {
-      resolve('image data')
-    }))
-    Plotly.newPlot = sinon.stub().returns(new Promise(resolve => {
-      resolve({})
-    }))
+    Plotly.toImage = sinon.stub().resolves(
+      new Promise(resolve => resolve('image data'))
+    )
+    Plotly.newPlot = sinon.stub().resolves(
+      new Promise(resolve => resolve({}))
+    )
     Plotly.purge = sinon.stub()
+  }
+
+  const mockBrowser = () => {
     document.createElement = sinon.stub()
+    window.decodeURIComponent = sinon.stub().returns('decoded image data')
+    window.encodeURIComponent = sinon.stub().returns('encoded image data')
+  }
+
+  const mockWindow = () => {
+    const win = createMockWindow()
+    sinon.stub(remote, 'createBrowserWindow').returns(win)
+    return {
+      win: win,
+      restore: () => remote.createBrowserWindow.restore()
+    }
   }
 
   t.test('v1.30.0 and up', t => {
-    mock130()
+    t.test('(format png)', t => {
+      mock130()
 
-    fn({}, {}, (errorCode, result) => {
-      t.equal(result.imgData, 'image data')
-      t.ok(Plotly.toImage.calledOnce)
-      t.end()
+      fn({}, {}, (errorCode, result) => {
+        t.equal(result.imgData, 'image data')
+        t.ok(Plotly.toImage.calledOnce)
+        t.end()
+      })
     })
+
+    t.test('(format pdf)', t => {
+      mock130()
+      mockBrowser()
+      const {win, restore} = mockWindow()
+      win.webContents.executeJavaScript.returns(new Promise(resolve => resolve()))
+      win.webContents.printToPDF.yields(null, 'pdf data')
+
+      fn({format: 'pdf'}, {}, (errorCode, result) => {
+        t.equal(errorCode, null)
+        t.equal(result.imgData, 'pdf data')
+        t.equal(window.encodeURIComponent.callCount, 1, 'encodeURIComponent calls')
+        t.equal(win.webContents.executeJavaScript.callCount, 1, 'executeJavaScript calls')
+        t.equal(win.webContents.printToPDF.callCount, 1, 'printToPDF calls')
+        t.ok(win.close.calledOnce)
+
+        restore()
+        t.end()
+      })
+    })
+
+    t.end()
   })
 
   t.test('v1.11.0 <= versions < v1.30.0', t => {
     t.test('(format png)', t => {
       mock110()
+      mockBrowser()
 
       fn({}, {}, (errorCode, result) => {
         t.equal(result.imgData, 'image data')
@@ -429,17 +496,41 @@ tap.test('render:', t => {
 
     t.test('(format svg)', t => {
       mock110()
-      global.decodeURIComponent = sinon.stub().returns('decoded image data')
+      mockBrowser()
 
       fn({format: 'svg'}, {}, (errorCode, result) => {
         t.equal(result.imgData, 'decoded image data')
         t.ok(document.createElement.calledOnce)
+        t.ok(window.decodeURIComponent.calledOnce)
         t.ok(Plotly.newPlot.calledOnce)
         t.ok(Plotly.toImage.calledOnce)
         t.ok(Plotly.purge.calledOnce)
-        t.ok(global.decodeURIComponent)
+        t.end()
+      })
+    })
 
-        delete global.decodeURIComponent
+    t.test('(format pdf)', t => {
+      mock110()
+      mockBrowser()
+      const {win, restore} = mockWindow()
+      win.webContents.executeJavaScript.returns(new Promise(resolve => resolve()))
+      win.webContents.printToPDF.yields(null, 'pdf data')
+
+      fn({format: 'pdf'}, {}, (errorCode, result) => {
+        t.equal(errorCode, null)
+        t.equal(result.imgData, 'pdf data')
+        t.equal(document.createElement.callCount, 1, 'createElement calls')
+        t.equal(window.encodeURIComponent.callCount, 1, 'encodeURIComponent calls')
+        t.equal(win.webContents.executeJavaScript.callCount, 1, 'executeJavaScript calls')
+        t.equal(win.webContents.printToPDF.callCount, 1, 'printToPDF calls')
+        t.doesNotThrow(() => {
+          const gd = {
+            _fullLayout: {paper_bgcolor: 'some color'}
+          }
+          Plotly.toImage.args[0][1].setBackground(gd, 'some other color')
+        }, 'custom setBackground function')
+
+        restore()
         t.end()
       })
     })
@@ -464,6 +555,41 @@ tap.test('render:', t => {
 
     fn({}, {}, (errorCode) => {
       t.equal(errorCode, 525)
+      t.end()
+    })
+  })
+
+  t.test('should return error code on executeJavaScript errors', t => {
+    mock130()
+    mockBrowser()
+    const {win, restore} = mockWindow()
+    win.webContents.executeJavaScript.returns(new Promise((resolve, reject) => {
+      reject(new Error('oh no!'))
+    }))
+
+    fn({format: 'pdf'}, {}, (errorCode, result) => {
+      t.equal(errorCode, 525)
+      t.match(result.error, /oh no/, 'error')
+      t.ok(win.close.calledOnce)
+
+      restore()
+      t.end()
+    })
+  })
+
+  t.test('should return error code on printToPDF errors', t => {
+    mock130()
+    mockBrowser()
+    const {win, restore} = mockWindow()
+    win.webContents.executeJavaScript.returns(new Promise(resolve => resolve()))
+    win.webContents.printToPDF.yields(new Error('oops'))
+
+    fn({format: 'pdf'}, {}, (errorCode, result) => {
+      t.equal(errorCode, 525)
+      t.match(result.error, /oops/, 'error')
+      t.ok(win.close.calledOnce)
+
+      restore()
       t.end()
     })
   })

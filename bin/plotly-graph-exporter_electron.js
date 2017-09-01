@@ -58,7 +58,6 @@ getStdin().then((txt) => {
         mapboxAccessToken: argv['mapbox-access-token'],
         mathjax: argv.mathjax,
         topojson: argv.topojson,
-        batik: argv.batik || path.join(__dirname, '..', 'build', 'batik-1.7', 'batik-rasterizer.jar'),
         format: argv.format,
         scale: argv.scale,
         width: argv.width,

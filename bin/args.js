@@ -1,7 +1,7 @@
 const plotlyGraphCst = require('../src/component/plotly-graph/constants')
 const minimist = require('minimist')
 
-const PLOTLYJS_STRING = ['plotly', 'mapbox-access-token', 'topojson', 'mathjax', 'batik']
+const PLOTLYJS_STRING = ['plotly', 'mapbox-access-token', 'topojson', 'mathjax']
 
 const PLOTLYJS_ALIAS = {
   'plotly': ['plotlyjs', 'plotly-js', 'plotly_js', 'plotlyJS', 'plotlyJs'],
@@ -13,8 +13,7 @@ const PLOTLYJS_DEFAULT = {
   'plotly': '',
   'mapbox-access-token': process.env.MAPBOX_ACCESS_TOKEN || '',
   'topojson': '',
-  'mathjax': '',
-  'batik': process.env.BATIK_RASTERIZER_PATH || ''
+  'mathjax': ''
 }
 
 const DESCRIPTION = {
@@ -32,9 +31,7 @@ const DESCRIPTION = {
 
   topojson: `Sets path to topojson files. By default topojson files on the plot.ly CDN are used.`,
 
-  mathjax: `Sets path to MathJax files. Required to export LaTeX characters.`,
-
-  batik: 'Sets path to batik-rasterizer jar file. Required to export PDF and EPS formats.'
+  mathjax: `Sets path to MathJax files. Required to export LaTeX characters.`
 }
 
 const EXPORTER_MINIMIST_CONFIG = {
@@ -151,9 +148,6 @@ exports.getExporterHelpMsg = function () {
   --mathjax ${formatAliases('mathjax')}
     ${DESCRIPTION.mathjax}
 
-  --batik
-    ${DESCRIPTION.batik}
-
   --format ${formatAliases('format')}
     Sets the output format (${Object.keys(plotlyGraphCst.contentFormat).join(', ')}). Applies to all output images.
 
@@ -218,9 +212,6 @@ exports.getServerHelpMsg = function () {
 
   --mathjax ${formatAliases('mathjax')}
     ${DESCRIPTION.mathjax}
-
-  --batik
-    ${DESCRIPTION.batik}
 
   --debug
     ${DESCRIPTION.debug}
