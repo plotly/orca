@@ -1,33 +1,64 @@
+# Inspired by:
+# https://github.com/teppeis-sandbox/circleci2-multiple-node-versions/blob/master/.circleci/config.yml
+#
+# List of node images:
+# https://hub.docker.com/r/circleci/node/tags/
+#
+# Note that we use the '-browsers' variation which wraps electron with xvfb
+# for headless testing
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - node-v6
+      - node-v8
+
 version: 2
-
 jobs:
-  build:
+  base: &base
     docker:
-      # see https://circleci.com/docs/2.0/circleci-images/
-      # use '-browsers' version to have access to xvfb wrappers
-      - image: circleci/node:6.10.3-browsers
-
+      - image: node
     steps:
+      - run:
+          name: List versions
+          command: |
+            echo "npm: $(npm --version)"
+            echo "node: $(node --version)"
       - checkout
-
-      # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run: npm install
-
+            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
+            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-master-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
+      - run:
+          name: Install deps
+          command: |
+            npm install
+            sudo apt-get install poppler-utils
+      - run:
+          name: List deps
+          command: |
+            npm ls
+            pdftops -v
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      # install pdftops
-      - run: sudo apt-get install poppler-utils
-
-      - run: npm test
-
+          key: v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
+      - run:
+          name: Test
+          command: npm test
+      - run:
+          name: Coverage
+          command: npm run coverage
       - store_artifacts:
           path: build
+
+  node-v6:
+    <<: *base
+    docker:
+      - image: circleci/node:6.10.3-browsers
+
+  node-v8:
+    <<: *base
+    docker:
+      - image: circleci/node:8.4.0-browsers
