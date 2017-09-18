@@ -48,6 +48,30 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 ####################
+# Download fonts
+
+RUN apt-get update -y && apt-get install -y subversion fontconfig && \
+    rm -rf /var/lib/apt/lists/* && apt-get clean && \
+    cd /usr/share/fonts/truetype && \
+    for font in \
+      https://github.com/google/fonts/trunk/apache/droidsansmono \
+      https://github.com/google/fonts/trunk/apache/droidsans \
+      https://github.com/google/fonts/trunk/apache/droidserif \
+      https://github.com/google/fonts/trunk/apache/roboto \
+      https://github.com/google/fonts/trunk/apache/opensans \
+      https://github.com/google/fonts/trunk/ofl/gravitasone \
+      https://github.com/google/fonts/trunk/ofl/oldstandardtt \
+      https://github.com/google/fonts/trunk/ofl/ptsansnarrow \
+      https://github.com/google/fonts/trunk/ofl/raleway \
+      https://github.com/google/fonts/trunk/ofl/overpass \
+    ; do \
+      svn checkout $font ; \
+    done && \
+    fc-cache -fv && apt-get --auto-remove -y remove subversion
+
+# TODO: handle user-supplied fonts (e.g. Balto)
+
+####################
 # Copy and set up image-exporter
 
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
