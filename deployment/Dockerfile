@@ -67,9 +67,8 @@ RUN apt-get update -y && apt-get install -y subversion fontconfig && \
     ; do \
       svn checkout $font ; \
     done && \
+    mkdir /usr/share/fonts/user && \
     fc-cache -fv && apt-get --auto-remove -y remove subversion
-
-# TODO: handle user-supplied fonts (e.g. Balto)
 
 ####################
 # Copy and set up image-exporter
@@ -90,4 +89,5 @@ RUN npm install && \
     mkdir build
 
 EXPOSE 9091
-CMD xvfb-run ./bin/plotly-export-server.js --plotlyJS ./plotly-latest.min.js
+CMD fc-cache -v /usr/share/fonts/user && \
+    xvfb-run ./bin/plotly-export-server.js --plotlyJS ./plotly-latest.min.js

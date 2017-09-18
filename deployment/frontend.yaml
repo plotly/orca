@@ -32,3 +32,12 @@ spec:
         ports:
         - name: http-server
           containerPort: 9091
+        volumeMounts:
+        - mountPath: "/usr/share/fonts/user"
+          name: plotly-cloud-licensed-fonts
+      volumes:
+      - name: plotly-cloud-licensed-fonts
+        gcePersistentDisk:
+          pdName: plotly-cloud-licensed-fonts
+          readOnly: true
+          fsType: ext4
