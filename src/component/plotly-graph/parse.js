@@ -90,15 +90,22 @@ function parse (body, _opts, sendToRenderer) {
     result.figure.layout = {}
   }
 
-  result.width = isPositiveNumeric(opts.width) ? Number(opts.width)
-    : isPositiveNumeric(result.figure.layout.width) ? Number(result.figure.layout.width)
-    : cst.dflt.width
-
-  result.height = isPositiveNumeric(opts.height) ? Number(opts.height)
-    : isPositiveNumeric(result.figure.layout.height) ? Number(result.figure.layout.height)
-    : cst.dflt.height
+  result.width = parseDim(result, opts, 'width')
+  result.height = parseDim(result, opts, 'height')
 
   sendToRenderer(null, result)
+}
+
+function parseDim (result, opts, dim) {
+  const layout = result.figure.layout
+
+  if (isPositiveNumeric(opts[dim])) {
+    return Number(opts[dim])
+  } else if (isPositiveNumeric(layout[dim]) && !layout.autosize) {
+    return Number(layout[dim])
+  } else {
+    return cst.dflt[dim]
+  }
 }
 
 module.exports = parse

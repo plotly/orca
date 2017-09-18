@@ -252,6 +252,19 @@ tap.test('parse:', t => {
         })
       })
 
+      shouldPass.forEach(d => {
+        t.test(`should fallback to dflt for ${d} with autosize turned on`, t => {
+          const body = {figure: {data: [], layout: { autosize: true }}}
+          body.figure.layout[k] = d
+
+          fn(body, {}, (errorCode, result) => {
+            t.equal(errorCode, null, 'code')
+            t.equal(result[k], dflt, 'result')
+            t.end()
+          })
+        })
+      })
+
       shouldFail.forEach(d => {
         t.test(`should fallback to layout ${k} for ${d}`, t => {
           const body = {figure: {data: [], layout: {}}}
