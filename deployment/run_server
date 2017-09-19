@@ -1,0 +1,5 @@
+#!/bin/bash -xe
+
+fc-cache -v /usr/share/fonts/user
+
+xvfb-run --server-args '-screen 0 640x480x24' ./bin/plotly-export-server.js $@

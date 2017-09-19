@@ -84,11 +84,10 @@ COPY bin /var/www/image-exporter/bin
 COPY src /var/www/image-exporter/src
 
 WORKDIR /var/www/image-exporter
-RUN npm install && \
-    wget https://cdn.plot.ly/plotly-latest.min.js && \
-    mkdir build
+RUN npm install && mkdir build
+
+COPY deployment/run_server /
 
 EXPOSE 9091
-CMD fc-cache -v /usr/share/fonts/user && \
-    xvfb-run --server-args "-screen 0 640x480x24" \
-        ./bin/plotly-export-server.js --plotlyJS ./plotly-latest.min.js
+ENTRYPOINT ["/run_server"]
+CMD ["--plotlyJS", "https://plot.ly/static/plotlyjs/build/plotlyjs-bundle.js"]
