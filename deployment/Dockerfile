@@ -90,4 +90,5 @@ RUN npm install && \
 
 EXPOSE 9091
 CMD fc-cache -v /usr/share/fonts/user && \
-    xvfb-run ./bin/plotly-export-server.js --plotlyJS ./plotly-latest.min.js
+    xvfb-run --server-args "-screen 0 640x480x24" \
+        ./bin/plotly-export-server.js --plotlyJS ./plotly-latest.min.js
