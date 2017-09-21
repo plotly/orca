@@ -35,6 +35,10 @@ spec:
         volumeMounts:
         - mountPath: "/usr/share/fonts/user"
           name: plotly-cloud-licensed-fonts
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 9091
       volumes:
       - name: plotly-cloud-licensed-fonts
         gcePersistentDisk:
