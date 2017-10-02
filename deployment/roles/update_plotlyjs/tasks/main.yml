@@ -1,0 +1,11 @@
+# From https://github.com/kubernetes/kubernetes/issues/27081#issuecomment-238078103
+# Change an unused variable in the deployment config, which will cause a
+# rolling update that creates new pods.  (New pods will automatically run the
+# latest plotly.js since that's loaded on boot.)
+
+- name: Show timestamp
+  local_action: command date +%s
+  register: date
+
+- name: Update plotly.js by patching the deployment
+  local_action: command kubectl patch deployment imageserver --patch "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"RESTART_DATE\":\"{{ date.stdout }}\"}}}}}"
