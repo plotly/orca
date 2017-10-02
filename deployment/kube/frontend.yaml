@@ -24,7 +24,7 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       containers:
       - name: imageserver-app
-        image: gcr.io/jody-imageserver-test/imageserver
+        image: gcr.io/sunlit-shelter-132119/imageserver
         # This setting makes nodes pull the docker image every time before
         # starting the pod. This is useful when debugging, but should be turned
         # off in production.

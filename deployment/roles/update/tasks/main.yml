@@ -5,7 +5,7 @@
 - debug: msg="Deploying rev {{ sha1_to_deploy }}"
 
 - name: Ensure image exists
-  local_action: shell gcloud container images list-tags gcr.io/jody-imageserver-test/imageserver |grep -q {{ sha1_to_deploy }}
+  local_action: shell gcloud container images list-tags gcr.io/sunlit-shelter-132119/imageserver |grep -q {{ sha1_to_deploy }}
 
 - name: Rollout new image
-  local_action: command kubectl set image deployments/imageserver imageserver-app=gcr.io/jody-imageserver-test/imageserver:{{ sha1_to_deploy }}
+  local_action: command kubectl set image deployments/imageserver imageserver-app=gcr.io/sunlit-shelter-132119/imageserver:{{ sha1_to_deploy }}
