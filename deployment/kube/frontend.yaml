@@ -25,6 +25,12 @@ spec:
       containers:
       - name: imageserver-app
         image: gcr.io/sunlit-shelter-132119/imageserver
+        env:
+          - name: PLOTLY_MAPBOX_DEFAULT_ACCESS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: mapbox
+                key: default_access_token
         # This setting makes nodes pull the docker image every time before
         # starting the pod. This is useful when debugging, but should be turned
         # off in production.

@@ -60,3 +60,19 @@ for zone in us-central1-a us-central1-b us-central1-c ; do
   gcloud compute disks create plotly-cloud-licensed-fonts --image-project=sunlit-shelter-132119 --image=plotly-cloud-licensed-fonts --zone $zone
 done
 ```
+
+# Mapbox Access Token
+
+In order to use the Mapbox functionality built in to plotly.js, a Mapbox
+access token must be provided. This can be part of the plot JSON, but for cases
+where it is not included in the plot JSON it is useful to have a default.
+
+To specify one, add it as a Kubernetes secret:
+
+```
+echo -n "pk.whatever.blabla" > /tmp/token
+kubectl create secret generic mapbox --from-file=default_access_token=/tmp/token
+```
+
+After adding the secret for the first time or it changes, you'll need to recreate
+all pods. The easiest way to do this is by running the update_plotlyjs command.
