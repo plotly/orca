@@ -9,10 +9,16 @@
 
 workflows:
   version: 2
-  test:
+  test-and-push:
     jobs:
-      - node-v6
-      - node-v8
+      - test-node-v6
+      - test-node-v8
+      - docker-build
+      - docker-push:
+          requires:
+            - test-node-v6
+            - test-node-v8
+            - docker-build
 
 version: 2
 jobs:
@@ -53,12 +59,60 @@ jobs:
       - store_artifacts:
           path: build
 
-  node-v6:
+  test-node-v6:
     <<: *base
     docker:
       - image: circleci/node:6.10.3-browsers
 
-  node-v8:
+  test-node-v8:
     <<: *base
     docker:
       - image: circleci/node:8.4.0-browsers
+
+  docker-build:
+    docker:
+      - image: circleci/node:6.10.3-browsers
+
+    steps:
+      - setup_remote_docker:
+          reusable: true
+
+      - checkout
+
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -f deployment/Dockerfile -t gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_SHA1 .
+
+      - run:
+          name: Smoke test Docker image
+          command: |
+            docker run -d -p 9091:9091/tcp --name imageserver gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_SHA1
+            docker run --network container:imageserver appropriate/curl --retry 60 --retry-connrefused --retry-delay 1 http://localhost:9091/ping
+
+  docker-push:
+    docker:
+      - image: circleci/node:6.10.3-browsers
+
+    steps:
+      - setup_remote_docker:
+          reusable: true
+
+      - run:
+          name: Install gcloud
+          command: |
+            echo "deb http://packages.cloud.google.com/apt cloud-sdk-jessie main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+            curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+            sudo apt-get update && sudo apt-get install google-cloud-sdk kubectl
+
+      - run:
+          name: Push Docker image to GCR
+          command: |
+            echo ${GOOGLE_AUTH} | base64 -i --decode > ${HOME}/gcp-key.json
+            gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+
+            docker tag gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_SHA1 gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_BRANCH
+            gcloud docker -- push gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_SHA1
+            gcloud docker -- push gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_BRANCH

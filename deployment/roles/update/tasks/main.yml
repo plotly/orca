@@ -1,0 +1,11 @@
+- name: Determine current sha1 to deploy
+  local_action: command git rev-parse HEAD
+  register: sha1
+- set_fact: sha1_to_deploy="{{ sha1.stdout }}"
+- debug: msg="Deploying rev {{ sha1_to_deploy }}"
+
+- name: Ensure image exists
+  local_action: shell gcloud container images list-tags gcr.io/sunlit-shelter-132119/imageserver |grep -q {{ sha1_to_deploy }}
+
+- name: Rollout new image
+  local_action: command kubectl set image deployments/imageserver imageserver-app=gcr.io/sunlit-shelter-132119/imageserver:{{ sha1_to_deploy }}
