@@ -5,6 +5,7 @@ const cst = require('./constants')
  *
  * @param {object} info : info object
  *  - format {string} (from parse)
+ *  - encoded {string} (from parse)
  *  - imgData {string} (from render)
  * @param {object} opts : component options
  *  - pdftops {string or instance of Pdftops)
@@ -18,6 +19,7 @@ const cst = require('./constants')
 function convert (info, opts, reply) {
   const imgData = info.imgData
   const format = info.format
+  const encoded = info.encoded
 
   const result = {}
   let errorCode = null
@@ -53,15 +55,19 @@ function convert (info, opts, reply) {
     })
   }
 
-  // TODO
-  // - is the 'encoded' option still relevant?
-
   switch (format) {
     case 'png':
     case 'jpeg':
     case 'webp':
+      body = encoded
+        ? imgData
+        : Buffer.from(imgData, 'base64')
+      bodyLength = body.length
+      return done()
     case 'pdf':
-      body = Buffer.from(imgData, 'base64')
+      body = encoded
+        ? `data:${cst.contentFormat.pdf};base64,${imgData.toString('base64')}`
+        : Buffer.from(imgData, 'base64')
       bodyLength = body.length
       return done()
     case 'svg':
@@ -71,7 +77,9 @@ function convert (info, opts, reply) {
       return done()
     case 'eps':
       pdf2eps(imgData, (eps) => {
-        body = eps
+        body = encoded
+          ? `data:${cst.contentFormat.eps};base64,${eps.toString('base64')}`
+          : Buffer.from(eps, 'base64')
         bodyLength = body.length
         return done()
       })

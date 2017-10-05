@@ -337,6 +337,34 @@ tap.test('convert:', t => {
     t.end()
   })
 
+  t.test('should pass image data when encoded option is turned on', t => {
+    const formats = ['png', 'webp', 'jpeg']
+
+    formats.forEach(f => {
+      t.test(`for format ${f}`, t => {
+        fn({imgData: 'asdfDFDASFsafadsf', format: f, encoded: true}, {}, (errorCode, result) => {
+          t.equal(errorCode, null)
+          t.match(result.head['Content-Type'], f)
+          t.type(result.body, 'asdfDFDASFsafadsf')
+          t.type(result.bodyLength, 'number')
+          t.end()
+        })
+      })
+    })
+
+    t.test('for format pdf', t => {
+      fn({imgData: 'asdfDFDASFsafadsf', format: 'pdf', encoded: true}, {}, (errorCode, result) => {
+        t.equal(errorCode, null)
+        t.match(result.head['Content-Type'], 'pdf')
+        t.type(result.body, 'data:application/pdf;base64,asdfDFDASFsafadsf')
+        t.type(result.bodyLength, 'number')
+        t.end()
+      })
+    })
+
+    t.end()
+  })
+
   t.test('should pass svg image data', t => {
     fn({imgData: '<svg></svg>', format: 'svg'}, {}, (errorCode, result) => {
       t.equal(errorCode, null)
@@ -350,12 +378,25 @@ tap.test('convert:', t => {
   t.test('should convert pdf data to eps', t => {
     const info = {imgData: mocks.pdf, format: 'eps'}
 
-    fn(info, {}, (errorCode, result) => {
-      t.equal(errorCode, null)
-      t.equal(result.head['Content-Type'], 'application/postscript')
-      t.type(result.body, Buffer)
-      t.end()
+    t.test('(encoded false)', t => {
+      fn(info, {}, (errorCode, result) => {
+        t.equal(errorCode, null)
+        t.equal(result.head['Content-Type'], 'application/postscript')
+        t.type(result.body, Buffer)
+        t.end()
+      })
     })
+
+    t.test('(encoded true)', t => {
+      fn(Object.assign({}, info, {encoded: true}), {}, (errorCode, result) => {
+        t.equal(errorCode, null)
+        t.equal(result.head['Content-Type'], 'application/postscript')
+        t.match(result.body, /^data:application\/postscript;base64,/)
+        t.end()
+      })
+    })
+
+    t.end()
   })
 
   t.test('should convert pdf data to eps (while passing instance of Pdftops)', t => {
@@ -422,7 +463,7 @@ tap.test('render:', t => {
   const mock110 = () => {
     Plotly.version = '1.11.0'
     Plotly.toImage = sinon.stub().resolves(
-      new Promise(resolve => resolve('image data'))
+      new Promise(resolve => resolve('data:image/yo;base64,image data'))
     )
     Plotly.newPlot = sinon.stub().resolves(
       new Promise(resolve => resolve({}))
@@ -494,6 +535,20 @@ tap.test('render:', t => {
       })
     })
 
+    t.test('(format png encoded)', t => {
+      mock110()
+      mockBrowser()
+
+      fn({encoded: true}, {}, (errorCode, result) => {
+        t.equal(result.imgData, 'data:image/yo;base64,image data')
+        t.ok(document.createElement.calledOnce)
+        t.ok(Plotly.newPlot.calledOnce)
+        t.ok(Plotly.toImage.calledOnce)
+        t.ok(Plotly.purge.calledOnce)
+        t.end()
+      })
+    })
+
     t.test('(format svg)', t => {
       mock110()
       mockBrowser()
@@ -502,6 +557,21 @@ tap.test('render:', t => {
         t.equal(result.imgData, 'decoded image data')
         t.ok(document.createElement.calledOnce)
         t.ok(window.decodeURIComponent.calledOnce)
+        t.ok(Plotly.newPlot.calledOnce)
+        t.ok(Plotly.toImage.calledOnce)
+        t.ok(Plotly.purge.calledOnce)
+        t.end()
+      })
+    })
+
+    t.test('(format svg encoded)', t => {
+      mock110()
+      mockBrowser()
+
+      fn({format: 'svg', encoded: true}, {}, (errorCode, result) => {
+        t.equal(result.imgData, 'data:image/yo;base64,image data')
+        t.ok(document.createElement.calledOnce)
+        t.ok(window.decodeURIComponent.notCalled)
         t.ok(Plotly.newPlot.calledOnce)
         t.ok(Plotly.toImage.calledOnce)
         t.ok(Plotly.purge.calledOnce)

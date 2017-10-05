@@ -8,10 +8,10 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
  * @param {object} body : JSON-parsed request body
  *  - figure
  *  - format
- *  - encoded (?)
  *  - scale
  *  - width
  *  - height
+ *  - encoded
  *  - fid (figure id)
  * 0r:
  *  - data
@@ -46,9 +46,9 @@ function parse (body, _opts, sendToRenderer) {
     opts = _opts
   }
 
-  result.encoded = !!opts.encoded
   result.scale = isPositiveNumeric(opts.scale) ? Number(opts.scale) : cst.dflt.scale
   result.fid = isNonEmptyString(opts.fid) ? opts.fid : null
+  result.encoded = !!opts.encoded
 
   if (isNonEmptyString(opts.format)) {
     if (cst.contentFormat[opts.format]) {

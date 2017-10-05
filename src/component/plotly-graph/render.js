@@ -11,6 +11,7 @@ const cst = require('./constants')
  *  - width
  *  - height
  *  - scale
+ *  - encoded
  * @param {object} opts : component options
  *  - mapboxAccessToken
  * @param {function} sendToMain
@@ -21,6 +22,7 @@ const cst = require('./constants')
 function render (info, opts, sendToMain) {
   const figure = info.figure
   const format = info.format
+  const encoded = info.encoded
 
   const config = Object.assign({
     mapboxAccessToken: opts.mapboxAccessToken || '',
@@ -53,7 +55,7 @@ function render (info, opts, sendToMain) {
     // works as of https://github.com/plotly/plotly.js/compare/to-image-scale
     scale: info.scale,
     // return image data w/o the leading 'data:image' spec
-    imageDataOnly: !PRINT_TO_PDF,
+    imageDataOnly: !PRINT_TO_PDF && !encoded,
     // blend jpeg background color as jpeg does not support transparency
     setBackground: format === 'jpeg' ? 'opaque'
       : PRINT_TO_PDF ? pdfBackground
@@ -85,9 +87,17 @@ function render (info, opts, sendToMain) {
           case 'png':
           case 'jpeg':
           case 'webp':
-            return imgData.replace(cst.imgPrefix.base64, '')
+            if (encoded) {
+              return imgData
+            } else {
+              return imgData.replace(cst.imgPrefix.base64, '')
+            }
           case 'svg':
-            return decodeSVG(imgData)
+            if (encoded) {
+              return imgData
+            } else {
+              return decodeSVG(imgData)
+            }
           case 'pdf':
           case 'eps':
             return toPDF(imgData, imgOpts, bgColor)
