@@ -116,3 +116,9 @@ jobs:
             docker tag gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_SHA1 gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_BRANCH
             gcloud docker -- push gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_SHA1
             gcloud docker -- push gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_BRANCH
+
+      - run:
+          name: Push Docker image to Docker hub
+          command: |
+            docker tag gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_SHA1 plotly/testbed:$CIRCLE_BRANCH
+            docker push plotly/testbed:$CIRCLE_BRANCH
