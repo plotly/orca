@@ -14,6 +14,7 @@ const cst = require('./constants')
  *  - encoded
  * @param {object} opts : component options
  *  - mapboxAccessToken
+ *  - plotGlPixelRatio
  * @param {function} sendToMain
  *  - errorCode
  *  - result
@@ -26,7 +27,7 @@ function render (info, opts, sendToMain) {
 
   const config = Object.assign({
     mapboxAccessToken: opts.mapboxAccessToken || '',
-    plotGlPixelRatio: cst.plotGlPixelRatio
+    plotGlPixelRatio: opts.plotGlPixelRatio || cst.plotGlPixelRatio
   }, figure.config)
 
   const result = {}
