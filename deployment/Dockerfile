@@ -1,6 +1,11 @@
 FROM ubuntu:xenial
 
 ####################
+# Install subversion (to download from github repos)
+
+RUN apt-get update -y && apt-get install -y subversion
+
+####################
 # Install node and dependencies
 # From: https://github.com/nodejs/docker-node/blob/master/6.11/Dockerfile
 
@@ -50,7 +55,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 ####################
 # Download fonts
 
-RUN apt-get update -y && apt-get install -y subversion fontconfig && \
+RUN apt-get update -y && apt-get install -y fontconfig && \
     rm -rf /var/lib/apt/lists/* && apt-get clean && \
     cd /usr/share/fonts/truetype && \
     for font in \
@@ -68,12 +73,22 @@ RUN apt-get update -y && apt-get install -y subversion fontconfig && \
       svn checkout $font ; \
     done && \
     mkdir /usr/share/fonts/user && \
-    fc-cache -fv && apt-get --auto-remove -y remove subversion
+    fc-cache -fv
 
 ####################
 # Download poppler-utils (which includes pdftops)
 
 RUN apt-get update -y && apt-get install -y poppler-utils
+
+####################
+# Download mathjax (same version as plotly.js extras/)
+
+RUN svn checkout https://github.com/plotly/plotly.js.git/trunk/dist/extras/mathjax
+
+####################
+# Remove subversion
+
+RUN apt-get --auto-remove -y remove subversion
 
 ####################
 # Copy and set up image-exporter
@@ -95,4 +110,4 @@ COPY deployment/run_server /
 
 EXPOSE 9091
 ENTRYPOINT ["/run_server"]
-CMD ["--plotlyJS", "https://plot.ly/static/plotlyjs/build/plotlyjs-bundle.js"]
+CMD ["--plotlyJS", "https://plot.ly/static/plotlyjs/build/plotlyjs-bundle.js --mathjax /mathjax/MathJax.js"]
