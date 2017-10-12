@@ -53,7 +53,7 @@ function render (info, opts, sendToMain) {
     format: PRINT_TO_PDF ? 'svg' : format,
     width: info.width,
     height: info.height,
-    // works as of https://github.com/plotly/plotly.js/compare/to-image-scale
+    // only works as of plotly.js v1.31.0
     scale: info.scale,
     // return image data w/o the leading 'data:image' spec
     imageDataOnly: !PRINT_TO_PDF && !encoded,

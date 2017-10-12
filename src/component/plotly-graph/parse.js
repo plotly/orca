@@ -8,7 +8,7 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
  * @param {object} body : JSON-parsed request body
  *  - figure
  *  - format
- *  - scale
+ *  - scale (only for plotly.js v.1.31.0 and up)
  *  - width
  *  - height
  *  - encoded
@@ -18,7 +18,7 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
  *  - layout
  * @param {object} _opts : component options
  *  - format
- *  - scale
+ *  - scale (only for plotly.js v.1.31.0 and up)
  *  - width
  *  - height
  * @param {function} sendToRenderer
