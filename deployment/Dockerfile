@@ -71,6 +71,11 @@ RUN apt-get update -y && apt-get install -y subversion fontconfig && \
     fc-cache -fv && apt-get --auto-remove -y remove subversion
 
 ####################
+# Download poppler-utils (which includes pdftops)
+
+RUN apt-get update -y && apt-get install -y poppler-utils
+
+####################
 # Copy and set up image-exporter
 
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
