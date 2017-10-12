@@ -16,9 +16,6 @@ if (argv.help) {
   process.exit(0)
 }
 
-// TODO
-// - try https://github.com/indexzero/node-portfinder
-
 let app
 
 const plotlyJsOpts = {

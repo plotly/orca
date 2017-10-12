@@ -6,21 +6,13 @@ const fs = require('fs')
 const request = require('request')
 const readChunk = require('read-chunk')
 const fileType = require('file-type')
-const { paths } = require('../common')
 
+const { paths } = require('../common')
 const PORT = 9109
 const SERVER_URL = `http://localhost:${PORT}`
-const ROOT_PATH = path.join(__dirname, '..', '..')
-
-// TODO
-// - maybe just firing `plotly-export-server` in a child process would be enough?
-//   + I don't see any spectron feature that could be useful to use
-//     (they are mostly useful to inspect the app's window)
-// - though checking window creation/deletion might be nice
-//   for `plotly-dashboard` component
 
 const app = new Application({
-  path: path.join(ROOT_PATH, 'bin', 'plotly-export-server.js'),
+  path: path.join(paths.bin, 'plotly-export-server.js'),
   args: ['--port', PORT]
 })
 

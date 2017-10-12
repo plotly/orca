@@ -282,21 +282,5 @@ tap.test('createServer:', t => {
     t.end()
   })
 
-  t.test('should quit app on server errors', t => {
-    sinon.stub(console, 'error')
-
-    _boot([], (args) => {
-      const app = args[0]
-
-      app.quit = () => {
-        t.ok(console.error.calledOnce)
-        console.error.restore()
-        t.end()
-      }
-
-      server.emit('error')
-    })
-  })
-
   t.end()
 })

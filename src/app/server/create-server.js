@@ -151,17 +151,6 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
     })
   })
 
-  server.on('error', (err) => {
-    console.error(err)
-
-    // TODO
-    // - quit if port is in used, (might be better way to do this?)
-    // - are there any other server errors we should look out for?
-    // - what about
-    //   https://github.com/plotly/streambed/blob/master/image_server/server_app/lib/soft-reset.js
-    app.quit()
-  })
-
   return server
 }
 
