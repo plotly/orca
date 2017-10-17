@@ -1,11 +1,6 @@
 FROM ubuntu:xenial
 
 ####################
-# Install subversion (to download from github repos)
-
-RUN apt-get update -y && apt-get install -y subversion
-
-####################
 # Install node and dependencies
 # From: https://github.com/nodejs/docker-node/blob/master/6.11/Dockerfile
 
@@ -55,7 +50,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 ####################
 # Download fonts
 
-RUN apt-get update -y && apt-get install -y fontconfig && \
+RUN apt-get update -y && apt-get install -y subversion fontconfig && \
     rm -rf /var/lib/apt/lists/* && apt-get clean && \
     cd /usr/share/fonts/truetype && \
     for font in \
@@ -73,22 +68,15 @@ RUN apt-get update -y && apt-get install -y fontconfig && \
       svn checkout $font ; \
     done && \
     mkdir /usr/share/fonts/user && \
-    fc-cache -fv
-
-####################
-# Download poppler-utils (which includes pdftops)
-
-RUN apt-get update -y && apt-get install -y poppler-utils
+    fc-cache -fv && apt-get --auto-remove -y remove subversion
 
 ####################
 # Download mathjax (same version as plotly.js extras/)
 
-RUN svn checkout https://github.com/plotly/plotly.js.git/trunk/dist/extras/mathjax
-
-####################
-# Remove subversion
-
-RUN apt-get --auto-remove -y remove subversion
+RUN apt-get update -y && apt-get install -y subversion && \
+    rm -rf /var/lib/apt/lists/* && apt-get clean && \
+    svn checkout https://github.com/plotly/plotly.js.git/trunk/dist/extras/mathjax && \
+    apt-get --auto-remove -y remove subversion
 
 ####################
 # Copy and set up image-exporter
@@ -96,7 +84,7 @@ RUN apt-get --auto-remove -y remove subversion
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
     sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' && \
     apt-get update -y && \
-    apt-get install -y google-chrome-stable xvfb && \
+    apt-get install -y google-chrome-stable xvfb poppler-utils && \
     rm -rf /var/lib/apt/lists/* && apt-get clean
 
 COPY package.json /var/www/image-exporter/
