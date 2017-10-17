@@ -6,3 +6,5 @@ coverage
 
 build/*
 !build/README.md
+
+deployment/*.retry
