@@ -50,7 +50,13 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 ####################
 # Download fonts
 
-RUN apt-get update -y && apt-get install -y subversion fontconfig && \
+RUN apt-get update -y && \
+    apt-get install -y \
+        fontconfig \
+        fonts-ipafont-gothic \
+        fonts-ipafont-mincho \
+        subversion \
+        && \
     rm -rf /var/lib/apt/lists/* && apt-get clean && \
     cd /usr/share/fonts/truetype && \
     for font in \
