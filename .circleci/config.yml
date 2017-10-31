@@ -120,5 +120,6 @@ jobs:
       - run:
           name: Push Docker image to Docker hub
           command: |
-            docker tag gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_SHA1 plotly/testbed:$CIRCLE_BRANCH
-            docker push plotly/testbed:$CIRCLE_BRANCH
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker tag gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_BRANCH
+            docker push quay.io/plotly/image-exporter:$CIRCLE_BRANCH
