@@ -116,3 +116,10 @@ jobs:
             docker tag gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_SHA1 gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_BRANCH
             gcloud docker -- push gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_SHA1
             gcloud docker -- push gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_BRANCH
+
+      - run:
+          name: Push Docker image to Quay
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS quay.io
+            docker tag gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_BRANCH
+            docker push quay.io/plotly/image-exporter:$CIRCLE_BRANCH

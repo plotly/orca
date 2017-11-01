@@ -26,7 +26,7 @@
   ],
   "dependencies": {
     "body": "^5.1.0",
-    "electron": "^1.7.5",
+    "electron": "^1.7.9",
     "fast-isnumeric": "^1.1.1",
     "get-stdin": "^5.0.1",
     "glob": "^7.1.2",

@@ -1,4 +1,4 @@
-FROM ubuntu:trusty
+FROM ubuntu:xenial
 
 ####################
 # Install node and dependencies
@@ -77,12 +77,20 @@ RUN apt-get update -y && \
     fc-cache -fv && apt-get --auto-remove -y remove subversion
 
 ####################
+# Download mathjax (same version as plotly.js extras/)
+
+RUN apt-get update -y && apt-get install -y subversion && \
+    rm -rf /var/lib/apt/lists/* && apt-get clean && \
+    svn checkout https://github.com/plotly/plotly.js.git/trunk/dist/extras/mathjax && \
+    apt-get --auto-remove -y remove subversion
+
+####################
 # Copy and set up image-exporter
 
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
     sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' && \
     apt-get update -y && \
-    apt-get install -y google-chrome-stable xvfb && \
+    apt-get install -y google-chrome-stable xvfb poppler-utils && \
     rm -rf /var/lib/apt/lists/* && apt-get clean
 
 COPY package.json /var/www/image-exporter/
@@ -96,4 +104,4 @@ COPY deployment/run_server /
 
 EXPOSE 9091
 ENTRYPOINT ["/run_server"]
-CMD ["--plotlyJS", "https://plot.ly/static/plotlyjs/build/plotlyjs-bundle.js"]
+CMD ["--plotlyJS", "https://plot.ly/static/plotlyjs/build/plotlyjs-bundle.js --mathjax /mathjax/MathJax.js"]
