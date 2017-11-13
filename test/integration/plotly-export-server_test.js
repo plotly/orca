@@ -30,7 +30,7 @@ tap.tearDown(() => {
 tap.test('should launch', t => {
   app.start().then(() => {
     app.client.getWindowCount().then(cnt => {
-      t.equal(cnt, 3)
+      t.equal(cnt, 4)
       t.end()
     })
   })
@@ -129,6 +129,68 @@ tap.test('should work for *plotly-dashboard* component', {timeout: 1e5}, t => {
   })
 
   t.end()
+})
+
+tap.test('should work for *plotly-dashboard-thumbnail* component', t => {
+  const outPath = path.join(ROOT_PATH, 'build', 'dashboard-thumbnail.png')
+  const ws = fs.createWriteStream(outPath)
+
+  request({
+    method: 'post',
+    url: SERVER_URL + '/dashboard-thumbnail',
+    body: JSON.stringify({
+      settings: { backgroundColor: '#d3d3d3' },
+      layout: {
+        first: {
+          boxType: 'plot',
+          figure: {
+            data: [{
+              y: [1, 2, 1]
+            }]
+          }
+        },
+        second: {
+          boxType: 'plot',
+          figure: {
+            data: [{
+              type: 'bar',
+              y: [1, 2, 4]
+            }]
+          }
+        },
+        third: {
+          boxType: 'plot',
+          figure: {
+            data: [{
+              type: 'heatmap',
+              z: [[1, 2, 4], [1, 2, 3]]
+            }]
+          }
+        },
+        forth: {
+          boxType: 'plot',
+          figure: {
+            data: [{
+              type: 'scatter3d',
+              x: [1, 2, 3],
+              y: [1, 2, 3],
+              z: [1, 2, 1]
+            }]
+          }
+        }
+      }
+    })
+  })
+  .on('error', t.fail)
+  .pipe(ws)
+
+  ws.on('error', t.fail)
+  ws.on('finish', () => {
+    const size = fs.statSync(outPath).size
+    t.ok(size > 1e4, 'min pdf file size')
+    t.ok(size < 2e4, 'max pdf file size')
+    t.end()
+  })
 })
 
 tap.test('should teardown', t => {
