@@ -148,7 +148,8 @@ tap.test('createServer:', t => {
       const app = args[0]
 
       app.on('after-export', (info) => {
-        t.equal(Object.keys(info).length, 15, '# of keys')
+        t.equal(Object.keys(info).length, 16, '# of keys')
+        t.equal(info.method, 'POST', 'method')
         t.type(info.id, 'string', 'id')
         t.equal(info.port, args[3].port, 'port')
         t.equal(info.pending, 0, 'pending')
@@ -179,7 +180,7 @@ tap.test('createServer:', t => {
 
     t.test('on invalid route', t => {
       _boot([], (args) => {
-        wrapApp(t, args, [4, 404, 'invalid route'])
+        wrapApp(t, args, [5, 404, 'invalid route'])
 
         _post('not-gonna-work', body0(), (err, res, body) => {
           if (err) t.fail()
@@ -193,7 +194,7 @@ tap.test('createServer:', t => {
       const opts = opts0()
 
       _boot([false, false, false, opts], (args) => {
-        wrapApp(t, args, [4, 504, 'window for given route does not exist'])
+        wrapApp(t, args, [5, 504, 'window for given route does not exist'])
 
         _post('', body0(), (err, res, body) => {
           if (err) t.fail()
@@ -208,7 +209,7 @@ tap.test('createServer:', t => {
       BrowserWindow.getAllWindows = () => ({length: Infinity})
 
       _boot([false, BrowserWindow], (args) => {
-        wrapApp(t, args, [4, 402, 'too many windows are opened'])
+        wrapApp(t, args, [5, 402, 'too many windows are opened'])
 
         _post('', body0(), (err, res, body) => {
           if (err) t.fail()
@@ -220,7 +221,7 @@ tap.test('createServer:', t => {
 
     t.test('on json parse errors', t => {
       _boot([], (args) => {
-        wrapApp(t, args, [4, 422, 'json parse error'])
+        wrapApp(t, args, [5, 422, 'json parse error'])
 
         _post('', body0() + '/', (err, res, body) => {
           if (err) t.fail()
@@ -236,7 +237,7 @@ tap.test('createServer:', t => {
       sinon.stub(_module, 'parse').yields(432)
 
       _boot([false, false, false, opts], (args) => {
-        wrapApp(t, args, [4, 432, ''])
+        wrapApp(t, args, [5, 432, ''])
 
         _post('', body0(), (err, res, body) => {
           if (err) t.fail()
@@ -251,7 +252,7 @@ tap.test('createServer:', t => {
       const opts = mockWebContents(opts0(), 467, {msg: 'error msg'})
 
       _boot([false, false, false, opts], (args) => {
-        wrapApp(t, args, [11, 467, 'error msg'])
+        wrapApp(t, args, [12, 467, 'error msg'])
 
         _post('', body0(), (err, res, body) => {
           if (err) t.fail()
@@ -267,7 +268,7 @@ tap.test('createServer:', t => {
       sinon.stub(_module, 'convert').yields(483)
 
       _boot([false, false, false, opts], (args) => {
-        wrapApp(t, args, [12, 483, ''])
+        wrapApp(t, args, [13, 483, ''])
 
         _post('', body0(), (err, res, body) => {
           if (err) t.fail()

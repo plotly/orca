@@ -31,6 +31,7 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
     //   and is emitted on 'export-error' and 'after-export'
     const fullInfo = {
       port: opts.port,
+      method: req.method,
       id: id
     }
 
