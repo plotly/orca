@@ -106,7 +106,7 @@ function render (info, opts, sendToMain) {
             result.imgData = img.toPNG()
             done()
           })
-        }, 20)
+        }, 100)
       })
       .catch(() => {
         errorCode = 525

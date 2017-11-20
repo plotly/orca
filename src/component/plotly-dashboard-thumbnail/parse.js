@@ -2,14 +2,12 @@ const isPlainObj = require('is-plain-obj')
 const isNonEmptyString = require('../../util/is-non-empty-string')
 const overrideFigure = require('../plotly-thumbnail/parse').overrideFigure
 
-const seq = ['first', 'second', 'third', 'forth']
-
 /**
  * @param {object} body : JSON-parsed request body
  *  - layout:
  *    - type
  *    - direction
- *    - first, second, third, forth:
+ *    - first, second:
  *      - boxType
  *      - figure
  *  - settings:
@@ -30,45 +28,58 @@ function parse (body, opts, sendToRenderer) {
   result.fid = isNonEmptyString(body.fid) ? body.fid : null
 
   const layout = body.layout
+  result.panels = []
+
+  const parseFromType = (cont) => {
+    switch (cont.type) {
+      case 'split':
+        parseFromType(cont.first)
+        parseFromType(cont.second)
+        break
+      case 'box':
+        parseFromBoxType(cont)
+        break
+    }
+  }
+
+  const parseFromBoxType = (cont) => {
+    let figure
+
+    switch (cont.boxType) {
+      case 'plot':
+        figure = {
+          data: cont.figure.data || [],
+          layout: cont.figure.layout || {}
+        }
+        overrideFigure(figure)
+        break
+
+      case 'text':
+        figure = {
+          data: [],
+          layout: {}
+        }
+        overrideFigure(figure)
+
+        figure.annotations = [{
+          text: cont.text.substr(50)
+        }]
+        break
+
+      default:
+        figure = {
+          data: [],
+          layout: {}
+        }
+        overrideFigure(figure)
+        break
+    }
+
+    result.panels.push(figure)
+  }
 
   if (isPlainObj(layout)) {
-    result.layoutType = layout.type
-    result.direction = layout.direction
-
-    result.panels = seq.map(s => {
-      const spec = layout[s] || {}
-      let figure
-
-      switch (spec.boxType) {
-        case 'plot':
-          figure = {
-            data: spec.figure.data || [],
-            layout: spec.figure.layout || {}
-          }
-          break
-
-        case 'text':
-          figure = {
-            data: [],
-            layout: {
-              annotations: [{
-                text: 'copy text panel here'
-              }]
-            }
-          }
-          break
-
-        default:
-          figure = {
-            data: [],
-            layout: {}
-          }
-          break
-      }
-
-      overrideFigure(figure)
-      return figure
-    })
+    parseFromType(layout)
   } else {
     return errorOut(400)
   }

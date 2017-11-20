@@ -141,41 +141,52 @@ tap.test('should work for *plotly-dashboard-thumbnail* component', t => {
     body: JSON.stringify({
       settings: { backgroundColor: '#d3d3d3' },
       layout: {
+        type: 'split',
         first: {
-          boxType: 'plot',
-          figure: {
-            data: [{
-              y: [1, 2, 1]
-            }]
+          type: 'split',
+          first: {
+            type: 'box',
+            boxType: 'plot',
+            figure: {
+              data: [{
+                y: [1, 2, 1]
+              }]
+            }
+          },
+          second: {
+            type: 'box',
+            boxType: 'plot',
+            figure: {
+              data: [{
+                type: 'bar',
+                y: [1, 2, 4]
+              }]
+            }
           }
         },
         second: {
-          boxType: 'plot',
-          figure: {
-            data: [{
-              type: 'bar',
-              y: [1, 2, 4]
-            }]
-          }
-        },
-        third: {
-          boxType: 'plot',
-          figure: {
-            data: [{
-              type: 'heatmap',
-              z: [[1, 2, 4], [1, 2, 3]]
-            }]
-          }
-        },
-        forth: {
-          boxType: 'plot',
-          figure: {
-            data: [{
-              type: 'scatter3d',
-              x: [1, 2, 3],
-              y: [1, 2, 3],
-              z: [1, 2, 1]
-            }]
+          type: 'split',
+          first: {
+            type: 'box',
+            boxType: 'plot',
+            figure: {
+              data: [{
+                type: 'heatmap',
+                z: [[1, 2, 4], [1, 2, 3]]
+              }]
+            }
+          },
+          second: {
+            type: 'box',
+            boxType: 'plot',
+            figure: {
+              data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                z: [1, 2, 1]
+              }]
+            }
           }
         }
       }
