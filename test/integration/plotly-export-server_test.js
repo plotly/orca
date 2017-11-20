@@ -198,8 +198,8 @@ tap.test('should work for *plotly-dashboard-thumbnail* component', t => {
   ws.on('error', t.fail)
   ws.on('finish', () => {
     const size = fs.statSync(outPath).size
-    t.ok(size > 1e4, 'min pdf file size')
-    t.ok(size < 2e4, 'max pdf file size')
+    t.ok(size > 800, 'min png file size')
+    t.ok(size < 2e4, 'max png file size')
     t.end()
   })
 })
