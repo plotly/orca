@@ -58,6 +58,7 @@ app.on('after-connect', (info) => {
 app.on('after-export', (info) => {
   if (SHOW_LOGS) {
     console.log(JSON.stringify({
+      severity: 'INFO',
       httpRequest: {
         requestMethod: info.method
       },
