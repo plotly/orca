@@ -4,6 +4,7 @@ const pkg = require('../package.json')
 
 const argv = getServerArgs()
 const SHOW_LOGS = !argv.quiet
+const DEBUG = argv.debug
 
 if (argv.version) {
   console.log(pkg.version)
@@ -48,7 +49,7 @@ const opts = {
 launch()
 
 app.on('after-connect', (info) => {
-  if (SHOW_LOGS) {
+  if (DEBUG) {
     console.log(`Listening on port ${info.port} after a ${info.startupTime} ms bootup`)
     console.log(`Open routes: ${info.openRoutes.join(' ')}`)
   }
@@ -56,21 +57,43 @@ app.on('after-connect', (info) => {
 
 app.on('after-export', (info) => {
   if (SHOW_LOGS) {
-    console.log(`after-export, fig: ${info.fid} in ${info.processingTime} ms`)
+    console.log(JSON.stringify({
+      severity: 'INFO',
+      httpRequest: {
+        requestMethod: info.method
+      },
+      labels: {
+        fid: info.fid,
+        head: info.head,
+        processingTime: info.processingTime
+      }
+    }))
   }
 })
 
 app.on('export-error', (info) => {
   if (SHOW_LOGS) {
-    console.log(`export error ${info.code} - ${info.msg}`)
+    console.log(JSON.stringify({
+      severity: 'ERROR',
+      textPayload: `${info.code} - ${info.msg}`,
+      labels: {
+        fid: info.fid,
+        head: info.head
+      }
+    }))
   }
 })
 
 process.on('uncaughtException', (err) => {
-  console.warn(err)
+  if (SHOW_LOGS) {
+    console.log(JSON.stringify({
+      severity: 'ERROR',
+      textPayload: err.toString()
+    }))
+  }
 
   if (argv.keepAlive) {
-    if (SHOW_LOGS) {
+    if (DEBUG) {
       console.log('... relaunching')
     }
     launch()
@@ -78,6 +101,8 @@ process.on('uncaughtException', (err) => {
 })
 
 function launch () {
-  console.log(`Spinning up server with pid: ${process.pid}`)
+  if (DEBUG) {
+    console.log(`Spinning up server with pid: ${process.pid}`)
+  }
   app = plotlyExporter.serve(opts)
 }
