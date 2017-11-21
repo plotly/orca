@@ -20,7 +20,7 @@ tap.test('pdftops.pdf2eps', t => {
         if (err) t.fail(err)
 
         const size = fs.statSync(outPath).size
-        t.ok(size > 3e5, 'min pdf file size')
+        t.ok(size > 1e5, 'min pdf file size')
         t.ok(size < 4e5, 'max pdf file size')
         t.end()
       })

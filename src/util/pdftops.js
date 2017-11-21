@@ -10,6 +10,8 @@ const PATH_TO_BUILD = path.join(__dirname, '..', '..', 'build')
 /** Node wrapper for pdftops
  *
  * $ apt-get poppler-utils
+ * ... or on OS X:
+ * $ brew install poppler
  *
  * See:
  * - https://linux.die.net/man/1/pdftops

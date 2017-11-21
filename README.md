@@ -4,6 +4,14 @@ aka image server 2.0.
 
 See https://github.com/plotly/streambed/issues/9655 for info on the requirements.
 
+## Install
+
+- `npm i`
+- install `poppler`:
+    - Linux: `apt-get poppler-utils`
+    - OS X: `brew install poppler`
+- `npm run test`
+
 ## In brief
 
 The new image exporter will be in a repo of its own. Streambed, plotly.js and
