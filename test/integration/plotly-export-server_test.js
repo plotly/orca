@@ -4,6 +4,8 @@ const Application = require('spectron').Application
 const path = require('path')
 const fs = require('fs')
 const request = require('request')
+const readChunk = require('read-chunk')
+const fileType = require('file-type')
 
 const PORT = 9109
 const SERVER_URL = `http://localhost:${PORT}`
@@ -124,6 +126,7 @@ tap.test('should work for *plotly-dashboard* component', {timeout: 1e5}, t => {
       const size = fs.statSync(outPath).size
       t.ok(size > 1e4, 'min pdf file size')
       t.ok(size < 2e4, 'max pdf file size')
+      t.ok(fileType(readChunk.sync(outPath, 0, 4100)).mime === 'application/pdf', 'pdf content')
       t.end()
     })
   })
@@ -200,6 +203,7 @@ tap.test('should work for *plotly-dashboard-thumbnail* component', t => {
     const size = fs.statSync(outPath).size
     t.ok(size > 800, 'min png file size')
     t.ok(size < 6e4, 'max png file size')
+    t.ok(fileType(readChunk.sync(outPath, 0, 4100)).mime === 'image/png', 'png content')
     t.end()
   })
 })
