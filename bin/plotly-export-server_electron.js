@@ -44,6 +44,10 @@ const opts = {
     route: '/thumbnail',
     options: plotlyJsOpts
   }, {
+    name: 'plotly-dashboard-preview',
+    route: '/dashboard-preview',
+    options: plotlyJsOpts
+  }, {
     name: 'plotly-dashboard-thumbnail',
     route: '/dashboard-thumbnail',
     options: plotlyJsOpts
