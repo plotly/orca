@@ -61,6 +61,14 @@ function render (info, opts, sendToMain) {
           width: ${imgWidth};
           height: ${imgHeight};
         }
+        div {
+          display: flex;
+          min-width: 0;
+          min-height: 0;
+          width: 100%;
+          height: 100%;
+          flex: 1 1 0;
+        }
       </style>
     </head>
     <body></body>
