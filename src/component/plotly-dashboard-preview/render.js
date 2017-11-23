@@ -86,20 +86,19 @@ function render (info, opts, sendToMain) {
 
   const contents = win.webContents
 
-  contents.once('did-finish-load', () => {
-    const promises = info.panels.map((p, i) => {
-      return Plotly.toImage({
-        data: p.data,
-        layout: Object.assign({}, p.layout, {width: imgWidth * 2, height: imgHeight}),
-        config: config
-      }, {
-        format: 'png',
-        width: imgWidth,
-        height: imgHeight,
-        imageDataOnly: false
-      })
-        .then(imgData => {
-          contents.executeJavaScript(`new Promise((resolve, reject) => {
+  const renderOnePlot = p => {
+    return Plotly.toImage({
+      data: p.data,
+      layout: p.layout,
+      config: config
+    }, {
+      format: 'png',
+      width: imgWidth,
+      height: imgHeight,
+      imageDataOnly: false
+    })
+      .then(imgData => {
+        contents.executeJavaScript(`new Promise((resolve, reject) => {
           const img = document.createElement('img')
           document.body.appendChild(img)
           img.onload = resolve
@@ -107,8 +106,13 @@ function render (info, opts, sendToMain) {
           img.src = "${imgData}"
           setTimeout(() => reject(new Error('too long to load image')), 5000)
         })`)
-        })
-    })
+      })
+  }
+
+  contents.once('did-finish-load', () => {
+    const promises = []
+
+    info.panels.forEach(p => promises.push(renderOnePlot(p)))
 
     Promise.all(promises)
       .then(() => {
