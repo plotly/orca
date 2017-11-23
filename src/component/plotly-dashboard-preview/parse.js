@@ -33,6 +33,7 @@ function parse (body, opts, sendToRenderer) {
       case 'split':
         return {
           type: 'split',
+          direction: cont.direction,
           panels: [cont.first, cont.second].map(parseFromType)
         }
       case 'box':

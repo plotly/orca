@@ -57,6 +57,7 @@ function render (info, opts, sendToMain) {
           overflow: hidden;
         }
         img {
+          display: block;
           padding: 0;
           width: ${imgWidth};
           height: ${imgHeight};
@@ -67,7 +68,7 @@ function render (info, opts, sendToMain) {
           min-height: 0;
           width: 100%;
           height: 100%;
-          flex: 1 1 0;
+          flex: 1 1 0%;
         }
       </style>
     </head>
@@ -118,11 +119,14 @@ function render (info, opts, sendToMain) {
       })
   }
 
-  const renderOneDiv = idArray => {
+  const renderOneDiv = (idArray, verticalContainer) => {
     contents.executeJavaScript(`new Promise((resolve, reject) => {
           const root = ${idArray.length} ? document.getElementById('gd_${idArray.slice(0, -1).join('_')}') : document.body
           const div = document.createElement('div')
           div.setAttribute('id', 'gd_${idArray.join('_')}')
+          if(${verticalContainer}) {
+            div.style['flex-direction'] = 'column'
+          }
           root.appendChild(div)
         })`)
   }
@@ -131,7 +135,7 @@ function render (info, opts, sendToMain) {
     const promises = []
 
     const traversePanels = (p, path) => {
-      renderOneDiv(path)
+      renderOneDiv(path, p.type === 'split' && p.direction === 'vertical')
       switch (p.type) {
         case 'box': {
           promises.push(renderOnePlot(p.contents, path))
