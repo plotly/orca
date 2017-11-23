@@ -124,14 +124,14 @@ function render (info, opts, sendToMain) {
     const promises = []
 
     const traversePanels = p => {
+      renderOneDiv(index++)
       switch (p.type) {
         case 'box': {
-          promises.push(renderOnePlot(p.contents, index++))
+          promises.push(renderOnePlot(p.contents, index))
           break
         }
         case 'split': {
           p.panels.forEach(panel => {
-            renderOneDiv(index)
             traversePanels(panel)
           })
           break
