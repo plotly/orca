@@ -102,4 +102,7 @@ function id2name (id) {
   return id.charAt(0) + 'axis' + id.substr(1)
 }
 
-module.exports = parse
+module.exports = {
+  parse: parse,
+  overrideFigure: overrideFigure
+}

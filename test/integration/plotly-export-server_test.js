@@ -4,6 +4,8 @@ const Application = require('spectron').Application
 const path = require('path')
 const fs = require('fs')
 const request = require('request')
+const readChunk = require('read-chunk')
+const fileType = require('file-type')
 
 const PORT = 9109
 const SERVER_URL = `http://localhost:${PORT}`
@@ -30,7 +32,7 @@ tap.tearDown(() => {
 tap.test('should launch', t => {
   app.start().then(() => {
     app.client.getWindowCount().then(cnt => {
-      t.equal(cnt, 3)
+      t.equal(cnt, 4)
       t.end()
     })
   })
@@ -124,11 +126,86 @@ tap.test('should work for *plotly-dashboard* component', {timeout: 1e5}, t => {
       const size = fs.statSync(outPath).size
       t.ok(size > 1e4, 'min pdf file size')
       t.ok(size < 2e4, 'max pdf file size')
+      t.ok(fileType(readChunk.sync(outPath, 0, 4100)).mime === 'application/pdf', 'pdf content')
       t.end()
     })
   })
 
   t.end()
+})
+
+tap.test('should work for *plotly-dashboard-thumbnail* component', t => {
+  const outPath = path.join(ROOT_PATH, 'build', 'dashboard-thumbnail.png')
+  const ws = fs.createWriteStream(outPath)
+
+  request({
+    method: 'post',
+    url: SERVER_URL + '/dashboard-thumbnail',
+    body: JSON.stringify({
+      settings: { backgroundColor: '#d3d3d3' },
+      layout: {
+        type: 'split',
+        first: {
+          type: 'split',
+          first: {
+            type: 'box',
+            boxType: 'plot',
+            figure: {
+              data: [{
+                y: [1, 2, 1]
+              }]
+            }
+          },
+          second: {
+            type: 'box',
+            boxType: 'plot',
+            figure: {
+              data: [{
+                type: 'bar',
+                y: [1, 2, 4]
+              }]
+            }
+          }
+        },
+        second: {
+          type: 'split',
+          first: {
+            type: 'box',
+            boxType: 'plot',
+            figure: {
+              data: [{
+                type: 'heatmap',
+                z: [[1, 2, 4], [1, 2, 3]]
+              }]
+            }
+          },
+          second: {
+            type: 'box',
+            boxType: 'plot',
+            figure: {
+              data: [{
+                type: 'scatter3d',
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                z: [1, 2, 1]
+              }]
+            }
+          }
+        }
+      }
+    })
+  })
+  .on('error', t.fail)
+  .pipe(ws)
+
+  ws.on('error', t.fail)
+  ws.on('finish', () => {
+    const size = fs.statSync(outPath).size
+    t.ok(size > 800, 'min png file size')
+    t.ok(size < 6e4, 'max png file size')
+    t.ok(fileType(readChunk.sync(outPath, 0, 4100)).mime === 'image/png', 'png content')
+    t.end()
+  })
 })
 
 tap.test('should teardown', t => {
