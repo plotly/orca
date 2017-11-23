@@ -86,7 +86,7 @@ function render (info, opts, sendToMain) {
 
   const contents = win.webContents
 
-  const renderOnePlot = (p, i) => {
+  const renderOnePlot = (p, idArray) => {
     return Plotly.toImage({
       data: p.data,
       layout: p.layout,
@@ -100,8 +100,8 @@ function render (info, opts, sendToMain) {
       .then(imgData => {
         contents.executeJavaScript(`new Promise((resolve, reject) => {
           const img = document.createElement('img')
-          img.setAttribute('id', 'image_${i}')
-          document.body.appendChild(img)
+          const root = document.getElementById('gd_${idArray.join('_')}')
+          root.appendChild(img)
           img.onload = resolve
           img.onerror = reject
           img.src = '${imgData}'
@@ -110,29 +110,28 @@ function render (info, opts, sendToMain) {
       })
   }
 
-  const renderOneDiv = i => {
+  const renderOneDiv = idArray => {
     contents.executeJavaScript(`new Promise((resolve, reject) => {
+          const root = ${idArray.length} ? document.getElementById('gd_${idArray.slice(0, -1).join('_')}') : document.body
           const div = document.createElement('div')
-          div.setAttribute('id', 'div_${i}')
-          document.body.appendChild(div)
+          div.setAttribute('id', 'gd_${idArray.join('_')}')
+          root.appendChild(div)
         })`)
   }
-
-  let index = 0
 
   contents.once('did-finish-load', () => {
     const promises = []
 
-    const traversePanels = p => {
-      renderOneDiv(index++)
+    const traversePanels = (p, path) => {
+      renderOneDiv(path)
       switch (p.type) {
         case 'box': {
-          promises.push(renderOnePlot(p.contents, index))
+          promises.push(renderOnePlot(p.contents, path))
           break
         }
         case 'split': {
-          p.panels.forEach(panel => {
-            traversePanels(panel)
+          p.panels.forEach((panel, i) => {
+            traversePanels(panel, path.concat([i]))
           })
           break
         }
@@ -140,7 +139,7 @@ function render (info, opts, sendToMain) {
       }
     }
 
-    traversePanels(info.panels)
+    traversePanels(info.panels, [])
 
     Promise.all(promises)
       .then(() => {
