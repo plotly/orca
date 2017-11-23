@@ -44,7 +44,7 @@ function parse (body, opts, sendToRenderer) {
     switch (cont.boxType) {
       case 'plot':
         return {
-          type: 'plot',
+          type: 'box',
           contents: {
             data: cont.figure.data || [],
             layout: cont.figure.layout || {}
@@ -53,7 +53,7 @@ function parse (body, opts, sendToRenderer) {
 
       case 'text':
         return {
-          type: 'plot',
+          type: 'box',
           contents: {
             data: [],
             layout: {},
@@ -63,7 +63,7 @@ function parse (body, opts, sendToRenderer) {
 
       default:
         return {
-          type: 'plot',
+          type: 'box',
           contents: {
             data: [],
             layout: {}

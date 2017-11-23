@@ -114,7 +114,7 @@ function render (info, opts, sendToMain) {
 
     const traversePanels = p => {
       switch (p.type) {
-        case 'plot': {
+        case 'box': {
           promises.push(renderOnePlot(p.contents))
           break
         }
