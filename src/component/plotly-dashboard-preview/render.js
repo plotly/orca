@@ -86,7 +86,7 @@ function render (info, opts, sendToMain) {
 
   const contents = win.webContents
 
-  const renderOnePlot = p => {
+  const renderOnePlot = (p, i) => {
     return Plotly.toImage({
       data: p.data,
       layout: p.layout,
@@ -100,14 +100,25 @@ function render (info, opts, sendToMain) {
       .then(imgData => {
         contents.executeJavaScript(`new Promise((resolve, reject) => {
           const img = document.createElement('img')
+          img.setAttribute('id', 'image_${i}')
           document.body.appendChild(img)
           img.onload = resolve
           img.onerror = reject
-          img.src = "${imgData}"
+          img.src = '${imgData}'
           setTimeout(() => reject(new Error('too long to load image')), 5000)
         })`)
       })
   }
+
+  const renderOneDiv = i => {
+    contents.executeJavaScript(`new Promise((resolve, reject) => {
+          const div = document.createElement('div')
+          div.setAttribute('id', 'div_${i}')
+          document.body.appendChild(div)
+        })`)
+  }
+
+  let index = 0
 
   contents.once('did-finish-load', () => {
     const promises = []
@@ -115,11 +126,14 @@ function render (info, opts, sendToMain) {
     const traversePanels = p => {
       switch (p.type) {
         case 'box': {
-          promises.push(renderOnePlot(p.contents))
+          promises.push(renderOnePlot(p.contents, index++))
           break
         }
         case 'split': {
-          p.panels.forEach(traversePanels)
+          p.panels.forEach(panel => {
+            renderOneDiv(index)
+            traversePanels(panel)
+          })
           break
         }
         default: { }
@@ -133,7 +147,7 @@ function render (info, opts, sendToMain) {
         setTimeout(() => {
           contents.capturePage(img => {
             result.imgData = img.toPNG()
-            done()
+            //done()
           })
         }, 100)
       })
