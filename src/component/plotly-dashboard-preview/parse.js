@@ -19,63 +19,61 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
 function parse (body, opts, sendToRenderer) {
   const result = {}
 
-  const errorOut = (code) => {
+  const errorOut = code => {
     result.msg = 'invalid body'
     sendToRenderer(code, result)
   }
 
   result.fid = isNonEmptyString(body.fid) ? body.fid : null
 
-  const layout = body.layout
-  result.panels = []
+  const dashboardLayout = body.layout
 
-  const parseFromType = (cont) => {
+  const parseFromType = cont => {
     switch (cont.type) {
       case 'split':
-        parseFromType(cont.first)
-        parseFromType(cont.second)
-        break
+        return {
+          type: 'split',
+          panels: [cont.first, cont.second].map(parseFromType)
+        }
       case 'box':
-        parseFromBoxType(cont)
-        break
+        return parseFromBoxType(cont)
     }
   }
 
-  const parseFromBoxType = (cont) => {
-    let figure
-
+  const parseFromBoxType = cont => {
     switch (cont.boxType) {
       case 'plot':
-        figure = {
-          data: cont.figure.data || [],
-          layout: cont.figure.layout || {}
+        return {
+          type: 'plot',
+          contents: {
+            data: cont.figure.data || [],
+            layout: cont.figure.layout || {}
+          }
         }
-        break
 
       case 'text':
-        figure = {
-          data: [],
-          layout: {}
+        return {
+          type: 'plot',
+          contents: {
+            data: [],
+            layout: {},
+            annotations: [{text: cont.text.substr(50)}]
+          }
         }
-
-        figure.annotations = [{
-          text: cont.text.substr(50)
-        }]
-        break
 
       default:
-        figure = {
-          data: [],
-          layout: {}
+        return {
+          type: 'plot',
+          contents: {
+            data: [],
+            layout: {}
+          }
         }
-        break
     }
-
-    result.panels.push(figure)
   }
 
-  if (isPlainObj(layout)) {
-    parseFromType(layout)
+  if (isPlainObj(dashboardLayout)) {
+    result.panels = parseFromType(dashboardLayout)
   } else {
     return errorOut(400)
   }

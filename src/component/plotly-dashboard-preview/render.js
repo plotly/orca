@@ -112,7 +112,21 @@ function render (info, opts, sendToMain) {
   contents.once('did-finish-load', () => {
     const promises = []
 
-    info.panels.forEach(p => promises.push(renderOnePlot(p)))
+    const traversePanels = p => {
+      switch (p.type) {
+        case 'plot': {
+          promises.push(renderOnePlot(p.contents))
+          break
+        }
+        case 'split': {
+          p.panels.forEach(traversePanels)
+          break
+        }
+        default: { }
+      }
+    }
+
+    traversePanels(info.panels)
 
     Promise.all(promises)
       .then(() => {
