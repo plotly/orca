@@ -30,8 +30,8 @@ second
 function render (info, opts, sendToMain) {
   const winWidth = info.width
   const winHeight = info.height
-  const imgWidth = (info.width - pad * 3) / 2
-  const imgHeight = (info.height - pad * 3) / 2
+  const imgWidth = (info.width - pad * 3) // 2
+  const imgHeight = (info.height - pad * 3) // 2
 
   let win = remote.createBrowserWindow({
     width: winWidth,
@@ -59,8 +59,9 @@ function render (info, opts, sendToMain) {
         img {
           display: block;
           padding: 0;
-          width: ${imgWidth};
-          height: ${imgHeight};
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
         }
         div {
           display: flex;

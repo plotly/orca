@@ -2317,6 +2317,7 @@ const ebola = {
   'layout': {
     'direction': 'vertical',
     'sizeUnit': 'px',
+/*
     'second': {
       type: 'box',
       boxType: 'plot',
@@ -2329,6 +2330,7 @@ const ebola = {
         }]
       }
     },
+*/
     'size': 1025,
     'type': 'split',
     'first': {
