@@ -5,5 +5,5 @@ module.exports = {
   inject: plotlyGraph.inject,
   parse: require('./parse'),
   render: require('./render'),
-  convert: require('./convert')
+  convert: require('../plotly-dashboard-thumbnail/convert')
 }

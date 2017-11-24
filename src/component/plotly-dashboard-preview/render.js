@@ -160,7 +160,7 @@ function render (info, opts, sendToMain) {
         setTimeout(() => {
           contents.capturePage(img => {
             result.imgData = img.toPNG()
-           //done()
+            done()
           })
         }, 100)
       })
