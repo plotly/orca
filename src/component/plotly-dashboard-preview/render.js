@@ -57,6 +57,7 @@ function render (info, opts, sendToMain) {
           overflow: hidden;
         }
         img {
+          opacity: 0.5;
           display: block;
           padding: 0;
           max-width: 100%;
@@ -96,7 +97,7 @@ function render (info, opts, sendToMain) {
 
   const contents = win.webContents
 
-  const renderOnePlot = (p, idArray) => {
+  const renderOnePlot = (p, idArray, imgWidth, imgHeight) => {
     return Plotly.toImage({
       data: p.data,
       layout: p.layout,
@@ -125,6 +126,7 @@ function render (info, opts, sendToMain) {
           const root = ${idArray.length} ? document.getElementById('gd_${idArray.slice(0, -1).join('_')}') : document.body
           const div = document.createElement('div')
           div.setAttribute('id', 'gd_${idArray.join('_')}')
+          div.style.background = 'rgb(${Math.round(255 * Math.random())}, ${Math.round(255 * Math.random())}, ${Math.round(255 * Math.random())})'
           if(${verticalContainer}) {
             div.style['flex-direction'] = 'column'
           }
@@ -135,16 +137,20 @@ function render (info, opts, sendToMain) {
   contents.once('did-finish-load', () => {
     const promises = []
 
-    const traversePanels = (p, path) => {
-      renderOneDiv(path, p.type === 'split' && p.direction === 'vertical')
+    const traversePanels = (p, path, width, height) => {
+      const dir = p.direction
+      renderOneDiv(path, p.type === 'split' && dir === 'vertical')
       switch (p.type) {
         case 'box': {
-          promises.push(renderOnePlot(p.contents, path))
+          promises.push(renderOnePlot(p.contents, path, width, height))
           break
         }
         case 'split': {
+          const multiplier = 1 / p.panels.length
+          const newWidth = dir === 'vertical' ? width : width * multiplier
+          const newHeight = dir === 'horizontal' ? height : height * multiplier
           p.panels.forEach((panel, i) => {
-            traversePanels(panel, path.concat([i]))
+            traversePanels(panel, path.concat([i]), newWidth, newHeight)
           })
           break
         }
@@ -152,7 +158,7 @@ function render (info, opts, sendToMain) {
       }
     }
 
-    traversePanels(info.panels, [])
+    traversePanels(info.panels, [], winWidth, winHeight)
 
     Promise.all(promises)
       .then(() => {

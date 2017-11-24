@@ -2317,20 +2317,6 @@ const ebola = {
   'layout': {
     'direction': 'vertical',
     'sizeUnit': 'px',
-/*
-    'second': {
-      type: 'box',
-      boxType: 'plot',
-      figure: {
-        data: [{
-          type: 'scatter3d',
-          x: [1, 2, 3],
-          y: [1, 2, 3],
-          z: [1, 2, 1]
-        }]
-      }
-    },
-*/
     'size': 1025,
     'type': 'split',
     'first': {
