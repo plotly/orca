@@ -43,7 +43,6 @@ function render (info, opts, sendToMain) {
           overflow: hidden;
         }
         img {
-          opacity: 0.5;
           display: block;
           padding: 0;
           max-width: 100%;
@@ -112,7 +111,6 @@ function render (info, opts, sendToMain) {
           const root = ${idArray.length} ? document.getElementById('gd_${idArray.slice(0, -1).join('_')}') : document.body
           const div = document.createElement('div')
           div.setAttribute('id', 'gd_${idArray.join('_')}')
-          div.style.background = 'rgb(${Math.round(255 * Math.random())}, ${Math.round(255 * Math.random())}, ${Math.round(255 * Math.random())})'
           if(${verticalContainer}) {
             div.style['flex-direction'] = 'column'
           }
