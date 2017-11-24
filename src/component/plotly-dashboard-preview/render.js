@@ -2,8 +2,6 @@
 
 const remote = require('../../util/remote')
 
-const pad = 0
-
 /**
  * @param {object} info : info object
  *  - layoutType TODO
@@ -30,8 +28,6 @@ second
 function render (info, opts, sendToMain) {
   const winWidth = info.width
   const winHeight = info.height
-  const imgWidth = (info.width - pad * 3) // 2
-  const imgHeight = (info.height - pad * 3) // 2
 
   let win = remote.createBrowserWindow({
     width: winWidth,
@@ -165,7 +161,7 @@ function render (info, opts, sendToMain) {
         setTimeout(() => {
           contents.capturePage(img => {
             result.imgData = img.toPNG()
-            //done()
+            done()
           })
         }, 100)
       })

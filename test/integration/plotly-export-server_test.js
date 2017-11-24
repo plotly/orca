@@ -32,7 +32,7 @@ tap.tearDown(() => {
 tap.test('should launch', t => {
   app.start().then(() => {
     app.client.getWindowCount().then(cnt => {
-      t.equal(cnt, 4)
+      t.equal(cnt, 5)
       t.end()
     })
   })
