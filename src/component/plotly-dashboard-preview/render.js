@@ -15,16 +15,6 @@ const remote = require('../../util/remote')
  *    - imgData
  */
 
-/*
-
-props:
-type: 'box', 'split'
-boxType: 'plot', 'webpage', 'empty', 'text'
-first
-second
-
- */
-
 function render (info, opts, sendToMain) {
   const winWidth = info.width
   const winHeight = info.height
@@ -135,6 +125,8 @@ function render (info, opts, sendToMain) {
 
     const traversePanels = (p, path, width, height) => {
       const dir = p.direction
+      const size = p.size || 50
+      const sizeUnit = p.sizeUnit || '%'
       renderOneDiv(path, p.type === 'split' && dir === 'vertical')
       switch (p.type) {
         case 'box': {
@@ -142,11 +134,18 @@ function render (info, opts, sendToMain) {
           break
         }
         case 'split': {
-          const multiplier = 1 / p.panels.length
-          const newWidth = dir === 'vertical' ? width : width * multiplier
-          const newHeight = dir === 'horizontal' ? height : height * multiplier
+          let multiplier = 1 / p.panels.length
+          if (p.panels.length) {
+            if (sizeUnit === '%') {
+              multiplier = size / 100
+            } else if (sizeUnit === 'px') {
+              multiplier = size / (dir === 'vertical' ? height : width)
+            }
+          }
+          const newWidths = dir === 'vertical' ? [width, width] : [width * multiplier, width * (1 - multiplier)]
+          const newHeights = dir === 'horizontal' ? [height, height] : [height * multiplier, height * (1 - multiplier)]
           p.panels.forEach((panel, i) => {
-            traversePanels(panel, path.concat([i]), newWidth, newHeight)
+            traversePanels(panel, path.concat([i]), newWidths[i], newHeights[i])
           })
           break
         }
@@ -161,7 +160,7 @@ function render (info, opts, sendToMain) {
         setTimeout(() => {
           contents.capturePage(img => {
             result.imgData = img.toPNG()
-            done()
+           //done()
           })
         }, 100)
       })

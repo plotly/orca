@@ -34,6 +34,8 @@ function parse (body, opts, sendToRenderer) {
         return {
           type: 'split',
           direction: cont.direction,
+          size: cont.size,
+          sizeUnit: cont.sizeUnit,
           panels: [cont.first, cont.second].filter(d => d).map(parseFromType)
         }
       case 'box':
@@ -87,8 +89,8 @@ function parse (body, opts, sendToRenderer) {
     result.backgroundColor = '#fff'
   }
 
-  result.width = body.width || 800
-  result.height = body.height || 600
+  result.width = body.width || 1280
+  result.height = body.height || 800
 
   sendToRenderer(null, result)
 }
