@@ -1,6 +1,7 @@
 /* global Plotly:false */
 
 const remote = require('../../util/remote')
+const separator = 12
 
 /**
  * @param {object} info : info object
@@ -48,8 +49,11 @@ function render (info, opts, sendToMain) {
           max-width: 100%;
           max-height: 100%;
           object-fit: contain;
+          margin: ${separator}px;
         }
         div {
+          padding: 0;
+          margin: 0;
           display: flex;
           min-width: 0;
           min-height: 0;
@@ -140,8 +144,12 @@ function render (info, opts, sendToMain) {
               multiplier = size / (dir === 'vertical' ? height : width)
             }
           }
-          const newWidths = dir === 'vertical' ? [width, width] : [width * multiplier, width * (1 - multiplier)]
-          const newHeights = dir === 'horizontal' ? [height, height] : [height * multiplier, height * (1 - multiplier)]
+          const newWidths = dir === 'vertical'
+            ? [width, width]
+            : [width * multiplier, width * (1 - multiplier) - 2 * separator]
+          const newHeights = dir === 'horizontal'
+            ? [height, height]
+            : [height * multiplier, height * (1 - multiplier) - 2 * separator]
           p.panels.forEach((panel, i) => {
             traversePanels(panel, path.concat([i]), newWidths[i], newHeights[i])
           })
@@ -151,7 +159,7 @@ function render (info, opts, sendToMain) {
       }
     }
 
-    traversePanels(info.panels, [], winWidth, winHeight)
+    traversePanels(info.panels, [], winWidth - 2 * separator, winHeight - 2 * separator)
 
     Promise.all(promises)
       .then(() => {
