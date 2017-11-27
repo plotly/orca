@@ -32,22 +32,28 @@ const opts = {
   port: argv.port,
   maxNumberOfWindows: argv.maxNumberOfWindows,
   debug: argv.debug,
-  component: [{
-    name: 'plotly-graph',
-    route: '/',
-    options: plotlyJsOpts
-  }, {
-    name: 'plotly-dashboard',
-    route: '/dashboard'
-  }, {
-    name: 'plotly-thumbnail',
-    route: '/thumbnail',
-    options: plotlyJsOpts
-  }, {
-    name: 'plotly-dashboard-thumbnail',
-    route: '/dashboard-thumbnail',
-    options: plotlyJsOpts
-  }]
+  component: [
+    {
+      name: 'plotly-graph',
+      route: '/',
+      options: plotlyJsOpts
+    }, {
+      name: 'plotly-dashboard',
+      route: '/dashboard'
+    }, {
+      name: 'plotly-thumbnail',
+      route: '/thumbnail',
+      options: plotlyJsOpts
+    }, {
+      name: 'plotly-dashboard-thumbnail',
+      route: '/dashboard-thumbnail',
+      options: plotlyJsOpts
+    },
+    {
+      name: 'plotly-dashboard-preview',
+      route: '/dashboard-preview',
+      options: plotlyJsOpts
+    }]
 }
 
 launch()

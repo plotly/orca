@@ -1,6 +1,5 @@
 const isPlainObj = require('is-plain-obj')
 const isNonEmptyString = require('../../util/is-non-empty-string')
-const overrideFigure = require('../plotly-thumbnail/parse').overrideFigure
 
 /**
  * @param {object} body : JSON-parsed request body
@@ -20,66 +19,64 @@ const overrideFigure = require('../plotly-thumbnail/parse').overrideFigure
 function parse (body, opts, sendToRenderer) {
   const result = {}
 
-  const errorOut = (code) => {
+  const errorOut = code => {
     result.msg = 'invalid body'
     sendToRenderer(code, result)
   }
 
   result.fid = isNonEmptyString(body.fid) ? body.fid : null
 
-  const layout = body.figure.layout
-  result.panels = []
+  const dashboardLayout = body.figure.layout
 
-  const parseFromType = (cont) => {
+  const parseFromType = cont => {
     switch (cont.type) {
       case 'split':
-        parseFromType(cont.first)
-        parseFromType(cont.second)
-        break
+        return {
+          type: 'split',
+          direction: cont.direction,
+          size: cont.size,
+          sizeUnit: cont.sizeUnit,
+          panels: [cont.first, cont.second].filter(d => d).map(parseFromType)
+        }
       case 'box':
-        parseFromBoxType(cont)
-        break
+        return parseFromBoxType(cont)
     }
   }
 
-  const parseFromBoxType = (cont) => {
-    let figure
-
+  const parseFromBoxType = cont => {
     switch (cont.boxType) {
       case 'plot':
-        figure = {
-          data: cont.figure.data || [],
-          layout: cont.figure.layout || {}
+        return {
+          type: 'box',
+          contents: {
+            data: cont.figure.data || [],
+            layout: cont.figure.layout || {}
+          }
         }
-        overrideFigure(figure)
-        break
 
       case 'text':
-        figure = {
-          data: [],
-          layout: {}
+        return {
+          type: 'box',
+          contents: {
+            data: [],
+            layout: {},
+            annotations: [{text: cont.text.substr(50)}]
+          }
         }
-        overrideFigure(figure)
-
-        figure.annotations = [{
-          text: cont.text.substr(50)
-        }]
-        break
 
       default:
-        figure = {
-          data: [],
-          layout: {}
+        return {
+          type: 'box',
+          contents: {
+            data: [],
+            layout: {}
+          }
         }
-        overrideFigure(figure)
-        break
     }
-
-    result.panels.push(figure)
   }
 
-  if (isPlainObj(layout)) {
-    parseFromType(layout)
+  if (isPlainObj(dashboardLayout)) {
+    result.panels = parseFromType(dashboardLayout)
   } else {
     return errorOut(400)
   }
@@ -91,6 +88,9 @@ function parse (body, opts, sendToRenderer) {
   } else {
     result.backgroundColor = '#fff'
   }
+
+  result.width = body.width || 1280
+  result.height = body.height || 800
 
   sendToRenderer(null, result)
 }

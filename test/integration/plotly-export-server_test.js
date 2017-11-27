@@ -32,7 +32,7 @@ tap.tearDown(() => {
 tap.test('should launch', t => {
   app.start().then(() => {
     app.client.getWindowCount().then(cnt => {
-      t.equal(cnt, 4)
+      t.equal(cnt, 5)
       t.end()
     })
   })
@@ -54,7 +54,9 @@ tap.test('should work for *plotly-graph* component', t => {
     url: SERVER_URL + '/',
     body: JSON.stringify({
       figure: {
-        data: [{y: [1, 2, 1]}]
+        layout: {
+          data: [{y: [1, 2, 1]}]
+        }
       }
     })
   }, (err, res, body) => {
@@ -74,7 +76,9 @@ tap.test('should work for *plotly-thumbnail* component', t => {
     url: SERVER_URL + '/thumbnail',
     body: JSON.stringify({
       figure: {
-        data: [{y: [1, 2, 1]}]
+        layout: {
+          data: [{y: [1, 2, 1]}]
+        }
       }
     })
   }, (err, res, body) => {
@@ -143,52 +147,54 @@ tap.test('should work for *plotly-dashboard-thumbnail* component', t => {
     url: SERVER_URL + '/dashboard-thumbnail',
     body: JSON.stringify({
       settings: { backgroundColor: '#d3d3d3' },
-      layout: {
-        type: 'split',
-        first: {
+      figure: {
+        layout: {
           type: 'split',
           first: {
-            type: 'box',
-            boxType: 'plot',
-            figure: {
-              data: [{
-                y: [1, 2, 1]
-              }]
+            type: 'split',
+            first: {
+              type: 'box',
+              boxType: 'plot',
+              figure: {
+                data: [{
+                  y: [1, 2, 1]
+                }]
+              }
+            },
+            second: {
+              type: 'box',
+              boxType: 'plot',
+              figure: {
+                data: [{
+                  type: 'bar',
+                  y: [1, 2, 4]
+                }]
+              }
             }
           },
           second: {
-            type: 'box',
-            boxType: 'plot',
-            figure: {
-              data: [{
-                type: 'bar',
-                y: [1, 2, 4]
-              }]
-            }
-          }
-        },
-        second: {
-          type: 'split',
-          first: {
-            type: 'box',
-            boxType: 'plot',
-            figure: {
-              data: [{
-                type: 'heatmap',
-                z: [[1, 2, 4], [1, 2, 3]]
-              }]
-            }
-          },
-          second: {
-            type: 'box',
-            boxType: 'plot',
-            figure: {
-              data: [{
-                type: 'scatter3d',
-                x: [1, 2, 3],
-                y: [1, 2, 3],
-                z: [1, 2, 1]
-              }]
+            type: 'split',
+            first: {
+              type: 'box',
+              boxType: 'plot',
+              figure: {
+                data: [{
+                  type: 'heatmap',
+                  z: [[1, 2, 4], [1, 2, 3]]
+                }]
+              }
+            },
+            second: {
+              type: 'box',
+              boxType: 'plot',
+              figure: {
+                data: [{
+                  type: 'scatter3d',
+                  x: [1, 2, 3],
+                  y: [1, 2, 3],
+                  z: [1, 2, 1]
+                }]
+              }
             }
           }
         }
