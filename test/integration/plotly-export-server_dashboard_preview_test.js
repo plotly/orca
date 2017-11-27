@@ -2314,44 +2314,46 @@ const ebola3 = {
 
 const ebola = {
   'version': 2,
-  'layout': {
-    'direction': 'vertical',
-    'sizeUnit': 'px',
-    'size': 1025,
-    'type': 'split',
-    'first': {
+  'figure': {
+    'layout': {
       'direction': 'vertical',
       'sizeUnit': 'px',
-      'second': {
-        'boxType': 'plot',
-        'fileId': 'jackp:18198',
-        'figure': ebola1,
-        'type': 'box',
-        'shareKey': null,
-        'title': 'All Outbreak Data'
-      },
-      'size': 383,
+      'size': 1025,
       'type': 'split',
       'first': {
-        'direction': 'horizontal',
-        'sizeUnit': '%',
+        'direction': 'vertical',
+        'sizeUnit': 'px',
         'second': {
           'boxType': 'plot',
-          'fileId': 'jackp:17875',
-          'figure': ebola2,
+          'fileId': 'jackp:18198',
+          'figure': ebola1,
           'type': 'box',
           'shareKey': null,
-          'title': 'Deaths per Outbreak'
+          'title': 'All Outbreak Data'
         },
-        'size': 50,
+        'size': 383,
         'type': 'split',
         'first': {
-          'boxType': 'plot',
-          'fileId': 'jackp:17874',
-          'figure': ebola3,
-          'type': 'box',
-          'shareKey': null,
-          'title': 'Outbreak Location'
+          'direction': 'horizontal',
+          'sizeUnit': '%',
+          'second': {
+            'boxType': 'plot',
+            'fileId': 'jackp:17875',
+            'figure': ebola2,
+            'type': 'box',
+            'shareKey': null,
+            'title': 'Deaths per Outbreak'
+          },
+          'size': 50,
+          'type': 'split',
+          'first': {
+            'boxType': 'plot',
+            'fileId': 'jackp:17874',
+            'figure': ebola3,
+            'type': 'box',
+            'shareKey': null,
+            'title': 'Outbreak Location'
+          }
         }
       }
     }

@@ -26,7 +26,7 @@ function parse (body, opts, sendToRenderer) {
 
   result.fid = isNonEmptyString(body.fid) ? body.fid : null
 
-  const dashboardLayout = body.layout
+  const dashboardLayout = body.figure.layout
 
   const parseFromType = cont => {
     switch (cont.type) {
