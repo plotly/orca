@@ -127,8 +127,8 @@ function render (info, opts, sendToMain) {
 
     const traversePanels = (p, path, width, height) => {
       const dir = p.direction
-      const size = p.size || 50
-      const sizeUnit = p.sizeUnit || '%'
+      const size = p.size
+      const sizeUnit = p.sizeUnit
       renderOneDiv(path, p.type === 'split' && dir === 'vertical')
       switch (p.type) {
         case 'box': {
@@ -155,7 +155,6 @@ function render (info, opts, sendToMain) {
           })
           break
         }
-        default: { }
       }
     }
 
