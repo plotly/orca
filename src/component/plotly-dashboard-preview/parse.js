@@ -33,10 +33,10 @@ function parse (body, opts, sendToRenderer) {
       case 'split':
         return {
           type: 'split',
-          direction: cont.direction,
-          size: cont.size,
-          sizeUnit: cont.sizeUnit,
-          panels: [cont.first, cont.second].filter(d => d).map(parseFromType)
+          direction: cont.direction || 'horizontal',
+          size: cont.size || 50,
+          sizeUnit: cont.sizeUnit || '%',
+          panels: [cont.first, cont.second].filter(d => d).map(parseFromType).filter(d => d)
         }
       case 'box':
         return parseFromBoxType(cont)
@@ -49,8 +49,8 @@ function parse (body, opts, sendToRenderer) {
         return {
           type: 'box',
           contents: {
-            data: cont.figure.data || [],
-            layout: cont.figure.layout || {}
+            data: (cont.figure && cont.figure.data) || [],
+            layout: (cont.figure && cont.figure.layout) || {}
           }
         }
 
@@ -60,7 +60,7 @@ function parse (body, opts, sendToRenderer) {
           contents: {
             data: [],
             layout: {},
-            annotations: [{text: cont.text.substr(50)}]
+            annotations: [{text: cont.text ? cont.text.substr(50) : ''}]
           }
         }
 
