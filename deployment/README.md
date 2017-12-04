@@ -2,12 +2,14 @@
 
 ## Provision:
 
-This is done once, manually.
+This is done once, manually. Replace `ENVIRONMENT` with the environment you're
+working with (currently `stage` is supported).
+
 
 ```
-gcloud beta container clusters create imageserver-stage --enable-autoscaling --min-nodes=1 --max-nodes=3 --num-nodes=1 --zone=us-central1-a --additional-zones=us-central1-b,us-central1-c --enable-autoupgrade --cluster-version=1.7.6-gke.1
+gcloud beta container clusters create imageserver-ENVIRONMENT --enable-autoscaling --min-nodes=1 --max-nodes=3 --num-nodes=1 --zone=us-central1-a --additional-zones=us-central1-b,us-central1-c --enable-autoupgrade --cluster-version=1.7.6-gke.1
 # Note: "min", "num", and "max" nodes sets the number PER ZONE.
-kubectl apply -f deployment/kube
+kubectl apply -f deployment/kube/ENVIRONMENT
 kubectl get service imageserver # Will show the load balancer IP when it's ready
 ```
 
