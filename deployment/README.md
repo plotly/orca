@@ -3,7 +3,7 @@
 ## Provision:
 
 This is done once, manually. Replace `ENVIRONMENT` with the environment you're
-working with (currently `stage` is supported).
+working with (currently `stage` and `prod` are supported).
 
 The scaling limit variables `--min-nodes`, `--max-nodes`, and `--num-nodes`
 must be set to the appropriate count *per zone*.
