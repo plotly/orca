@@ -25,7 +25,6 @@ spec:
       containers:
       - name: imageserver-app
         image: gcr.io/sunlit-shelter-132119/imageserver
-        args: ["--plotlyJS", "https://stage.plot.ly/static/plotlyjs/build/plotlyjs-bundle.js"]
         env:
           - name: PLOTLY_MAPBOX_DEFAULT_ACCESS_TOKEN
             valueFrom:
