@@ -77,7 +77,6 @@ function render (info, opts, sendToMain) {
 
   contents.once('did-finish-load', () => {
     const promises = info.panels
-      .filter(p => p.data && p.data.length > 0)
       .map(p => {
         return Plotly.toImage({
           data: p.data,

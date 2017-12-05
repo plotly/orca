@@ -43,39 +43,14 @@ function parse (body, opts, sendToRenderer) {
   }
 
   const parseFromBoxType = (cont) => {
-    let figure
-
-    switch (cont.boxType) {
-      case 'plot':
-        figure = {
-          data: cont.figure.data || [],
-          layout: cont.figure.layout || {}
-        }
-        overrideFigure(figure)
-        break
-
-      case 'text':
-        figure = {
-          data: [],
-          layout: {}
-        }
-        overrideFigure(figure)
-
-        figure.annotations = [{
-          text: cont.text.substr(50)
-        }]
-        break
-
-      default:
-        figure = {
-          data: [],
-          layout: {}
-        }
-        overrideFigure(figure)
-        break
+    if (cont.boxType === 'plot') {
+      const figure = {
+        data: cont.figure.data || [],
+        layout: cont.figure.layout || {}
+      }
+      overrideFigure(figure)
+      result.panels.push(figure)
     }
-
-    result.panels.push(figure)
   }
 
   if (isPlainObj(layout)) {
