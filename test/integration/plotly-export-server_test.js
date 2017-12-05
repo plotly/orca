@@ -128,7 +128,7 @@ tap.test('should work for *plotly-dashboard* component', {timeout: 1e5}, t => {
     ws.on('error', t.fail)
     ws.on('finish', () => {
       const size = fs.statSync(outPath).size
-      t.ok(size > 1e4, 'min pdf file size')
+      t.ok(size > 5e3, 'min pdf file size')
       t.ok(size < 2e4, 'max pdf file size')
       t.ok(fileType(readChunk.sync(outPath, 0, 4100)).mime === 'application/pdf', 'pdf content')
       t.end()
