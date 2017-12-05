@@ -88,7 +88,8 @@ jobs:
           name: Smoke test Docker image
           command: |
             docker run -d -p 9091:9091/tcp --name imageserver gcr.io/${GOOGLE_PROJECT_ID}/imageserver:$CIRCLE_SHA1
-            docker run --network container:imageserver appropriate/curl --retry 60 --retry-connrefused --retry-delay 1 http://localhost:9091/ping
+            docker run --network container:imageserver quay.io/plotly/wget wget --retry-connrefused --waitretry=1 -t 60 -O /dev/null --progress=dot http://localhost:9091/ping
+
 
   docker-push:
     docker:
