@@ -1,0 +1,19 @@
+# WARNING: There is considerable duplication between this file and the
+# stage version.  When updating this file, please check if your changes
+# need to be made to the other version.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: imageserver
+  annotations:
+    cloud.google.com/load-balancer-type: "internal"
+  labels:
+    app: imageserver
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 9091
+    protocol: TCP
+  selector:
+    app: imageserver

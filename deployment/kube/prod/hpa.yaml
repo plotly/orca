@@ -1,0 +1,18 @@
+# WARNING: There is considerable duplication between this file and the
+# stage version.  When updating this file, please check if your changes
+# need to be made to the other version.
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: imageserver
+spec:
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: imageserver
+  # Set this to 3x "min-nodes":
+  minReplicas: 4
+  # Set this to 3x "max-nodes":
+  maxReplicas: 12
+  targetCPUUtilizationPercentage: 80

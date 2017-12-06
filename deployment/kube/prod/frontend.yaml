@@ -1,0 +1,57 @@
+# WARNING: There is considerable duplication between this file and the
+# stage version.  When updating this file, please check if your changes
+# need to be made to the other version.
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: imageserver
+  labels:
+    app: imageserver
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: imageserver
+        tier: frontend
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                    - imageserver
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: imageserver-app
+        image: gcr.io/sunlit-shelter-132119/imageserver
+        env:
+          - name: PLOTLY_MAPBOX_DEFAULT_ACCESS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: mapbox
+                key: default_access_token
+        # This setting makes nodes pull the docker image every time before
+        # starting the pod. This is useful when debugging, but should be turned
+        # off in production.
+        imagePullPolicy: Always
+        ports:
+        - name: http-server
+          containerPort: 9091
+        volumeMounts:
+        - mountPath: "/usr/share/fonts/user"
+          name: plotly-cloud-licensed-fonts
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 9091
+      volumes:
+      - name: plotly-cloud-licensed-fonts
+        gcePersistentDisk:
+          pdName: plotly-cloud-licensed-fonts
+          readOnly: true
+          fsType: ext4

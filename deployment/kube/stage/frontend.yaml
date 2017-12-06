@@ -1,3 +1,7 @@
+# WARNING: There is considerable duplication between this file and the
+# prod version.  When updating this file, please check if your changes
+# need to be made to the other version.
+
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:

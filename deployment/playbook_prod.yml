@@ -1,0 +1,8 @@
+- hosts: localhost
+  gather_facts: False
+  vars:
+    cluster: imageserver-prod
+    zone: us-central1-a
+  roles:
+    - common
+    - update
