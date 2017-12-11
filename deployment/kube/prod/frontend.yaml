@@ -30,7 +30,7 @@ spec:
       - name: imageserver-app
         image: gcr.io/sunlit-shelter-132119/imageserver
         env:
-          - name: PLOTLY_MAPBOX_DEFAULT_ACCESS_TOKEN
+          - name: MAPBOX_ACCESS_TOKEN
             valueFrom:
               secretKeyRef:
                 name: mapbox
