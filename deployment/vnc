@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export DISPLAY=:99
+export XAUTHORITY=`ls /tmp/xvfb-run*/Xauthority`
+
+fluxbox &
+x11vnc -auth $XAUTHORITY -display $DISPLAY -nopw
