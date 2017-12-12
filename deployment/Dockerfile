@@ -100,8 +100,11 @@ COPY src /var/www/image-exporter/src
 WORKDIR /var/www/image-exporter
 RUN npm install && mkdir build
 
-COPY deployment/run_server /
+RUN apt-get update -y && apt-get install -y x11vnc fluxbox
 
-EXPOSE 9091
+COPY deployment/run_server /
+COPY deployment/vnc /
+
+EXPOSE 9091 5900
 ENTRYPOINT ["/run_server"]
 CMD ["--plotlyJS", "https://plot.ly/static/plotlyjs/build/plotlyjs-bundle.js --mathjax /mathjax/MathJax.js"]

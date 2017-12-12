@@ -2,4 +2,4 @@
 
 fc-cache -v /usr/share/fonts/user
 
-xvfb-run --server-args '-screen 0 640x480x24' ./bin/plotly-export-server.js $@
+xvfb-run --server-args '-screen 0 1280x960x24 -audit 2' --error-file /dev/stdout ./bin/plotly-export-server.js $@
