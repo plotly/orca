@@ -94,6 +94,15 @@ app.on('export-error', (info) => {
   }
 })
 
+app.on('renderer-error', (info) => {
+  if (SHOW_LOGS) {
+    console.log(JSON.stringify({
+      severity: 'ERROR',
+      textPayload: `${info.msg} - ${info.error}`,
+    }))
+  }
+})
+
 process.on('uncaughtException', (err) => {
   if (SHOW_LOGS) {
     console.log(JSON.stringify({
