@@ -65,6 +65,8 @@ app.on('after-connect', (info) => {
   }
 })
 
+var requestCount = 0
+
 app.on('after-export', (info) => {
   if (SHOW_LOGS) {
     console.log(JSON.stringify({
@@ -78,6 +80,10 @@ app.on('after-export', (info) => {
         processingTime: info.processingTime
       }
     }))
+  }
+
+  if (requestCount++ >= 1000) {
+    app.quit()
   }
 })
 
