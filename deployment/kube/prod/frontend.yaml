@@ -45,6 +45,8 @@ spec:
         volumeMounts:
         - mountPath: "/usr/share/fonts/user"
           name: plotly-cloud-licensed-fonts
+        - mountPath: "/dev/shm"
+          name: dshm
         livenessProbe:
           httpGet:
             path: /ping
@@ -55,3 +57,6 @@ spec:
           pdName: plotly-cloud-licensed-fonts
           readOnly: true
           fsType: ext4
+      - name: dshm
+        emptyDir:
+          medium: Memory
