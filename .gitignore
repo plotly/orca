@@ -4,7 +4,6 @@ npm-debug.log*
 coverage
 .nyc_output
 
-build/*
-!build/README.md
+dist/
 
 deployment/*.retry
