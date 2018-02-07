@@ -1,0 +1,17 @@
+#!/bin/bash
+
+HEARTBEAT_FILE=/var/run/imageserver_heartbeat
+
+if [ ! -e $HEARTBEAT_FILE ] ; then
+    echo WARNING: $HEARTBEAT_FILE not found
+    exit 0
+fi
+
+HEARTBEAT_AGE=$(($(date +%s) - $(date +%s -r $HEARTBEAT_FILE)))
+
+if [ $HEARTBEAT_AGE -gt 30 ] ; then
+    echo HEARTBEAT EXPIRED, $HEARTBEAT_AGE seconds
+    exit 1
+fi
+
+exit 0

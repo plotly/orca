@@ -2,6 +2,30 @@
 
 fc-cache -v /usr/share/fonts/user
 
-while true; do
-  xvfb-run --auto-servernum --server-args '-screen 0 640x480x24' ./bin/plotly-export-server.js $@
-done
+# Dynamically create the wrapper used to launch xvfb and the server so that
+# we can fill in $@ from the Docker "command" argument.
+
+cat > /usr/local/bin/xvfb_wrapper <<EOF
+#!/bin/bash
+
+PIDFILE=/var/run/xvfb.pid
+
+if [ -e \$PIDFILE ] ; then
+  kill \`cat \$PIDFILE\`
+  rm -f \$PIDFILE
+  sleep 1
+fi
+
+pkill Xvfb
+pkill node
+
+xvfb-run --auto-servernum --server-args '-screen 0 640x480x24' ./bin/plotly-export-server.js $@ 1>/proc/1/fd/1 2>/proc/1/fd/2 &
+echo \$! > \$PIDFILE
+
+EOF
+
+chmod 755 /usr/local/bin/xvfb_wrapper
+
+/usr/local/bin/xvfb_wrapper start
+
+/opt/monit/bin/monit -c /etc/monitrc

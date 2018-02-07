@@ -100,6 +100,17 @@ COPY src /var/www/image-exporter/src
 WORKDIR /var/www/image-exporter
 RUN npm install && mkdir build
 
+####################
+# Install and configure monit
+RUN cd /opt && \
+    wget -q -O - https://mmonit.com/monit/dist/binary/5.25.1/monit-5.25.1-linux-x64.tar.gz | \
+        tar xvzf - && \
+    ln -s monit-* monit
+COPY deployment/monitrc /etc
+COPY deployment/check_heartbeat /usr/local/bin
+
+####################
+# Add entrypoint script
 COPY deployment/run_server /
 
 EXPOSE 9091
