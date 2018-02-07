@@ -124,6 +124,8 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
       comp._module.convert(fullInfo, compOpts, reply)
     })
 
+    app.emit('before-export', fullInfo)
+
     // parse -> send to renderer GO!
     textBody(req, {limit: BUFFER_OVERFLOW_LIMIT}, (err, _body) => {
       let body
