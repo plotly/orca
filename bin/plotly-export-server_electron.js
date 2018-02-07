@@ -1,4 +1,4 @@
-const plotlyExporter = require('../')
+const plotlyExporter = require('../src/index.js')
 const { getServerArgs, getServerHelpMsg } = require('./args')
 const pkg = require('../package.json')
 
