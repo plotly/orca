@@ -3,12 +3,12 @@ const sinon = require('sinon')
 const path = require('path')
 const fs = require('fs')
 const uuid = require('uuid/v4')
+const { paths } = require('../common')
 
 const coerceComponent = require('../../src/util/coerce-component')
-const PATH_TO_BUILD = path.join(__dirname, '..', '..', 'build')
 
 const testMockComponentModule = (t, compModuleContent, cb) => {
-  const compPath = path.join(PATH_TO_BUILD, uuid() + '.js')
+  const compPath = path.join(paths.build, uuid() + '.js')
   const comp = {path: compPath}
 
   fs.writeFile(compPath, compModuleContent, (err) => {

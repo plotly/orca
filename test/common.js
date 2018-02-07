@@ -2,13 +2,14 @@ const fs = require('fs')
 const path = require('path')
 const EventEmitter = require('events')
 const sinon = require('sinon')
+const os = require('os')
 
 const paths = {}
 const urls = {}
 const mocks = {}
 
 paths.root = path.join(__dirname, '..')
-paths.build = path.join(paths.root, 'build')
+paths.build = path.join(os.tmpdir(), 'plotly-graph-exporter-build')
 paths.bin = path.join(paths.root, 'bin')
 paths.readme = path.join(paths.root, 'README.md')
 paths.pkg = path.join(paths.root, 'package.json')
@@ -16,6 +17,10 @@ paths.glob = path.join(paths.root, 'src', 'util', '*')
 
 urls.dummy = 'http://dummy.url'
 urls.plotlyGraphMock = 'https://raw.githubusercontent.com/plotly/plotly.js/master/test/image/mocks/20.json'
+
+try {
+  fs.mkdirSync(paths.build)
+} catch (e) {}
 
 try {
   mocks.svg = fs.readFileSync(path.join(paths.build, 'test-mock.svg'), 'utf-8')

@@ -4,8 +4,12 @@ const childProcess = require('child_process')
 const parallel = require('run-parallel')
 const series = require('run-series')
 const uuid = require('uuid/v4')
+const os = require('os')
 
-const PATH_TO_BUILD = path.join(__dirname, '..', '..', 'build')
+const PATH_TO_BUILD = path.join(os.tmpdir(), 'plotly-graph-exporter-build')
+try {
+  fs.mkdirSync(PATH_TO_BUILD)
+} catch (e) {}
 
 /** Node wrapper for pdftops
  *
