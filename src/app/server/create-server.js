@@ -93,12 +93,12 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
     const reply = (errorCode, convertInfo) => {
       Object.assign(fullInfo, convertInfo)
 
+      fullInfo.pending = --pending
+      fullInfo.processingTime = timer.end()
+
       if (errorCode) {
         return errorReply(errorCode)
       }
-
-      fullInfo.pending = --pending
-      fullInfo.processingTime = timer.end()
 
       const cb = () => {
         app.emit('after-export', fullInfo)
