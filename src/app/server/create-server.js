@@ -86,7 +86,9 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
         return errorReply(errorCode)
       }
 
+      console.log('webContents.send START');
       comp._win.webContents.send(comp.name, id, fullInfo, compOpts)
+      console.log('webContents.send DONE');
     }
 
     // setup convert callback
@@ -115,6 +117,7 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
 
     // setup convert on render message -> end response
     ipcMain.once(id, (event, errorCode, renderInfo) => {
+      console.log('got render message back')
       Object.assign(fullInfo, renderInfo)
 
       if (errorCode) {

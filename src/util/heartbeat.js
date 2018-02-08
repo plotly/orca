@@ -10,6 +10,7 @@ function touch () {
     if (err) throw err
     fs.close(fd, err => { if (err) throw err })
   })
+  console.log('TOUCH')
 }
 
 let interval
@@ -22,14 +23,17 @@ function setupHeartbeat (app) {
   app.on('before-export', (info) => {
     clearInterval(interval)
     touch()
+    console.log('Starting export; stopping heartbeat')
   })
 
   app.on('after-export', (info) => {
     touch()
     interval = setInterval(touch, HEARTBEAT_INTERVAL)
+    console.log('Export done; heartbeat started')
   })
 
   interval = setInterval(touch, HEARTBEAT_INTERVAL)
+  console.log('Initial load; heartbeat started')
 }
 
 module.exports = setupHeartbeat
