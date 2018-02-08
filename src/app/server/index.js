@@ -43,6 +43,10 @@ function createApp (_opts) {
         win = null
       })
 
+      win.on('unresponsive', () => {
+        console.warn('Window is unresponsive !!!')
+      })
+
       createIndex(comp, opts, (index) => {
         comp._index = index
         win.loadURL(`file://${index.path}`)
