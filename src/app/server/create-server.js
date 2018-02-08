@@ -129,23 +129,31 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
 
     app.emit('before-export', fullInfo)
 
+    pending++
+
     // parse -> send to renderer GO!
-    textBody(req, {limit: BUFFER_OVERFLOW_LIMIT}, (err, _body) => {
-      let body
+    if (typeof comp._module.parse == 'function') {
+      textBody(req, {limit: BUFFER_OVERFLOW_LIMIT}, (err, _body) => {
+        let body
 
-      if (err) {
-        return errorReply(422)
-      }
+        if (err) {
+          return errorReply(422)
+        }
 
-      try {
-        body = JSON.parse(_body)
-      } catch (e) {
-        return errorReply(422)
-      }
+        try {
+          body = JSON.parse(_body)
+        } catch (e) {
+          return errorReply(422)
+        }
 
-      pending++
-      comp._module.parse(body, compOpts, sendToRenderer)
-    })
+        comp._module.parse(body, compOpts, sendToRenderer)
+        console.log('sendToRenderer done')
+      })
+    } else {
+      console.log('null sendToRenderer START')
+      sendToRenderer(null, null)
+      console.log('null sendToRenderer DONE')
+    }
   })
 
   server.on('error', (err) => {
