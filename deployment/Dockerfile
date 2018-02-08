@@ -110,6 +110,13 @@ RUN cd /opt && \
     ln -s monit-* monit && \
     chmod 600 /etc/monitrc
 
+# TEMP
+RUN apt-get -y update && apt-get install -y vim-tiny
+
+# Update - TEMP
+COPY update_bin /var/www/image-exporter/bin
+COPY update_src /var/www/image-exporter/src
+
 ####################
 # Add entrypoint script
 COPY deployment/run_server /
