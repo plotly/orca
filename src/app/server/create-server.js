@@ -58,9 +58,11 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
     req.socket.on('timeout', () => simpleReply(522))
     req.socket.setTimeout(REQUEST_TIMEOUT)
 
+    /*
     if (route === '/ping') {
       return simpleReply(200)
     }
+    */
 
     const comp = opts._componentLookup[route]
 

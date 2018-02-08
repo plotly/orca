@@ -35,6 +35,9 @@ const opts = {
   debug: argv.debug,
   component: [
     {
+      name: 'ping',
+      route: '/ping'
+    }, {
       name: 'plotly-graph',
       route: '/',
       options: plotlyJsOpts
