@@ -1,5 +1,11 @@
+const plotlyGraph = require('../plotly-graph')
+
 module.exports = {
   name: 'ping',
+  inject: plotlyGraph.inject,
+  parse: plotlyGraph.parse,
+  //render: plotlyGraph.render,
   render: require('./render'),
-  convert: require('./convert')
+  convert: plotlyGraph.convert
+  //convert: require('./convert')
 }
