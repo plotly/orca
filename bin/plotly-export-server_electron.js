@@ -1,6 +1,7 @@
 const plotlyExporter = require('../')
 const { getServerArgs, getServerHelpMsg } = require('./args')
 const pkg = require('../package.json')
+const setupHeartbeat = require('../src/util/heartbeat')
 
 const argv = getServerArgs()
 const SHOW_LOGS = !argv.quiet
@@ -66,6 +67,8 @@ app.on('after-connect', (info) => {
 })
 
 var requestCount = 0
+
+setupHeartbeat(app)
 
 app.on('after-export', (info) => {
   if (SHOW_LOGS) {

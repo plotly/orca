@@ -6,6 +6,7 @@ const isNonEmptyString = require('./is-non-empty-string')
 const COMPONENT_GLOBAL = 'PlotlyExporterComponent'
 const PATH_TO_BUILD = path.join(__dirname, '..', '..', 'build')
 const PATH_TO_INIT_RENDERERS = path.join(__dirname, 'init-renderers.js')
+const PATH_TO_INIT_PINGS = path.join(__dirname, 'init-pings.js')
 
 /** Create HTML index file
  *
@@ -50,6 +51,7 @@ function createIndex (comp, opts, cb) {
       <script>
         ${COMPONENT_GLOBAL} = require('${comp.path}')
         require('${PATH_TO_INIT_RENDERERS}')([${COMPONENT_GLOBAL}])
+        require('${PATH_TO_INIT_PINGS}')([${COMPONENT_GLOBAL}])
       </script>
     </body>
   </html>`

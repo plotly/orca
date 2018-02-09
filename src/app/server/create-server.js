@@ -4,6 +4,7 @@ const uuid = require('uuid/v4')
 
 const createTimer = require('../../util/create-timer')
 const cst = require('./constants')
+const Ping = require('./ping')
 
 const BUFFER_OVERFLOW_LIMIT = cst.bufferOverflowLimit
 const REQUEST_TIMEOUT = cst.requestTimeout
@@ -59,7 +60,14 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
     req.socket.setTimeout(REQUEST_TIMEOUT)
 
     if (route === '/ping') {
-      return simpleReply(200)
+      Ping(ipcMain, opts.component)
+        .then(() => simpleReply(200))
+        .catch((err) => {
+          fullInfo.msg = JSON.stringify(err, ['message', 'arguments', 'type', 'name'])
+          errorReply(500)
+        })
+
+      return
     }
 
     const comp = opts._componentLookup[route]
@@ -86,19 +94,21 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
         return errorReply(errorCode)
       }
 
+      console.log('webContents.send START');
       comp._win.webContents.send(comp.name, id, fullInfo, compOpts)
+      console.log('webContents.send DONE');
     }
 
     // setup convert callback
     const reply = (errorCode, convertInfo) => {
       Object.assign(fullInfo, convertInfo)
 
+      fullInfo.pending = --pending
+      fullInfo.processingTime = timer.end()
+
       if (errorCode) {
         return errorReply(errorCode)
       }
-
-      fullInfo.pending = --pending
-      fullInfo.processingTime = timer.end()
 
       const cb = () => {
         app.emit('after-export', fullInfo)
@@ -115,6 +125,7 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
 
     // setup convert on render message -> end response
     ipcMain.once(id, (event, errorCode, renderInfo) => {
+      console.log('got render message back')
       Object.assign(fullInfo, renderInfo)
 
       if (errorCode) {
@@ -124,23 +135,33 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
       comp._module.convert(fullInfo, compOpts, reply)
     })
 
+    app.emit('before-export', fullInfo)
+
+    pending++
+
     // parse -> send to renderer GO!
-    textBody(req, {limit: BUFFER_OVERFLOW_LIMIT}, (err, _body) => {
-      let body
+    if (typeof comp._module.parse == 'function') {
+      textBody(req, {limit: BUFFER_OVERFLOW_LIMIT}, (err, _body) => {
+        let body
 
-      if (err) {
-        return errorReply(422)
-      }
+        if (err) {
+          return errorReply(422)
+        }
 
-      try {
-        body = JSON.parse(_body)
-      } catch (e) {
-        return errorReply(422)
-      }
+        try {
+          body = JSON.parse(_body)
+        } catch (e) {
+          return errorReply(422)
+        }
 
-      pending++
-      comp._module.parse(body, compOpts, sendToRenderer)
-    })
+        comp._module.parse(body, compOpts, sendToRenderer)
+        console.log('sendToRenderer done')
+      })
+    } else {
+      console.log('null sendToRenderer START')
+      sendToRenderer(null, null)
+      console.log('null sendToRenderer DONE')
+    }
   })
 
   server.on('error', (err) => {

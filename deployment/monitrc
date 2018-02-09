@@ -1,0 +1,20 @@
+set daemon 10
+set init
+
+check process xvfb with pidfile "/var/run/xvfb.pid"
+  start program = "/usr/local/bin/xvfb_wrapper"
+  restart program = "/usr/local/bin/xvfb_wrapper"
+
+  if failed
+    port 9091
+    protocol http
+    request "/ping"
+    for 6 cycles
+    then restart
+
+check program check_heartbeat with path "/usr/local/bin/check_heartbeat"
+  if status != 0
+    then exec "/usr/local/bin/xvfb_wrapper"
+
+set httpd port 2812
+  allow localhost

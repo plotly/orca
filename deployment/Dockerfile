@@ -100,6 +100,25 @@ COPY src /var/www/image-exporter/src
 WORKDIR /var/www/image-exporter
 RUN npm install && mkdir build
 
+####################
+# Install and configure monit
+COPY deployment/monitrc /etc
+COPY deployment/check_heartbeat /usr/local/bin
+RUN cd /opt && \
+    wget -q -O - https://mmonit.com/monit/dist/binary/5.25.1/monit-5.25.1-linux-x64.tar.gz | \
+        tar xvzf - && \
+    ln -s monit-* monit && \
+    chmod 600 /etc/monitrc
+
+# TEMP
+RUN apt-get -y update && apt-get install -y vim-tiny
+
+# Update - TEMP
+COPY update_bin /var/www/image-exporter/bin
+COPY update_src /var/www/image-exporter/src
+
+####################
+# Add entrypoint script
 COPY deployment/run_server /
 
 EXPOSE 9091
