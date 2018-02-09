@@ -4,6 +4,7 @@ const uuid = require('uuid/v4')
 
 const createTimer = require('../../util/create-timer')
 const cst = require('./constants')
+const Ping = require('./ping')
 
 const BUFFER_OVERFLOW_LIMIT = cst.bufferOverflowLimit
 const REQUEST_TIMEOUT = cst.requestTimeout
@@ -59,7 +60,14 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
     req.socket.setTimeout(REQUEST_TIMEOUT)
 
     if (route === '/ping') {
-      return simpleReply(200)
+      Ping(ipcMain, opts.component)
+        .then(() => simpleReply(200))
+        .catch((err) => {
+          fullInfo.msg = JSON.stringify(err, ['message', 'arguments', 'type', 'name'])
+          errorReply(500)
+        })
+
+      return
     }
 
     const comp = opts._componentLookup[route]
