@@ -93,6 +93,10 @@ function parse (body, _opts, sendToRenderer) {
   result.width = parseDim(result, opts, 'width')
   result.height = parseDim(result, opts, 'height')
 
+  if (willFigureHang(result)) {
+    return errorOut(400, 'figure data is likely to make exporter hang, rejecting request')
+  }
+
   sendToRenderer(null, result)
 }
 
@@ -105,6 +109,67 @@ function parseDim (result, opts, dim) {
     return Number(layout[dim])
   } else {
     return cst.dflt[dim]
+  }
+}
+
+function willFigureHang (result) {
+  const data = result.figure.data
+  const numberOfPtsPerTraceType = {}
+
+  for (var i = 0; i < data.length; i++) {
+    const trace = data[i] || {}
+    const type = trace.type || 'scatter'
+
+    if (!(type in numberOfPtsPerTraceType)) {
+      numberOfPtsPerTraceType[type] = 0
+    }
+
+    const lengths = Object.keys(trace)
+      .filter(k => Array.isArray(trace[k]))
+      .map(k => trace[k].length)
+
+    // Consider the array of maximum length as a proxy to determine
+    // the number of points to be drawn. In general, this estimate
+    // can be (much) smaller than the true number of points plotted
+    // when it does not match the length of the other coordinate arrays.
+    numberOfPtsPerTraceType[type] += Math.max(...lengths)
+
+    if (numberOfPtsPerTraceType[type] > maxPtsPerTraceType(type)) {
+      return true
+    }
+  }
+}
+
+function maxPtsPerTraceType (type) {
+  switch (type) {
+    case 'scattergl':
+    case 'pointcloud':
+      return 1e7
+
+    case 'scatterpolargl':
+    case 'heatmap':
+    case 'heatmapgl':
+      return 1e6
+
+    case 'scatter3d':
+    case 'surface':
+    case 'mesh3d':
+      return 5e5
+
+    case 'parcoords':
+      return 5e5
+    case 'scattermapbox':
+      return 5e5
+
+    case 'histogram':
+    case 'histogram2d':
+    case 'histogram2dcontour':
+    case 'box':
+    case 'violin':
+      return 1e5
+
+    default:
+      return 5e4
   }
 }
 

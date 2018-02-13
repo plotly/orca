@@ -326,6 +326,40 @@ tap.test('parse:', t => {
     })
   })
 
+  t.test('should not access figures that a likely to make renderer hang', t => {
+    t.test('failing svg scatter case', t => {
+      var x = new Array(1e6)
+
+      fn({
+        data: [{
+          type: 'scatter',
+          x: x
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
+    t.test('passing scattergl case', t => {
+      var x = new Array(1e6)
+
+      fn({
+        data: [{
+          type: 'scattergl',
+          x: x
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, null, 'code')
+        t.type(result.figure, 'object', 'figure type')
+        t.end()
+      })
+    })
+
+    t.end()
+  })
+
   t.end()
 })
 
