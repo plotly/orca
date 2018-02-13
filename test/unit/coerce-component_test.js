@@ -135,6 +135,7 @@ tap.test('should normalize *route*', t => {
 tap.test('should set *inject* in noop if not set', t => {
   const content = `module.exports = {
     name: 'n',
+    ping: () => {},
     parse: () => {},
     render: () => {},
     convert: () => {}
