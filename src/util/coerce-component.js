@@ -2,7 +2,7 @@ const path = require('path')
 const isPlainObj = require('is-plain-obj')
 const isNonEmptyString = require('./is-non-empty-string')
 
-const REQUIRED_METHODS = ['parse', 'render', 'convert']
+const REQUIRED_METHODS = ['ping', 'parse', 'render', 'convert']
 const PATH_TO_COMPONENT = path.join(__dirname, '..', 'component')
 const NOOP = function () {}
 

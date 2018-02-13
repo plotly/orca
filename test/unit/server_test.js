@@ -268,7 +268,7 @@ tap.test('createServer:', t => {
       sinon.stub(_module, 'convert').yields(483)
 
       _boot([false, false, false, opts], (args) => {
-        wrapApp(t, args, [13, 483, ''])
+        wrapApp(t, args, [15, 483, ''])
 
         _post('', body0(), (err, res, body) => {
           if (err) t.fail()
