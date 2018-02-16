@@ -8,7 +8,7 @@ const urls = {}
 const mocks = {}
 
 paths.root = path.join(__dirname, '..')
-paths.build = path.join(paths.root, 'build')
+paths.build = path.join(path.join(paths.root, 'build'))
 paths.bin = path.join(paths.root, 'bin')
 paths.readme = path.join(paths.root, 'README.md')
 paths.pkg = path.join(paths.root, 'package.json')

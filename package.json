@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Plotly's image exporting utility",
   "license": "MIT",
-  "main": "src/index.js",
+  "main": "./bin/plotly-graph-exporter_electron.js",
   "bin": {
     "plotly-graph-exporter": "./bin/plotly-graph-exporter.js",
     "plotly-export-server": "./bin/plotly-export-server.js"
@@ -17,6 +17,24 @@
     "coverage": "npm run test:unit -- --cov",
     "lint": "standard --fix"
   },
+  "build": {
+    "appId": "com.plotly.image-exporter.graph-exporter",
+    "electronCompile": false,
+    "productName": "Plotly Graph Exporter",
+    "copyright": "Copyright © 2018 ${author}",
+    "appImage": {
+      "systemIntegration": "doNotAsk",
+      "category": "Utility"
+    },
+    "win": {
+      "target": [{
+        "target": "nsis"
+    }]},
+    "mac": {
+      "target": [{
+        "target": "default"
+    }]}
+  },
   "author": "Plotly, Inc.",
   "keywords": [
     "graphing",
@@ -26,7 +44,6 @@
   ],
   "dependencies": {
     "body": "^5.1.0",
-    "electron": "^1.7.9",
     "fast-isnumeric": "^1.1.1",
     "file-type": "^7.2.0",
     "get-stdin": "^5.0.1",
@@ -45,6 +62,7 @@
   },
   "devDependencies": {
     "devtron": "^1.4.0",
+    "electron": "^1.7.9",
     "electron-debug": "^1.4.0",
     "image-size": "^0.6.1",
     "sinon": "^3.2.0",

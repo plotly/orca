@@ -2,11 +2,12 @@ const tap = require('tap')
 const { spawn } = require('child_process')
 const path = require('path')
 const pkg = require('../../package.json')
+const { paths } = require('../common')
 
 const ROOT_PATH = path.join(__dirname, '..', '..')
 const BIN = path.join(ROOT_PATH, 'bin', 'plotly-graph-exporter.js')
 const BASE_ARGS = [
-  '--output-dir', path.join(ROOT_PATH, 'build'),
+  '--output-dir', path.join(paths.build),
   '--verbose'
 ]
 
