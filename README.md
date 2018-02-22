@@ -10,7 +10,7 @@ See https://github.com/plotly/streambed/issues/9655 for info on the requirements
 - install `poppler`:
     - Linux: `apt-get poppler-utils`
     - OS X: `brew install poppler`
-- `npm run test`
+- `npm test`
 
 ## In brief
 
