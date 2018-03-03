@@ -8,3 +8,5 @@ coverage
 dist/
 
 deployment/*.retry
+
+/yarn-error.log
