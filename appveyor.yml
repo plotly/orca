@@ -24,10 +24,11 @@ install:
 build_script:
   - yarn run pack
 
-#after_build:
+after_build:
+  - 7z a release.zip release/latest.yml release/*.exe
 
 artifacts:
-  - path: dist
+  - path: release.zip
     name: release
 
 test: off
