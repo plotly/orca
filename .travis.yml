@@ -21,7 +21,7 @@ install:
 script:
   - yarn run build
   - yarn run pack
-  # - zip mac-release.zip release/Falcon* release/*.yml
+  - zip mac-release.zip release/Falcon* release/*.yml
 
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine
@@ -29,5 +29,5 @@ before_cache:
 addons:
   artifacts:
     s3_region: us-east-1
-    # paths: mac-release.zip
+    paths: mac-release.zip
     debug: true
