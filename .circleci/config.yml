@@ -11,18 +11,19 @@ workflows:
   version: 2
   test-and-push:
     jobs:
-      - test-node-v6
-      - test-node-v8
-      - docker-build
-      - docker-push:
-          requires:
-            - test-node-v6
-            - test-node-v8
-            - docker-build
-      - electron-pack-and-release:
-          requires:
-            - test-node-v6
-            - test-node-v8
+      - electron-pack-and-release
+#      - test-node-v6
+#      - test-node-v8
+#      - docker-build
+#      - docker-push:
+#          requires:
+#            - test-node-v6
+#            - test-node-v8
+#            - docker-build
+#      - electron-pack-and-release:
+#          requires:
+#            - test-node-v6
+#            - test-node-v8
 
 version: 2
 jobs:
