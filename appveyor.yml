@@ -11,6 +11,7 @@ platform:
 
 cache:
   - '%USERPROFILE%\.electron'
+  - C:\Users\appveyor\AppData\Local\electron-builder\cache
 
 init:
   - git config --global core.autocrlf input
