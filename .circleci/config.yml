@@ -72,11 +72,11 @@ jobs:
   docker-build:
     docker:
       - image: circleci/node:8.9.4-browsers
-      - run:
-          name: Electron-Builder pack
-          command: yarn run pack
-      - store_artifacts:
-          path: dist
+    - run:
+        name: Electron-Builder pack
+        command: yarn run pack
+    - store_artifacts:
+        path: dist
 
     steps:
       - setup_remote_docker:
