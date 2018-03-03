@@ -18,7 +18,7 @@ init:
 
 install:
   - ps: Install-Product node $env:nodejs_version $env:platform
-  - yarn install --force
+  - yarn install
 
 build_script:
   - yarn run pack
