@@ -36,6 +36,6 @@ jobs:
       - run: yarn run pack
       - run: mkdir artifacts
       - run: mv release/*.yml artifacts || true
-      - # run: mv release/falcon-sql-client* artifacts
+      - run: mv release/image-exporter* artifacts
       - store_artifacts:
           path: artifacts
