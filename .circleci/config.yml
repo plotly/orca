@@ -56,13 +56,8 @@ jobs:
       - run:
           name: Coverage
           command: yarn run coverage
-      - run:
-          name: Electron-Builder pack
-          command: yarn run pack
       - store_artifacts:
           path: build
-      - store_artifacts:
-          path: dist
 
   test-node-v6:
     <<: *base
@@ -72,11 +67,16 @@ jobs:
   test-node-v8:
     <<: *base
     docker:
-      - image: circleci/node:8.4.0-browsers
+      - image: circleci/node:8.9.4-browsers
 
   docker-build:
     docker:
-      - image: circleci/node:6.13.0-browsers
+      - image: circleci/node:8.9.4-browsers
+      - run:
+          name: Electron-Builder pack
+          command: yarn run pack
+      - store_artifacts:
+          path: dist
 
     steps:
       - setup_remote_docker:
@@ -98,7 +98,7 @@ jobs:
 
   docker-push:
     docker:
-      - image: circleci/node:6.13.0-browsers
+      - image: circleci/node:8.9.4-browsers
 
     steps:
       - setup_remote_docker:
