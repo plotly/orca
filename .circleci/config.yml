@@ -114,6 +114,7 @@ jobs:
     docker:
       - image: circleci/node:8.9.4-browsers
     steps:
+      - checkout
       - run:
           name: Install deps
           command: yarn install
