@@ -74,7 +74,7 @@ jobs:
 
   docker-build:
     docker:
-      - image: circleci/node:6.10.3-browsers
+      - image: circleci/node:6.13.0-browsers
 
     steps:
       - setup_remote_docker:
