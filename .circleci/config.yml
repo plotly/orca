@@ -61,6 +61,8 @@ jobs:
           command: yarn run pack
       - store_artifacts:
           path: build
+      - store_artifacts:
+          path: dist
 
   test-node-v6:
     <<: *base
