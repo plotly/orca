@@ -19,6 +19,10 @@ workflows:
             - test-node-v6
             - test-node-v8
             - docker-build
+      - electron-pack-and-release:
+          requires:
+            - test-node-v6
+            - test-node-v8
 
 version: 2
 jobs:
@@ -79,10 +83,6 @@ jobs:
       - checkout
 
       - run:
-          name: Electron-Builder pack
-          command: yarn run pack
-
-      - run:
           name: Build Docker image
           command: |
             docker build -f deployment/Dockerfile -t quay.io/plotly/image-exporter:$CIRCLE_SHA1 .
@@ -92,9 +92,6 @@ jobs:
           command: |
             docker run -d -p 9091:9091/tcp --name imageserver quay.io/plotly/image-exporter:$CIRCLE_SHA1
             docker run --network container:imageserver quay.io/plotly/wget wget --retry-connrefused --waitretry=1 -t 60 -O /dev/null --progress=dot http://localhost:9091/ping
-
-      - store_artifacts:
-          path: dist
 
   docker-push:
     docker:
@@ -111,3 +108,16 @@ jobs:
             docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_BRANCH
             docker push quay.io/plotly/image-exporter:$CIRCLE_SHA1
             docker push quay.io/plotly/image-exporter:$CIRCLE_BRANCH
+
+  electron-pack-and-release:
+    docker:
+      - image: circleci/node:8.9.4-browsers
+    steps:
+      - run:
+          name: Install deps
+          command: yarn install
+      - run:
+          name: Electron-Builder pack
+          command: yarn run pack
+      - store_artifacts:
+          path: dist
