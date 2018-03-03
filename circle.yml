@@ -1,3 +1,4 @@
+### NOT EXECUTED AS WE'RE USING CircleCI v2.0
 version: 2
 jobs:
   build:
