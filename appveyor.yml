@@ -12,6 +12,7 @@ platform:
 cache:
   - '%USERPROFILE%\.electron'
   - C:\Users\appveyor\AppData\Local\electron-builder\cache
+  - C:\projects\image-exporter-vm18n\node_modules
 
 init:
   - git config --global core.autocrlf input
