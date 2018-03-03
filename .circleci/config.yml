@@ -29,7 +29,7 @@ jobs:
       - run:
           name: List versions
           command: |
-            echo "npm: $(npm --version)"
+            echo "yarn: $(yarn --version)"
             echo "node: $(node --version)"
       - checkout
       - restore_cache:
@@ -39,12 +39,12 @@ jobs:
       - run:
           name: Install deps
           command: |
-            npm install
+            yarn install
             sudo apt-get install poppler-utils
       - run:
           name: List deps
           command: |
-            npm ls
+            yarn list
             pdftops -v
       - save_cache:
           paths:
@@ -52,10 +52,13 @@ jobs:
           key: v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
       - run:
           name: Test
-          command: npm test
+          command: yarn run test
       - run:
           name: Coverage
-          command: npm run coverage
+          command: yarn run coverage
+      - run:
+          name: Electron-Builder pack
+          command: yarn run pack
       - store_artifacts:
           path: build
 
