@@ -20,26 +20,38 @@
   },
   "build": {
     "appId": "com.plotly.image-exporter.graph-exporter",
-    "electronCompile": false,
     "productName": "Plotly Graph Exporter",
-    "copyright": "Copyright © 2018 ${author}",
+    "files": [
+      "bin",
+      "src"
+    ],
+    "electronCompile": false,
     "appImage": {
-      "systemIntegration": "doNotAsk",
-      "category": "Utility"
+      "systemIntegration": "doNotAsk"
+    },
+    "linux": {
+      "category": "Utility",
+      "executableName": "plotly-graph-exporter",
+      "maintainer": "enquiries@nicolasriesco.net",
+      "asar": false,
+      "target": [
+        "tar.gz"
+      ]
     },
     "win": {
+      "asar": false,
       "target": [
-        {
-          "target": "nsis"
-        }
+        "nsis"
       ]
     },
     "mac": {
+      "category": "public.app-category.tools",
       "target": [
-        {
-          "target": "default"
-        }
+        "dmg"
       ]
+    },
+    "directories": {
+      "output": "release"
     }
   },
   "author": "Plotly, Inc.",
@@ -71,8 +83,8 @@
   "devDependencies": {
     "devtron": "^1.4.0",
     "electron": "^1.7.9",
-    "electron-debug": "^1.4.0",
     "electron-builder": "^20.2.0",
+    "electron-debug": "^1.4.0",
     "image-size": "^0.6.1",
     "sinon": "^3.2.0",
     "snazzy": "^7.0.0",
