@@ -66,16 +66,16 @@ jobs:
   test-node-v6:
     <<: *base
     docker:
-      - image: circleci/node:6.13.0-browsers
+      - image: circleci/node:6-browsers
 
   test-node-v8:
     <<: *base
     docker:
-      - image: circleci/node:8.9.4-browsers
+      - image: circleci/node:8-browsers
 
   docker-build:
     docker:
-      - image: circleci/node:8.9.4-browsers
+      - image: circleci/node:8-browsers
     steps:
       - setup_remote_docker:
           reusable: true
@@ -95,7 +95,7 @@ jobs:
 
   docker-push:
     docker:
-      - image: circleci/node:8.9.4-browsers
+      - image: circleci/node:8-browsers
 
     steps:
       - setup_remote_docker:
@@ -111,7 +111,7 @@ jobs:
 
   electron-pack-and-release:
     docker:
-      - image: circleci/node:8.9.4-browsers
+      - image: circleci/node:8-browsers
     steps:
       - checkout
       - run:
@@ -121,4 +121,4 @@ jobs:
           name: Electron-Builder pack
           command: yarn run pack
       - store_artifacts:
-          path: dist
+          path: release
