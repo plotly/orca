@@ -25,7 +25,6 @@
       "bin",
       "src"
     ],
-    "electronCompile": false,
     "appImage": {
       "systemIntegration": "doNotAsk"
     },
@@ -33,13 +32,11 @@
       "category": "Utility",
       "executableName": "plotly-graph-exporter",
       "maintainer": "enquiries@nicolasriesco.net",
-      "asar": false,
       "target": [
         "tar.gz"
       ]
     },
     "win": {
-      "asar": false,
       "target": [
         "nsis"
       ]
