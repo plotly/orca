@@ -115,4 +115,4 @@ COPY deployment/run_server /
 
 EXPOSE 9091
 ENTRYPOINT ["/run_server"]
-CMD ["--plotlyJS", "https://plot.ly/static/plotlyjs/build/plotlyjs-bundle.js --mathjax /mathjax/MathJax.js"]
+CMD ["--plotlyJS", "https://plot.ly/static/plotlyjs/build/plotlyjs-bundle.js", "--mathjax", "/mathjax/MathJax.js"]
