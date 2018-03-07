@@ -2,9 +2,16 @@
 
 fc-cache -v /usr/share/fonts/user
 
+BUILD_DIR=/var/www/image-exporter/build
+if [[ -n "${PLOTLY_JS_SRC}" ]]; then
+  # Fetch plotly js bundle and save it locally:
+  mkdir -p $BUILD_DIR
+  wget --retry-connrefused --no-check-certificate -O $BUILD_DIR/plotly-bundle.js $PLOTLY_JS_SRC
+  PLOTLYJS_ARG="--plotlyJS $BUILD_DIR/plotly-bundle.js"
+fi
+
 # Dynamically create the wrapper used to launch xvfb and the server so that
 # we can fill in $@ from the Docker "command" argument.
-
 cat > /usr/local/bin/xvfb_wrapper <<EOF
 #!/bin/bash
 
@@ -19,7 +26,7 @@ fi
 pkill Xvfb
 pkill node
 
-xvfb-run --auto-servernum --server-args '-screen 0 640x480x24' ./bin/plotly-export-server.js $@ 1>/proc/1/fd/1 2>/proc/1/fd/2 &
+xvfb-run --auto-servernum --server-args '-screen 0 640x480x24' ./bin/plotly-export-server.js $PLOTLYJS_ARG $@ 1>/proc/1/fd/1 2>/proc/1/fd/2 &
 echo \$! > \$PIDFILE
 
 EOF
