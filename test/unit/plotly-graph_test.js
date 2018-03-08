@@ -387,6 +387,23 @@ tap.test('parse:', t => {
         t.end()
       })
     })
+
+    t.test('failing edge case (mesh3d and alphahull)', t => {
+      var data = new Array(2e3)
+
+      fn({
+        data: [{
+          type: 'mesh3d',
+          x: data,
+          alphahull: 1
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
     t.end()
   })
 

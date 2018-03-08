@@ -136,6 +136,17 @@ function willFigureHang (result) {
     if (numberOfPtsPerTraceType[type] > maxPtsPerTraceType(type)) {
       return true
     }
+
+    // other special cases
+
+    // mesh3d will `alphahull` and 1000+ pts
+    if (
+      type === 'mesh3d' &&
+      'alphahull' in trace && Number(trace.alphahull) >= 0 &&
+      findMaxArrayLength(trace) > 1000
+    ) {
+      return true
+    }
   }
 }
 
