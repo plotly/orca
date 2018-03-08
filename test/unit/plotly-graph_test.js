@@ -357,6 +357,24 @@ tap.test('parse:', t => {
       })
     })
 
+    t.test('failing parcoords case', t => {
+      var x = new Array(3e5)
+
+      fn({
+        data: [{
+          type: 'parcoords',
+          dimensions: [{
+            values: x
+          }, {
+            values: x
+          }]
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
 
     t.test('failing case from too many traces', t => {
       var data = new Array(3e3)

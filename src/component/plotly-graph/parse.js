@@ -122,7 +122,7 @@ function willFigureHang (result) {
 
   const numberOfPtsPerTraceType = {}
 
-  for (var i = 0; i < data.length; i++) {
+  for (let i = 0; i < data.length; i++) {
     const trace = data[i] || {}
     const type = trace.type || 'scatter'
 
@@ -130,25 +130,42 @@ function willFigureHang (result) {
       numberOfPtsPerTraceType[type] = 0
     }
 
-    const lengths = Object.keys(trace)
-      .filter(k => Array.isArray(trace[k]))
-      .map(k => trace[k].length)
+    numberOfPtsPerTraceType[type] += estimateDataLength(trace)
 
-    // Consider the array of maximum length as a proxy to determine
-    // the number of points to be drawn. In general, this estimate
-    // can be (much) smaller than the true number of points plotted
-    // when it does not match the length of the other coordinate arrays.
-    numberOfPtsPerTraceType[type] += Math.max(...lengths)
-
+    // cap the number of point per trace type
     if (numberOfPtsPerTraceType[type] > maxPtsPerTraceType(type)) {
       return true
     }
   }
 }
 
+// Consider the array of maximum length as a proxy to determine
+// the number of points to be drawn. In general, this estimate
+// can be (much) smaller than the true number of points plotted
+// when it does not match the length of the other coordinate arrays.
+function findMaxArrayLength (cont) {
+  const lengths = Object.keys(cont)
+    .filter(k => Array.isArray(cont[k]))
+    .map(k => cont[k].length)
+
+  return Math.max(...lengths)
+}
+
+function estimateDataLength (trace) {
+  // special case for e.g. parcoords and splom traces
+  if (Array.isArray(trace.dimensions)) {
+    return trace.dimensions
+      .map(findMaxArrayLength)
+      .reduce((a, v) => a + v)
+  }
+
+  return findMaxArrayLength(trace)
+}
+
 function maxPtsPerTraceType (type) {
   switch (type) {
     case 'scattergl':
+    case 'splom':
     case 'pointcloud':
       return 1e7
 
