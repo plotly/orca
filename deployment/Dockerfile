@@ -5,7 +5,7 @@ FROM ubuntu:xenial
 # From: https://github.com/nodejs/docker-node/blob/master/6.11/Dockerfile
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        gnupg curl ca-certificates xz-utils wget \
+        gnupg curl ca-certificates xz-utils wget libgconf-2-4 \
     && rm -rf /var/lib/apt/lists/* && apt-get clean
 
 RUN groupadd --gid 1000 node \
@@ -115,4 +115,4 @@ COPY deployment/run_server /
 
 EXPOSE 9091
 ENTRYPOINT ["/run_server"]
-CMD ["--plotlyJS", "https://plot.ly/static/plotlyjs/build/plotlyjs-bundle.js", "--mathjax", "/mathjax/MathJax.js"]
+CMD ["--mathjax", "/mathjax/MathJax.js"]
