@@ -357,6 +357,18 @@ tap.test('parse:', t => {
       })
     })
 
+
+    t.test('failing case from too many traces', t => {
+      var data = new Array(3e3)
+
+      fn({
+        data: data
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
     t.end()
   })
 

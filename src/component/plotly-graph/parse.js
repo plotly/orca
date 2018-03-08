@@ -114,6 +114,12 @@ function parseDim (result, opts, dim) {
 
 function willFigureHang (result) {
   const data = result.figure.data
+
+  // cap the number of traces
+  if (data.length > 200) {
+    return true
+  }
+
   const numberOfPtsPerTraceType = {}
 
   for (var i = 0; i < data.length; i++) {
