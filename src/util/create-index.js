@@ -2,9 +2,13 @@ const fs = require('fs')
 const path = require('path')
 const uuid = require('uuid/v4')
 const isNonEmptyString = require('./is-non-empty-string')
+const os = require('os')
 
 const COMPONENT_GLOBAL = 'PlotlyExporterComponent'
-const PATH_TO_BUILD = path.join(__dirname, '..', '..', 'build')
+const PATH_TO_BUILD = path.join(os.tmpdir(), 'plotly-graph-exporter-build')
+try {
+  fs.mkdirSync(PATH_TO_BUILD)
+} catch (e) {}
 const PATH_TO_INIT_RENDERERS = path.join(__dirname, 'init-renderers.js')
 const PATH_TO_INIT_PINGS = path.join(__dirname, 'init-pings.js')
 

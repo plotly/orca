@@ -10,8 +10,8 @@ const mock = JSON.stringify({
   }
 })
 
-execSync(`${paths.bin}/plotly-graph-exporter.js '${mock}' -f svg -d build -o test-mock`)
-console.log('build/test-mock.svg created')
+execSync(`${paths.bin}/plotly-graph-exporter.js '${mock}' -f svg -d ${paths.build} -o test-mock`)
+console.log(`${paths.build}/test-mock.svg created`)
 
-execSync(`${paths.bin}/plotly-graph-exporter.js '${mock}' -f pdf -d build -o test-mock`)
-console.log('build/test-mock.pdf created')
+execSync(`${paths.bin}/plotly-graph-exporter.js '${mock}' -f pdf -d ${paths.build} -o test-mock`)
+console.log(`${paths.build}/test-mock.pdf created`)

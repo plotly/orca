@@ -6,6 +6,7 @@ const fs = require('fs')
 const request = require('request')
 const readChunk = require('read-chunk')
 const fileType = require('file-type')
+const { paths } = require('../common')
 
 const PORT = 9109
 const SERVER_URL = `http://localhost:${PORT}`
@@ -110,7 +111,7 @@ tap.test('should work for *plotly-dashboard* component', {timeout: 1e5}, t => {
   })
 
   t.test('piping info write stream', t => {
-    const outPath = path.join(ROOT_PATH, 'build', 'dashboard.pdf')
+    const outPath = path.join(paths.build, 'dashboard.pdf')
     const ws = fs.createWriteStream(outPath)
 
     request({
@@ -139,7 +140,7 @@ tap.test('should work for *plotly-dashboard* component', {timeout: 1e5}, t => {
 })
 
 tap.test('should work for *plotly-dashboard-thumbnail* component', t => {
-  const outPath = path.join(ROOT_PATH, 'build', 'dashboard-thumbnail.png')
+  const outPath = path.join(paths.build, 'dashboard-thumbnail.png')
   const ws = fs.createWriteStream(outPath)
 
   request({

@@ -51,6 +51,10 @@ spec:
           httpGet:
             path: /ping
             port: 9091
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
       volumes:
       - name: plotly-cloud-licensed-fonts
         gcePersistentDisk:

@@ -14,6 +14,5 @@ spec:
   # Set this to 3x "min-nodes":
   minReplicas: 3
   # Set this to 3x "max-nodes":
-  maxReplicas: 9
-  # This should be raised to 80 for production:
+  maxReplicas: 3
   targetCPUUtilizationPercentage: 50
