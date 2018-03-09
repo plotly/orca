@@ -326,6 +326,196 @@ tap.test('parse:', t => {
     })
   })
 
+  t.test('should not access figures that a likely to make renderer hang', t => {
+    t.test('failing svg scatter case', t => {
+      var x = new Array(1e6)
+
+      fn({
+        data: [{
+          type: 'scatter',
+          x: x
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
+    t.test('passing scattergl case', t => {
+      var x = new Array(1e6)
+
+      fn({
+        data: [{
+          type: 'scattergl',
+          x: x
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, null, 'code')
+        t.type(result.figure, 'object', 'figure type')
+        t.end()
+      })
+    })
+
+    t.test('failing parcoords case', t => {
+      var x = new Array(3e5)
+
+      fn({
+        data: [{
+          type: 'parcoords',
+          dimensions: [{
+            values: x
+          }, {
+            values: x
+          }]
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
+    t.test('failing heatmap case', t => {
+      var z = [
+        new Array(5e5),
+        new Array(5e5),
+        new Array(5e5)
+      ]
+
+      fn({
+        data: [{
+          type: 'heatmap',
+          z: z
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
+    t.test('failing case from too many traces', t => {
+      var data = new Array(3e3)
+
+      fn({
+        data: data
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
+    t.test('failing edge case (box with boxpoints all)', t => {
+      fn({
+        data: [{
+          type: 'box',
+          x: new Array(1e5),
+          boxpoints: 'all'
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
+    t.test('failing edge case (violin with points all)', t => {
+      fn({
+        data: [{
+          type: 'violin',
+          x: new Array(1e5),
+          points: 'all'
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
+    t.test('failing edge case (mesh3d and alphahull)', t => {
+      var data = new Array(2e3)
+
+      fn({
+        data: [{
+          type: 'mesh3d',
+          x: data,
+          alphahull: 1
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
+    t.test('failing case from too many traces', t => {
+      var data = new Array(3e3)
+
+      fn({
+        data: data
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
+    t.test('failing edge case (to test budget)', t => {
+      fn({
+        data: [{
+          type: 'scatter',
+          x: new Array(4e4) // below 5e4 threshold
+        }, {
+          type: 'heatmap',
+          z: [
+            new Array(5e5), // below 5e4 threshold
+            new Array(4e5)
+          ]
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
+    t.test('failing edge case (to test budget of edge cases)', t => {
+      fn({
+        data: [{
+          type: 'violin',
+          points: 'all',
+          x: new Array(4e4) // below 5e4 threshold
+        }, {
+          type: 'box',
+          boxpoints: 'all',
+          x: new Array(4e4) // below 5e4 threshold
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
+    t.test('failing case (with no arrays in starting trace)', t => {
+      fn({
+        data: [{}, {}, {
+          type: 'scatter',
+          x: new Array(1e6)
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
+    t.end()
+  })
+
   t.end()
 })
 

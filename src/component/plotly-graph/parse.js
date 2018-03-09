@@ -93,6 +93,10 @@ function parse (body, _opts, sendToRenderer) {
   result.width = parseDim(result, opts, 'width')
   result.height = parseDim(result, opts, 'height')
 
+  if (willFigureHang(result)) {
+    return errorOut(400, 'figure data is likely to make exporter hang, rejecting request')
+  }
+
   sendToRenderer(null, result)
 }
 
@@ -105,6 +109,108 @@ function parseDim (result, opts, dim) {
     return Number(layout[dim])
   } else {
     return cst.dflt[dim]
+  }
+}
+
+function willFigureHang (result) {
+  const data = result.figure.data
+
+  // cap the number of traces
+  if (data.length > 200) return true
+
+  let maxPtBudget = 0
+
+  for (let i = 0; i < data.length; i++) {
+    const trace = data[i] || {}
+
+    // cap the number of points using a budget
+    maxPtBudget += estimateDataLength(trace) / maxPtsPerTrace(trace)
+    if (maxPtBudget > 1) return true
+  }
+}
+
+// Consider the array of maximum length as a proxy to determine
+// the number of points to be drawn. In general, this estimate
+// can be (much) smaller than the true number of points plotted
+// when it does not match the length of the other coordinate arrays.
+function findMaxArrayLength (cont) {
+  const arrays = Object.keys(cont)
+    .filter(k => Array.isArray(cont[k]))
+    .map(k => cont[k])
+
+  const lengths = arrays.map(arr => {
+    if (Array.isArray(arr[0])) {
+      // 2D array case
+      return arr.reduce((a, r) => a + r.length, 0)
+    } else {
+      return arr.length
+    }
+  })
+
+  return Math.max(0, ...lengths)
+}
+
+function estimateDataLength (trace) {
+  // special case for e.g. parcoords and splom traces
+  if (Array.isArray(trace.dimensions)) {
+    return trace.dimensions
+      .map(findMaxArrayLength)
+      .reduce((a, v) => a + v)
+  }
+
+  return findMaxArrayLength(trace)
+}
+
+function maxPtsPerTrace (trace) {
+  const type = trace.type || 'scatter'
+
+  switch (type) {
+    case 'scattergl':
+    case 'splom':
+    case 'pointcloud':
+      return 1e7
+
+    case 'scatterpolargl':
+    case 'heatmap':
+    case 'heatmapgl':
+      return 1e6
+
+    case 'scatter3d':
+    case 'surface':
+      return 5e5
+
+    case 'mesh3d':
+      if ('alphahull' in trace && Number(trace.alphahull) >= 0) {
+        return 1000
+      } else {
+        return 5e5
+      }
+
+    case 'parcoords':
+      return 5e5
+    case 'scattermapbox':
+      return 5e5
+
+    case 'histogram':
+    case 'histogram2d':
+    case 'histogram2dcontour':
+      return 1e6
+
+    case 'box':
+      if (trace.boxpoints === 'all') {
+        return 5e4
+      } else {
+        return 1e6
+      }
+    case 'violin':
+      if (trace.points === 'all') {
+        return 5e4
+      } else {
+        return 1e6
+      }
+
+    default:
+      return 5e4
   }
 }
 
