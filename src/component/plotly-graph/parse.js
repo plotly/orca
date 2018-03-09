@@ -120,30 +120,42 @@ function willFigureHang (result) {
     return true
   }
 
-  const numberOfPtsPerTraceType = {}
+  let maxPtBudget = 0
 
   for (let i = 0; i < data.length; i++) {
     const trace = data[i] || {}
     const type = trace.type || 'scatter'
+    const len = estimateDataLength(trace)
 
-    if (!(type in numberOfPtsPerTraceType)) {
-      numberOfPtsPerTraceType[type] = 0
-    }
+    // cap the number of points using a budget
+    maxPtBudget += len / maxPtsPerTraceType(type)
+    if (maxPtBudget > 1) return true
 
-    numberOfPtsPerTraceType[type] += estimateDataLength(trace)
+    // other special cases
 
-    // cap the number of point per trace type
-    if (numberOfPtsPerTraceType[type] > maxPtsPerTraceType(type)) {
+    // box with boxpoints: 'all'
+    if (
+      type === 'box' &&
+      trace.boxpoints === 'all' &&
+      len > 5e4
+    ) {
       return true
     }
 
-    // other special cases
+    // violin with points: 'all'
+    if (
+      type === 'violin' &&
+      trace.points === 'all' &&
+      len > 5e4
+    ) {
+      return true
+    }
 
     // mesh3d will `alphahull` and 1000+ pts
     if (
       type === 'mesh3d' &&
       'alphahull' in trace && Number(trace.alphahull) >= 0 &&
-      findMaxArrayLength(trace) > 1000
+      len > 1000
     ) {
       return true
     }
@@ -155,11 +167,23 @@ function willFigureHang (result) {
 // can be (much) smaller than the true number of points plotted
 // when it does not match the length of the other coordinate arrays.
 function findMaxArrayLength (cont) {
-  const lengths = Object.keys(cont)
+  const arrays = Object.keys(cont)
     .filter(k => Array.isArray(cont[k]))
-    .map(k => cont[k].length)
+    .map(k => cont[k])
 
-  return Math.max(...lengths)
+  const lengths = arrays.map(arr => {
+    const innerArrays = arr.filter(Array.isArray)
+
+    if (innerArrays.length) {
+      return innerArrays
+        .map(a => a.length)
+        .reduce((a, v) => a + v)
+    } else {
+      return arr.length
+    }
+  })
+
+  return arrays.length ? Math.max(...lengths) : 0
 }
 
 function estimateDataLength (trace) {
@@ -200,7 +224,7 @@ function maxPtsPerTraceType (type) {
     case 'histogram2dcontour':
     case 'box':
     case 'violin':
-      return 1e5
+      return 1e6
 
     default:
       return 5e4
