@@ -172,18 +172,15 @@ function findMaxArrayLength (cont) {
     .map(k => cont[k])
 
   const lengths = arrays.map(arr => {
-    const innerArrays = arr.filter(Array.isArray)
-
-    if (innerArrays.length) {
-      return innerArrays
-        .map(a => a.length)
-        .reduce((a, v) => a + v)
+    if (Array.isArray(arr[0])) {
+      // 2D array case
+      return arr.reduce((a, r) => a + r.length, 0)
     } else {
       return arr.length
     }
   })
 
-  return arrays.length ? Math.max(...lengths) : 0
+  return Math.max(0, ...lengths)
 }
 
 function estimateDataLength (trace) {
