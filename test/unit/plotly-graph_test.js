@@ -482,6 +482,24 @@ tap.test('parse:', t => {
       })
     })
 
+    t.test('failing edge case (to test budget of edge cases)', t => {
+      fn({
+        data: [{
+          type: 'violin',
+          points: 'all',
+          x: new Array(4e4) // below 5e4 threshold
+        }, {
+          type: 'box',
+          boxpoints: 'all',
+          x: new Array(4e4) // below 5e4 threshold
+        }]
+      }, {}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
     t.test('failing case (with no arrays in starting trace)', t => {
       fn({
         data: [{}, {}, {

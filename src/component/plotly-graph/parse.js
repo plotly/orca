@@ -116,49 +116,16 @@ function willFigureHang (result) {
   const data = result.figure.data
 
   // cap the number of traces
-  if (data.length > 200) {
-    return true
-  }
+  if (data.length > 200) return true
 
   let maxPtBudget = 0
 
   for (let i = 0; i < data.length; i++) {
     const trace = data[i] || {}
-    const type = trace.type || 'scatter'
-    const len = estimateDataLength(trace)
 
     // cap the number of points using a budget
-    maxPtBudget += len / maxPtsPerTraceType(type)
+    maxPtBudget += estimateDataLength(trace) / maxPtsPerTrace(trace)
     if (maxPtBudget > 1) return true
-
-    // other special cases
-
-    // box with boxpoints: 'all'
-    if (
-      type === 'box' &&
-      trace.boxpoints === 'all' &&
-      len > 5e4
-    ) {
-      return true
-    }
-
-    // violin with points: 'all'
-    if (
-      type === 'violin' &&
-      trace.points === 'all' &&
-      len > 5e4
-    ) {
-      return true
-    }
-
-    // mesh3d will `alphahull` and 1000+ pts
-    if (
-      type === 'mesh3d' &&
-      'alphahull' in trace && Number(trace.alphahull) >= 0 &&
-      len > 1000
-    ) {
-      return true
-    }
   }
 }
 
@@ -194,7 +161,9 @@ function estimateDataLength (trace) {
   return findMaxArrayLength(trace)
 }
 
-function maxPtsPerTraceType (type) {
+function maxPtsPerTrace (trace) {
+  const type = trace.type || 'scatter'
+
   switch (type) {
     case 'scattergl':
     case 'splom':
@@ -208,8 +177,14 @@ function maxPtsPerTraceType (type) {
 
     case 'scatter3d':
     case 'surface':
-    case 'mesh3d':
       return 5e5
+
+    case 'mesh3d':
+      if ('alphahull' in trace && Number(trace.alphahull) >= 0) {
+        return 1000
+      } else {
+        return 5e5
+      }
 
     case 'parcoords':
       return 5e5
@@ -219,9 +194,20 @@ function maxPtsPerTraceType (type) {
     case 'histogram':
     case 'histogram2d':
     case 'histogram2dcontour':
-    case 'box':
-    case 'violin':
       return 1e6
+
+    case 'box':
+      if (trace.boxpoints === 'all') {
+        return 5e4
+      } else {
+        return 1e6
+      }
+    case 'violin':
+      if (trace.points === 'all') {
+        return 5e4
+      } else {
+        return 1e6
+      }
 
     default:
       return 5e4
