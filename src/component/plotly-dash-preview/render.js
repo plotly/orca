@@ -24,7 +24,7 @@ function render (info, opts, sendToMain) {
   const contents = win.webContents
   let errorCode = null
 
-  const done = () => {
+  const done = errorCode => {
     win.close()
 
     if (errorCode) {
@@ -40,8 +40,13 @@ function render (info, opts, sendToMain) {
   contents.on('page-favicon-updated', () => {
     if (PRINT_TO_PDF) {
       contents.printToPDF({}, (err, pdfData) => {
-        result.imgData = pdfData
-        done()
+        if (err) {
+            done(525)
+        }
+        else {
+          result.imgData = pdfData
+          done()
+        }
       })
     } else {
       contents.capturePage(img => {
