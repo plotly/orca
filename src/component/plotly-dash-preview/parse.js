@@ -24,15 +24,6 @@ function parse (body, opts, sendToRenderer) {
     return errorOut(400, 'invalid url')
   }
 
-  if (isNonEmptyString(body.format) && (body.format === 'png' || body.format === 'pdf')) {
-    result.format = body.format
-  } else {
-    // Default
-    result.format = 'png'
-  }
-
-  result.width = body.width || 800
-  result.height = body.height || 600
   sendToRenderer(null, result)
 }
 
