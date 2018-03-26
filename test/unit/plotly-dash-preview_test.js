@@ -14,7 +14,7 @@ tap.test('parse:', t => {
     shouldFail.forEach(d => {
       t.test(`(case ${JSON.stringify(d)})`, t => {
         fn({url: d}, {}, (errorCode, result) => {
-          t.equal(errorCode, 400, 'code')
+          t.equal(errorCode, 400)
           t.end()
         })
       })
@@ -23,9 +23,12 @@ tap.test('parse:', t => {
     t.end()
   })
 
+  t.end()
+})
+
 tap.test('render:', t => {
   const fn = _module.render
-  
+
   t.afterEach((done) => {
     remote.createBrowserWindow.restore()
     done()
@@ -34,6 +37,7 @@ tap.test('render:', t => {
   t.test('should call printToPDF', t => {
     const win = createMockWindow()
     sinon.stub(remote, 'createBrowserWindow').returns(win)
+    win.webContents.executeJavaScript.resolves(true)
     win.webContents.printToPDF.yields(null, '-> image data <-')
 
     fn({
@@ -41,16 +45,16 @@ tap.test('render:', t => {
     }, {}, (errorCode, result) => {
       t.ok(win.webContents.printToPDF.calledOnce)
       t.ok(win.close.calledOnce)
-      t.equal(errorCode, null, 'code')
+      t.equal(errorCode, undefined, 'code')
       t.equal(result.imgData, '-> image data <-', 'result')
       t.end()
     })
-
   })
 
   t.test('should handle printToPDF errors', t => {
     const win = createMockWindow()
     sinon.stub(remote, 'createBrowserWindow').returns(win)
+    win.webContents.executeJavaScript.resolves(true)
     win.webContents.printToPDF.yields(new Error('printToPDF error'))
 
     fn({
@@ -59,8 +63,10 @@ tap.test('render:', t => {
       t.ok(win.webContents.printToPDF.calledOnce)
       t.ok(win.close.calledOnce)
       t.equal(errorCode, 525, 'code')
-      t.equal(result.msg, 'print to PDF error', 'error msg')
+      t.equal(result.msg, 'dash preview generation failed', 'error msg')
       t.end()
     })
   })
+
+  t.end()
 })
