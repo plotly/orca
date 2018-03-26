@@ -3,8 +3,7 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
 /**
  * @param {object} body : JSON-parsed request body
  *  - url
- *  - share_key
- *  - parameters
+ *  - pdfOptions
  * @param {object} opts : component options
  * @param {function} sendToRenderer
  * - errorCode
@@ -24,6 +23,7 @@ function parse (body, opts, sendToRenderer) {
     return errorOut(400, 'invalid url')
   }
 
+  result.pdfOptions = body.pdf_options || {}
   sendToRenderer(null, result)
 }
 
