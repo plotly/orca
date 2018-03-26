@@ -3,6 +3,7 @@ const remote = require('../../util/remote')
 /**
  * @param {object} info : info object
  *  - url
+ *  - pdfOptions
  * @param {object} opts : component options
  * @param {function} sendToMain
  *  - errorCode
@@ -16,7 +17,6 @@ function render (info, opts, sendToMain) {
   win.loadURL(info.url)
 
   const contents = win.webContents
-  let errorCode = null
 
   const done = errorCode => {
     win.close()
@@ -27,20 +27,18 @@ function render (info, opts, sendToMain) {
     sendToMain(errorCode, result)
   }
 
+  /*
+   * We check for a 'waitfor' div in the dash-app
+   * which indicates that the app has finished rendering.
+   */
   const finishedLoading = () => {
     return win.webContents.executeJavaScript(`
       new Promise((resolve, reject) => {
-        var a = document.getElementById("_finished_loading");
+        var a = document.getElementById("waitfor");
         if (a) {
-          resolve(a.offsetTop);
+          resolve(true);
         }
-      })`).then(height => {
-        if (height > 50) {
-          return true;
-        } else {
-          return false
-        }
-      })
+      })`)
   }
 
   win.on('closed', () => {
@@ -49,20 +47,19 @@ function render (info, opts, sendToMain) {
 
   let intervalId = setInterval(() => {
     finishedLoading().then(loaded => {
-        if (loaded) {
-          clearInterval(intervalId);
-          contents.printToPDF({}, (err, pdfData) => {
-            if (err) {
-                done(525)
-            }
-            else {
-              result.imgData = pdfData
-              done()
-            }
-          })        
-        }
-    })}, 500)
-
+      if (loaded) {
+        clearInterval(intervalId)
+        contents.printToPDF(info.pdfOptions, (err, pdfData) => {
+          if (err) {
+            done(525)
+          } else {
+            result.imgData = pdfData
+            done()
+          }
+        })
+      }
+    })
+  }, 500)
 }
 
 module.exports = render
