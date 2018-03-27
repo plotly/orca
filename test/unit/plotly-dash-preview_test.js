@@ -8,8 +8,8 @@ const { createMockWindow } = require('../common')
 tap.test('parse:', t => {
   const fn = _module.parse
 
-  t.test('should error when no *url* field is given', t => {
-    const shouldFail = ['', null, true, 1, {}]
+  t.test('should error when invalid *url* field is given', t => {
+    const shouldFail = ['', null, true, 1, {}, 'dummy']
 
     shouldFail.forEach(d => {
       t.test(`(case ${JSON.stringify(d)})`, t => {
@@ -41,7 +41,7 @@ tap.test('render:', t => {
     win.webContents.printToPDF.yields(null, '-> image data <-')
 
     fn({
-      url: 'dummy'
+      url: 'https://dummy.com'
     }, {}, (errorCode, result) => {
       t.ok(win.webContents.printToPDF.calledOnce)
       t.ok(win.close.calledOnce)
@@ -58,7 +58,7 @@ tap.test('render:', t => {
     win.webContents.printToPDF.yields(new Error('printToPDF error'))
 
     fn({
-      url: 'dummy'
+      url: 'https://dummy.com'
     }, {}, (errorCode, result) => {
       t.ok(win.webContents.printToPDF.calledOnce)
       t.ok(win.close.calledOnce)
