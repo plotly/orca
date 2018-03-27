@@ -49,7 +49,7 @@
     "get-stdin": "^5.0.1",
     "glob": "^7.1.2",
     "is-plain-obj": "^1.1.0",
-    "is-url": "^1.2.2",
+    "is-url": "1.2.2",
     "minimist": "^1.2.0",
     "read-chunk": "^2.1.0",
     "request": "^2.81.0",

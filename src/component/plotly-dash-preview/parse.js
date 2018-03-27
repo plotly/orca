@@ -1,4 +1,4 @@
-const isNonEmptyString = require('../../util/is-non-empty-string')
+const isUrl = require('is-url')
 
 /**
  * @param {object} body : JSON-parsed request body
@@ -17,7 +17,7 @@ function parse (body, opts, sendToRenderer) {
     sendToRenderer(code, result)
   }
 
-  if (isNonEmptyString(body.url)) {
+  if (isUrl(body.url)) {
     result.url = body.url
   } else {
     return errorOut(400, 'invalid url')
