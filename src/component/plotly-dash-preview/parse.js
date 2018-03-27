@@ -24,6 +24,13 @@ function parse (body, opts, sendToRenderer) {
   }
 
   result.pdfOptions = body.pdf_options || {}
+  if (!body.loading_selector && !body.timeout) {
+    return errorOut(400, 'either loading_selector or timeout must be specified')
+  }
+
+  result.loadingSelector = body.loading_selector
+  result.timeOut = body.timeout
+
   sendToRenderer(null, result)
 }
 

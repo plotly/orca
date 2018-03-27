@@ -1,4 +1,5 @@
 const remote = require('../../util/remote')
+const cst = require('./constants')
 
 /**
  * @param {object} info : info object
@@ -14,6 +15,7 @@ function render (info, opts, sendToMain) {
   const result = {}
 
   let win = remote.createBrowserWindow()
+  win.webContents.openDevTools()
   win.loadURL(info.url)
 
   const contents = win.webContents
@@ -31,13 +33,34 @@ function render (info, opts, sendToMain) {
    * We check for a 'waitfor' div in the dash-app
    * which indicates that the app has finished rendering.
    */
-  const finishedLoading = () => {
+  const loaded = () => {
     return win.webContents.executeJavaScript(`
       new Promise((resolve, reject) => {
-        var a = document.getElementById("waitfor");
-        if (a) {
-          resolve(true);
+        let tries = ${cst.maxRenderingTries}
+
+        if (${info.timeOut}) {
+          tries = parseInt(${info.timeOut} * 1000/${cst.minInterval})
         }
+
+        let interval = setInterval(() => {
+          let el = document.querySelector("${info.loadingSelector}")
+
+          if (el) {
+            clearInterval(interval)
+            resolve(true)
+          }
+
+          if (--tries === 0) {
+            clearInterval(interval)
+
+            if (${info.timeOut}) {
+              resolve(true)
+            } else {
+              reject('fail to load')  
+            }
+          }
+        }, ${cst.minInterval})
+
       })`)
   }
 
@@ -45,21 +68,18 @@ function render (info, opts, sendToMain) {
     win = null
   })
 
-  let intervalId = setInterval(() => {
-    finishedLoading().then(loaded => {
-      if (loaded) {
-        clearInterval(intervalId)
-        contents.printToPDF(info.pdfOptions, (err, pdfData) => {
-          if (err) {
-            done(525)
-          } else {
-            result.imgData = pdfData
-            done()
-          }
-        })
+  loaded().then(() => {
+    contents.printToPDF(info.pdfOptions, (err, pdfData) => {
+      if (err) {
+        done(525)
+      } else {
+        result.imgData = pdfData
+        done()
       }
     })
-  }, 500)
+  }).catch(() => {
+    done(525)
+  })
 }
 
 module.exports = render
