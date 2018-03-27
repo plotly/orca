@@ -15,7 +15,7 @@ tap.test('parse:', t => {
       t.test(`(case ${JSON.stringify(d)})`, t => {
         fn({url: d}, {}, (errorCode, result) => {
           t.equal(errorCode, 400)
-          t.same(result, {"msg": "invalid url"})
+          t.same(result, {'msg': 'invalid url'})
           t.end()
         })
       })
@@ -25,7 +25,6 @@ tap.test('parse:', t => {
   })
 
   t.test('should error when neither loading_selector or timeout is given', t => {
-    
     fn({url: 'https://dash-app.com'}, {}, (errorCode, result) => {
       t.equal(errorCode, 400)
       t.equal(result.msg, 'either loading_selector or timeout must be specified')
@@ -34,13 +33,12 @@ tap.test('parse:', t => {
   })
 
   t.test('should error when pageSize is not given', t => {
-    
     fn({
       url: 'https://dash-app.com',
-      loading_selector: 'dummy',
+      loading_selector: 'dummy'
     }, {}, (errorCode, result) => {
       t.equal(errorCode, 400)
-      t.same(result.msg, 'pageSize must either be A3, A4, A5, Legal, Letter, ' + 
+      t.same(result.msg, 'pageSize must either be A3, A4, A5, Legal, Letter, ' +
                          'Tabloid or an Object containing height and width in microns.')
       t.end()
     })
@@ -86,7 +84,7 @@ tap.test('render:', t => {
       t.ok(win.webContents.printToPDF.notCalled)
       t.ok(win.close.calledOnce)
       t.equal(errorCode, 525, 'code')
-      t.same(result, {"msg": "dash preview generation failed"}, 'result')
+      t.same(result, {'msg': 'dash preview generation failed'}, 'result')
       t.end()
     })
   })
