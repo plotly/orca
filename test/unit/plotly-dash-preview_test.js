@@ -26,14 +26,14 @@ tap.test('parse:', t => {
   t.test('should error when neither loading_selector or timeout is given', t => {
     fn({url: 'https://dash-app.com'}, {}, (errorCode, result) => {
       t.equal(errorCode, 400)
-      t.equal(result.msg, 'either loading_selector or timeout must be specified')
+      t.equal(result.msg, 'either selector or timeout must be specified')
       t.end()
     })
   })
   t.test('should error when pageSize is not given', t => {
     fn({
       url: 'https://dash-app.com',
-      loading_selector: 'dummy'
+      selector: 'dummy'
     }, {}, (errorCode, result) => {
       t.equal(errorCode, 400)
       t.same(result.msg, 'pageSize must either be A3, A4, A5, Legal, Letter, ' +
