@@ -35,7 +35,7 @@ function render (info, opts, sendToMain) {
   const loaded = () => {
     return win.webContents.executeJavaScript(`
       new Promise((resolve, reject) => {
-        let tries = info.tries || ${cst.maxRenderingTries}
+        let tries = ${info.tries} || ${cst.maxRenderingTries}
 
         let interval = setInterval(() => {
           let el = document.querySelector('${info.selector}')
