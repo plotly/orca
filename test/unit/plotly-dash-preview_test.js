@@ -23,7 +23,6 @@ tap.test('parse:', t => {
 
     t.end()
   })
-
   t.test('should error when neither loading_selector or timeout is given', t => {
     fn({url: 'https://dash-app.com'}, {}, (errorCode, result) => {
       t.equal(errorCode, 400)
@@ -31,7 +30,6 @@ tap.test('parse:', t => {
       t.end()
     })
   })
-
   t.test('should error when pageSize is not given', t => {
     fn({
       url: 'https://dash-app.com',

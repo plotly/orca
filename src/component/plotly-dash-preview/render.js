@@ -35,14 +35,10 @@ function render (info, opts, sendToMain) {
   const loaded = () => {
     return win.webContents.executeJavaScript(`
       new Promise((resolve, reject) => {
-        let tries = ${cst.maxRenderingTries}
-
-        if (${info.timeOut}) {
-          tries = parseInt(${info.timeOut} * 1000/${cst.minInterval})
-        }
+        let tries = info.tries || ${cst.maxRenderingTries}
 
         let interval = setInterval(() => {
-          let el = document.querySelector("${info.loadingSelector}")
+          let el = document.querySelector('${info.selector}')
 
           if (el) {
             clearInterval(interval)
