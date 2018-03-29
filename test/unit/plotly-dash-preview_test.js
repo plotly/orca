@@ -41,6 +41,35 @@ tap.test('parse:', t => {
       t.end()
     })
   })
+  t.test('should parse properly when pageSize is given', t => {
+    fn({
+      url: 'https://dash-app.com',
+      selector: 'dummy',
+      pageSize: {height: 1000, width: 1000}
+    }, {}, (errorCode, result) => {
+      t.equal(errorCode, null)
+
+      // height/width are converted from microns to pixels:
+      t.same(result.browserSize, {
+        height: 3.779527559055118,
+        width: 3.779527559055118
+      })
+      t.end()
+    })
+  })
+  t.test('should parse properly when pdf_options are given', t => {
+    fn({
+      url: 'https://dash-app.com',
+      selector: 'dummy',
+      pdf_options: {pageSize: 'Letter', marginsType: 1}
+    }, {}, (errorCode, result) => {
+      t.equal(errorCode, null)
+      // height/width are converted to pixels from page-type:
+      t.same(result.browserSize, {height: 1056, width: 816})
+      t.same(result.pdfOptions, {pageSize: 'Letter', marginsType: 1})
+      t.end()
+    })
+  })
 
   t.end()
 })
