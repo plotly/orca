@@ -12,5 +12,9 @@ module.exports = {
     'Letter': {'width': 8.5 * pixelsInInch, 'height': 11 * pixelsInInch},
     'Legal': {'width': 8.5 * pixelsInInch, 'height': 14 * pixelsInInch},
     'Tabloid': {'width': 11 * pixelsInInch, 'height': 17 * pixelsInInch}
+  },
+  statusMsg: {
+    525: 'dash preview generation failed',
+    526: 'dash preview generation timed out'
   }
 }

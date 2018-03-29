@@ -23,7 +23,7 @@ function render (info, opts, sendToMain) {
     win.close()
 
     if (errorCode) {
-      result.msg = 'dash preview generation failed'
+      result.msg = cst.statusMsg[errorCode]
     }
     sendToMain(errorCode, result)
   }
@@ -73,7 +73,7 @@ function render (info, opts, sendToMain) {
       }
     })
   }).catch(() => {
-    done(525)
+    done(526)
   })
 }
 
