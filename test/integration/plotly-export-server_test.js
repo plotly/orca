@@ -215,8 +215,27 @@ tap.test('should work for *plotly-dashboard-thumbnail* component', t => {
   })
 })
 
+tap.test('should work for *plotly-dash-preview* component', t => {
+  request({
+    method: 'POST',
+    url: SERVER_URL + '/dash-preview',
+    body: JSON.stringify({
+      url: 'https://plot.ly/dash',
+      selector: '#_dash-app-content',
+      pageSize: {width: 800, height: 600}
+    })
+  }, (err, res, body) => {
+    if (err) t.fail(err)
+
+    t.equal(res.statusCode, 200, 'code')
+    t.type(body, 'string', 'body type')
+    t.end()
+  })
+})
+
 tap.test('should teardown', t => {
+  console.log('here')
   app.stop()
-    .catch(t.fail)
+    .catch(err => t.fail(err))
     .then(t.end)
 })

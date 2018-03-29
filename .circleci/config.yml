@@ -52,7 +52,7 @@ jobs:
           key: v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
       - run:
           name: Test
-          command: npm test
+          command: npm run test:lint && npm run test:unit
       - run:
           name: Coverage
           command: npm run coverage
