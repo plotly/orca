@@ -81,8 +81,8 @@ tap.test('render:', t => {
     }, {}, (errorCode, result) => {
       t.ok(win.webContents.printToPDF.notCalled)
       t.ok(win.close.calledOnce)
-      t.equal(errorCode, 525, 'code')
-      t.same(result, {'msg': 'dash preview generation failed'}, 'result')
+      t.equal(errorCode, 526, 'code')
+      t.same(result, {'msg': 'dash preview generation timed out'}, 'result')
       t.end()
     })
   })
