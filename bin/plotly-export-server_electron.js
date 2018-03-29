@@ -53,6 +53,10 @@ const opts = {
       name: 'plotly-dashboard-preview',
       route: '/dashboard-preview',
       options: plotlyJsOpts
+    },
+    {
+      name: 'plotly-dash-preview',
+      route: '/dash-preview'
     }]
 }
 
