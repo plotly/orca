@@ -20,7 +20,7 @@ install:
 
 script:
   - yarn run pack
-  - zip mac-release.zip release/Plotly Graph Exporter* release/**/*.yml
+  - zip mac-release.zip release/Plotly\ Graph\ Exporter* release/**/*.yml
 
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine
