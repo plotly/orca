@@ -36,10 +36,10 @@ function parse (body, opts, sendToRenderer) {
   result.tries = Number(result.timeOut * 1000 / cst.minInterval)
 
   if (cst.sizeMapping[result.pdfOptions.pageSize]) {
-    result.browserSize = cst.sizeMapping[result.pdfOptions.pageSize]
+    result.browserOpts = cst.sizeMapping[result.pdfOptions.pageSize]
   } else if (body.pageSize && isPositiveNumeric(body.pageSize.width) &&
              isPositiveNumeric(body.pageSize.height)) {
-    result.browserSize = {
+    result.browserOpts = {
       width: body.pageSize.width * cst.pixelsInMicron,
       height: body.pageSize.height * cst.pixelsInMicron
     }

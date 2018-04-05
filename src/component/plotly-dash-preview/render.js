@@ -14,7 +14,8 @@ const cst = require('./constants')
 function render (info, opts, sendToMain) {
   const result = {}
 
-  let win = remote.createBrowserWindow(info.browserSize)
+  info.browserOpts.webPreferences = {nodeIntegration: false}
+  let win = remote.createBrowserWindow(info.browserOpts)
   win.loadURL(info.url)
 
   const contents = win.webContents
