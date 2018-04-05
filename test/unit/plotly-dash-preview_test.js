@@ -50,7 +50,7 @@ tap.test('parse:', t => {
       t.equal(errorCode, null)
 
       // height/width are converted from microns to pixels:
-      t.same(result.browserSize, {
+      t.same(result.browserOpts, {
         height: 3.779527559055118,
         width: 3.779527559055118
       })
@@ -65,7 +65,7 @@ tap.test('parse:', t => {
     }, {}, (errorCode, result) => {
       t.equal(errorCode, null)
       // height/width are converted to pixels from page-type:
-      t.same(result.browserSize, {height: 1056, width: 816})
+      t.same(result.browserOpts, {height: 1056, width: 816})
       t.same(result.pdfOptions, {pageSize: 'Letter', marginsType: 1})
       t.end()
     })
@@ -89,7 +89,8 @@ tap.test('render:', t => {
     win.webContents.printToPDF.yields(null, '-> image data <-')
 
     fn({
-      url: 'https://dummy.com'
+      url: 'https://dummy.com',
+      browserOpts: {}
     }, {}, (errorCode, result) => {
       t.ok(win.webContents.printToPDF.calledOnce)
       t.ok(win.close.calledOnce)
@@ -106,7 +107,8 @@ tap.test('render:', t => {
     win.webContents.printToPDF.yields(null, '-> image data <-')
 
     fn({
-      url: 'https://dummy.com'
+      url: 'https://dummy.com',
+      browserOpts: {}
     }, {}, (errorCode, result) => {
       t.ok(win.webContents.printToPDF.notCalled)
       t.ok(win.close.calledOnce)
@@ -123,7 +125,8 @@ tap.test('render:', t => {
     win.webContents.printToPDF.yields(new Error('printToPDF error'))
 
     fn({
-      url: 'https://dummy.com'
+      url: 'https://dummy.com',
+      browserOpts: {}
     }, {}, (errorCode, result) => {
       t.ok(win.webContents.printToPDF.calledOnce)
       t.ok(win.close.calledOnce)
