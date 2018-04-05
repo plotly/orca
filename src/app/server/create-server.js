@@ -152,8 +152,9 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
   })
 
   app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
-      event.preventDefault()
-      callback(true)
+    event.preventDefault()
+    // eslint-disable-next-line
+    callback(true)
   })
 
   server.on('error', (err) => {
