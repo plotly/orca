@@ -38,8 +38,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
-            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-master-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
+            - v2-yarn-{{ checksum "yarn.lock" }}
       - run:
           name: Install deps
           command: |
@@ -54,7 +53,7 @@ jobs:
           paths:
             - node_modules
             - ".git"
-          key: v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
+          key: v2-yarn-{{ checksum "yarn.lock" }}
       - run:
           name: Test
           command: yarn run test
