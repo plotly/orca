@@ -81,17 +81,23 @@ jobs:
           reusable: true
 
       - checkout
-
+      - restore_cache:
+          keys:
+            - v2-yarn-{{ checksum "yarn.lock" }}
       - run:
           name: Build Docker image
           command: |
             docker build -f deployment/Dockerfile -t quay.io/plotly/image-exporter:$CIRCLE_SHA1 .
-
       - run:
           name: Smoke test Docker image
           command: |
             docker run -d -p 9091:9091/tcp --name imageserver quay.io/plotly/image-exporter:$CIRCLE_SHA1
             docker run --network container:imageserver quay.io/plotly/wget wget --retry-connrefused --waitretry=1 -t 60 -O /dev/null --progress=dot http://localhost:9091/ping
+      - save_cache:
+          paths:
+            - node_modules
+            - ".git"
+          key: v2-yarn-{{ checksum "yarn.lock" }}
 
   docker-push:
     docker:
@@ -114,12 +120,20 @@ jobs:
       - image: circleci/node:8-browsers
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v2-yarn-{{ checksum "yarn.lock" }}
       - run:
           name: Install deps
           command: yarn install
       - run:
           name: Electron-Builder pack
           command: yarn run pack
+      - save_cache:
+          paths:
+            - node_modules
+            - ".git"
+          key: v2-yarn-{{ checksum "yarn.lock" }}
       - run: mkdir artifacts
       - run: mv release/*.yml artifacts || true
       - run: mv release/image-exporter* artifacts
