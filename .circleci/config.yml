@@ -120,5 +120,8 @@ jobs:
       - run:
           name: Electron-Builder pack
           command: yarn run pack
+      - run: mkdir artifacts
+      - run: mv release/*.yml artifacts || true
+      - run: mv release/image-exporter* artifacts
       - store_artifacts:
-          path: release
+          path: artifacts
