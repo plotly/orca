@@ -53,6 +53,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
+            - ".git"
           key: v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
       - run:
           name: Test
