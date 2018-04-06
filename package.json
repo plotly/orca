@@ -25,6 +25,7 @@
       "bin",
       "src"
     ],
+    "asar": false,
     "appImage": {
       "systemIntegration": "doNotAsk"
     },
