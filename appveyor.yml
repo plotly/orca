@@ -10,9 +10,9 @@ platform:
 #services:
 
 cache:
-  - '%USERPROFILE%\.electron'
-  - C:\Users\appveyor\AppData\Local\electron-builder\cache
-  - C:\projects\image-exporter-vm18n\node_modules
+  - node_modules
+  - '%LOCALAPPDATA%\electron\Cache'
+  - '%LOCALAPPDATA%\electron-builder\cache'
 
 init:
   - git config --global core.autocrlf input
