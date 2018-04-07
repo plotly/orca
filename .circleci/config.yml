@@ -36,10 +36,22 @@ jobs:
           command: |
             echo "npm: $(npm --version)"
             echo "node: $(node --version)"
-      - checkout
       - restore_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
           keys:
-            - v2-npm-{{ checksum "package-lock.json" }}
+            - v1-source-{{ .Branch }}-
+            - v1-source-
+      - checkout
+      - save_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
+      - restore_cache:
+          key: v2-npm-{{ checksum "package-lock.json" }}
+          keys:
+            - v2-npm-
+      - run: node --version
+      - run: npm --version
       - run:
           name: Install deps
           command: |
@@ -50,11 +62,11 @@ jobs:
           command: |
             npm list
             pdftops -v
+      - run: npm run rebuild:modules:electron
       - save_cache:
+          key: v2-npm-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
-            - ".git"
-          key: v2-npm-{{ checksum "package-lock.json" }}
       - run:
           name: Test
           command: npm run test
@@ -81,7 +93,16 @@ jobs:
       - setup_remote_docker:
           reusable: true
 
+      - restore_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
+          keys:
+            - v1-source-{{ .Branch }}-
+            - v1-source-
       - checkout
+      - save_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
       - restore_cache:
           keys:
             - v2-npm-{{ checksum "package-lock.json" }}
@@ -97,7 +118,6 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-            - ".git"
           key: v2-npm-{{ checksum "package-lock.json" }}
 
   docker-push:
@@ -120,21 +140,31 @@ jobs:
     docker:
       - image: circleci/node:8-browsers
     steps:
-      - checkout
       - restore_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
           keys:
-            - v2-npm-{{ checksum "package-lock.json" }}
-      - run:
-          name: Install deps
-          command: npm install
+            - v1-source-{{ .Branch }}-
+            - v1-source-
+      - checkout
+      - save_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
+      - restore_cache:
+          key: v2-npm-{{ checksum "package-lock.json" }}
+          keys:
+            - v2-npm-
+      - run: node --version
+      - run: npm --version
+      - run: npm install
+      - run: npm run rebuild:modules:electron
       - run:
           name: Electron-Builder pack
           command: npm run pack
       - save_cache:
+          key: v2-npm-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
-            - ".git"
-          key: v2-npm-{{ checksum "package-lock.json" }}
       - run: mkdir artifacts
       - run: mv release/*.yml artifacts || true
       - run: mv release/image-exporter* artifacts
