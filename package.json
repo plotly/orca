@@ -34,7 +34,7 @@
       "executableName": "plotly-graph-exporter",
       "maintainer": "chris@plot.ly",
       "target": [
-        "tar.gz"
+        "appimage"
       ]
     },
     "win": {
