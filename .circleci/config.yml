@@ -13,11 +13,12 @@ workflows:
     jobs:
       - test-node-v6
       - test-node-v8
-      - docker-build
-      - docker-push:
+      - docker-build:
           requires:
             - test-node-v6
             - test-node-v8
+      - docker-push:
+          requires:
             - docker-build
       - electron-pack-and-release:
           requires:
