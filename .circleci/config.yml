@@ -33,33 +33,33 @@ jobs:
       - run:
           name: List versions
           command: |
-            echo "yarn: $(yarn --version)"
+            echo "npm: $(npm --version)"
             echo "node: $(node --version)"
       - checkout
       - restore_cache:
           keys:
-            - v2-yarn-{{ checksum "yarn.lock" }}
+            - v2-npm-{{ checksum "package-lock.json" }}
       - run:
           name: Install deps
           command: |
-            yarn install
+            npm install
             sudo apt-get install poppler-utils
       - run:
           name: List deps
           command: |
-            yarn list
+            npm list
             pdftops -v
       - save_cache:
           paths:
             - node_modules
             - ".git"
-          key: v2-yarn-{{ checksum "yarn.lock" }}
+          key: v2-npm-{{ checksum "package-lock.json" }}
       - run:
           name: Test
-          command: yarn run test
+          command: npm run test
       - run:
           name: Coverage
-          command: yarn run coverage
+          command: npm run coverage
       - store_artifacts:
           path: build
 
@@ -83,7 +83,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v2-yarn-{{ checksum "yarn.lock" }}
+            - v2-npm-{{ checksum "package-lock.json" }}
       - run:
           name: Build Docker image
           command: |
@@ -97,7 +97,7 @@ jobs:
           paths:
             - node_modules
             - ".git"
-          key: v2-yarn-{{ checksum "yarn.lock" }}
+          key: v2-npm-{{ checksum "package-lock.json" }}
 
   docker-push:
     docker:
@@ -122,18 +122,18 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v2-yarn-{{ checksum "yarn.lock" }}
+            - v2-npm-{{ checksum "package-lock.json" }}
       - run:
           name: Install deps
-          command: yarn install
+          command: npm install
       - run:
           name: Electron-Builder pack
-          command: yarn run pack
+          command: npm run pack
       - save_cache:
           paths:
             - node_modules
             - ".git"
-          key: v2-yarn-{{ checksum "yarn.lock" }}
+          key: v2-npm-{{ checksum "package-lock.json" }}
       - run: mkdir artifacts
       - run: mv release/*.yml artifacts || true
       - run: mv release/image-exporter* artifacts

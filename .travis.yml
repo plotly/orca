@@ -13,13 +13,12 @@ cache:
   - node_modules
   - $HOME/.cache/electron
   - $HOME/.cache/electron-builder
-  yarn: true
 
 install:
-  - yarn install
+  - npm install
 
 script:
-  - yarn run pack
+  - npm run pack
   - zip mac-release.zip release/Plotly\ Graph\ Exporter*
 
 before_cache:
