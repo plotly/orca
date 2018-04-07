@@ -32,7 +32,7 @@
     "linux": {
       "category": "Utility",
       "executableName": "plotly-graph-exporter",
-      "maintainer": "enquiries@nicolasriesco.net",
+      "maintainer": "chris@plot.ly",
       "target": [
         "tar.gz"
       ]
