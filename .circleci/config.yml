@@ -62,7 +62,6 @@ jobs:
           command: |
             npm list
             pdftops -v
-      - run: npm run rebuild:modules:electron
       - save_cache:
           key: v2-npm-{{ checksum "package-lock.json" }}
           paths:
@@ -157,7 +156,6 @@ jobs:
       - run: node --version
       - run: npm --version
       - run: npm install
-      - run: npm run rebuild:modules:electron
       - run:
           name: Electron-Builder pack
           command: npm run pack
