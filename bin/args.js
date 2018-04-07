@@ -96,7 +96,7 @@ const SERVER_MINIMIST_CONFIG = {
 }
 
 exports.getExporterArgs = function () {
-  return minimist(process.argv.slice(1), EXPORTER_MINIMIST_CONFIG)
+  return minimist(process.argv.slice(2), EXPORTER_MINIMIST_CONFIG)
 }
 
 exports.getServerArgs = function () {
