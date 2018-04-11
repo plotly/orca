@@ -15,7 +15,7 @@ function coerceOpts (_opts = {}) {
   const opts = {}
 
   opts.debug = !!_opts.debug
-  opts._browserWindowOpts = {}
+  opts._browserWindowOpts = { show: false }
 
   opts.parallelLimit = isPositiveNumeric(_opts.parallelLimit)
     ? Number(_opts.parallelLimit)
