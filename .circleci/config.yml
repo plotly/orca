@@ -13,13 +13,10 @@ workflows:
     jobs:
       - test-node-v6
       - test-node-v8
-      - docker-build:
+      - docker-build-and-push:
           requires:
             - test-node-v6
             - test-node-v8
-      - docker-push:
-          requires:
-            - docker-build
       - electron-pack-and-release:
           requires:
             - test-node-v6
@@ -85,7 +82,7 @@ jobs:
     docker:
       - image: circleci/node:8.11.1-browsers
 
-  docker-build:
+  docker-build-and-push:
     docker:
       - image: circleci/node:8.11.1-browsers
     steps:
@@ -114,19 +111,6 @@ jobs:
           command: |
             docker run -d -p 9091:9091/tcp --name imageserver quay.io/plotly/image-exporter:$CIRCLE_SHA1
             docker run --network container:imageserver quay.io/plotly/wget wget --retry-connrefused --waitretry=1 -t 60 -O /dev/null --progress=dot http://localhost:9091/ping
-      - save_cache:
-          paths:
-            - node_modules
-          key: v2-npm-{{ checksum "package-lock.json" }}
-
-  docker-push:
-    docker:
-      - image: circleci/node:8.11.1-browsers
-
-    steps:
-      - setup_remote_docker:
-          reusable: true
-
       - run:
           name: Push Docker image to Quay
           command: |
@@ -134,6 +118,10 @@ jobs:
             docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_BRANCH
             docker push quay.io/plotly/image-exporter:$CIRCLE_SHA1
             docker push quay.io/plotly/image-exporter:$CIRCLE_BRANCH
+      - save_cache:
+          paths:
+            - node_modules
+          key: v2-npm-{{ checksum "package-lock.json" }}
 
   electron-pack-and-release:
     docker:
