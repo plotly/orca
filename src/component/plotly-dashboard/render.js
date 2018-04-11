@@ -12,10 +12,11 @@ const cst = require('./constants')
  *  - result
  *    - imgData
  */
-function render (info, opts, sendToMain) {
+function render (info, opts = {}, sendToMain) {
   let win = remote.createBrowserWindow({
     width: info.width,
-    height: info.height
+    height: info.height,
+    show: opts.debug
   })
 
   const contents = win.webContents
