@@ -60,7 +60,6 @@
     "plotly"
   ],
   "dependencies": {
-    "ajv": "^6.4.0",
     "body": "^5.1.0",
     "fast-isnumeric": "^1.1.1",
     "file-type": "^7.2.0",
