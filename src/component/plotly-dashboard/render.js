@@ -16,7 +16,7 @@ function render (info, opts = {}, sendToMain) {
   let win = remote.createBrowserWindow({
     width: info.width,
     height: info.height,
-    show: opts.debug
+    show: !!opts.debug
   })
 
   const contents = win.webContents
