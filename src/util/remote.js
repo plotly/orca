@@ -12,6 +12,7 @@ function load () {
 module.exports = {
   createBrowserWindow: (opts) => {
     const _module = load()
+    opts['skipTaskbar'] = true
     return new _module.BrowserWindow(opts)
   },
   getCurrentWindow: () => load().getCurrentWindow()
