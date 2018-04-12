@@ -46,7 +46,10 @@
       "category": "public.app-category.tools",
       "target": [
         "dmg"
-      ]
+      ],
+      "extendInfo": {
+        "LSUIElement": 1
+      }
     },
     "directories": {
       "output": "release"
