@@ -43,6 +43,9 @@
     },
     "mac": {
       "category": "public.app-category.tools",
+      "extendInfo": {
+        "LSUIElement": 1
+      },
       "target": [
         "dmg"
       ]
