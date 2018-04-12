@@ -31,6 +31,9 @@
         "target": "nsis"
     }]},
     "mac": {
+      "extendInfo": {
+        "LSUIElement": 1
+      },
       "target": [{
         "target": "default"
     }]}
