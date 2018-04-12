@@ -155,7 +155,7 @@ function toPDF (imgData, imgOpts, bgColor) {
     let win = remote.createBrowserWindow({
       width: wPx,
       height: hPx,
-      show: imgOpts.debug
+      show: !!imgOpts.debug
     })
 
     win.on('closed', () => {

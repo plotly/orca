@@ -24,7 +24,7 @@ function render (info, opts, sendToMain) {
   let win = remote.createBrowserWindow({
     width: winWidth,
     height: winHeight,
-    show: opts.debug
+    show: !!opts.debug
   })
 
   const config = {
