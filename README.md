@@ -4,7 +4,7 @@
 
 ### Dependencies
 
-The environment you're installing this into may require Poppler.
+The environment you're installing this into may require Poppler for EPS exports.
 
 #### Poppler Installation via Aptitude (used by some \*nix/BSD, e.g. Ubuntu)
 
