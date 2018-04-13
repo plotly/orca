@@ -166,10 +166,6 @@ Dispatch to one component based on the URL of the request:
 
 `curl localhost:9090/plotly-dashboard/ <payload>`
 
-### Pixel Comparisons
-
-This is similar to the current plotly.js pixel comparison runner, but as a standalone version that our R, Python, and Julia libraries could also use for testing purposes.
-
 ## Other Useful Links
 
 Debugging:
