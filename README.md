@@ -16,7 +16,7 @@ The environment you're installing this into may require Poppler.
 
 ## In Brief
 
-This image exporter is not a completely new tool. Rather, it is comprised of much preexisting functionality which has been organized and isolated into a single canonical repository. Streambed, plotly.js and eventually the R, Python and Julia libraries will require it and optionally configure it for their needs.
+This image exporter is not a completely new tool. Rather, it is comprised of much preexisting functionality which has been organized and isolated into a single canonical repository. Plotly Cloud, plotly.js and eventually the R, Python and Julia libraries will require it and optionally configure it for their needs.
 
 This Image Exporter suite consists broadly of two commandline tools:
 * The "image server," which renders graphs as specified by commandline arguments
@@ -26,8 +26,6 @@ The image runner makes the suite easier to use for plotly.js testing and the R, 
 
 ### Electron
 
-It's way better than `nw.js`, a lot of people are using it. Using it for this project is a no-brainier.
-
 Electron apps juggle between a node.js process (called the **main** process) and browser scripts (call the **renderer** process). Compared to `nw.js`, creating Electron apps requires a little more boiler plate, but Electron makes it much easier to know what globals you have available.
 
 Electron creates an executable environment. That is, `require('electron')` does not do the same when executed as `node index.js` and `electron index.js`. So, to write good unit tests, it becomes important to split logic that only runs in Electron from other things that can be run in Node.js. That's why in `src/app/*`, only `index.js` requires Electron modules. The other modules are _pure_ Node.js and are tested in `test/unit/` using [TAP](http://www.node-tap.org/). The Electron logic is itself tested using [Spectron](https://github.com/electron/spectron) which is much slower.
@@ -36,7 +34,7 @@ Electron creates an executable environment. That is, `require('electron')` does 
 
 This project has a larger scope than the current image server.
 
-We want to export not just Plotly `"data"/"layout"`, but dashboard, print and thumbnail views.  Eventually, we could even export Plotly animations to gifs. Moreover, we probably want some export types to be open-source while others Streambed-only. Therefore, this package defines a _component_ framework. See `src/component/` for two examples.
+We want to export not just Plotly `"data"/"layout"`, but dashboard, print and thumbnail views.  Eventually, we could even export Plotly animations to gifs. Moreover, we probably want some export types to be open-source while others Plotly Cloud-only. Therefore, this package defines a _component_ framework. See `src/component/` for two examples.
 
 Each component has an `inject`, a `parse`, a `render` and a `convert` method:
 * `inject` (optional, main process) returns a string or an array of strings which is injected in the head of the app's HTML index file (e.g `<script src="plotly.js"></script>`)
@@ -48,7 +46,7 @@ Component modules are _just_ plain objects, listing methods. Components aren't i
 
 ### Logging
 
-I propose that this package won't assume anything logging-related. Logging will be achieved by listening to `app` events and piping their info into a user-chosen logger package (e.g. `bunyan` for the Streambed image server).
+Logging can be achieved by listening to `app` events and piping their info into a user-chosen logger package (e.g. `bunyan` for the Plotly Cloud image server).
 
 ## API
 
@@ -78,7 +76,7 @@ app.on('export-error', () => {})
 app.on('renderer-error', () => {})
 ```
 
-and launch it with `electron main.js`.
+…which can be launched by `electron main.js`.
 
 ### `serve`
 
@@ -121,7 +119,7 @@ app.on('export-error', () => {})
 app.on('renderer-error', () => {})
 ```
 
-and launch it with `electron main.js`.
+…which can be launched with `electron main.js`.
 
 ## CLI
 
@@ -135,13 +133,28 @@ A specialized "runner" for Plotly graphs:
 plotly-graph-exporter 20.json https://plot.ly/~empet/14324.json --format svg
 ```
 
-where `20.json` is a local `"data"/"layout"` JSON file and `https://plot.ly/~empet/14324` is a JSON URL.
+…where `20.json` is a local `"data"/"layout"` JSON file and `https://plot.ly/~empet/14324` is the URL of a remote JSON resource.
 
-I'm thinking the R, Python and Julia libraries could simply call `plotly-graph-exporter` to offer offline image generation to their users.
+#### Python Usage Example
+
+```python
+from subprocess import call
+import json
+
+fig = {"data": [{"y": [1,2,1]}]}
+call(['plotly-graph-exporter', json.dumps(fig)])
+```
+
+#### R Usage Example
+
+```R
+library(plotly)
+system2("plotly-graph-exporter", plotly_json(fig, FALSE))
+```
 
 ### Export Server
 
-The Export Server very similar to the current image server but with support for multiple components:
+The Export Server is very similar to the current image server but with support for multiple components:
 
 `plotly-image-server --port 9090`
 
@@ -155,7 +168,7 @@ Dispatch to one component based on the URL of the request:
 
 ### Pixel Comparisons
 
-Similar to the current plotly.js pixel comparison runner, but as a standalone version that our R, Python, Julia libraries could use too for testing purposes.
+This is similar to the current plotly.js pixel comparison runner, but as a standalone version that our R, Python, and Julia libraries could also use for testing purposes.
 
 ## Other Useful Links
 
@@ -172,17 +185,15 @@ Performance:
 
 ## Nomenclature
 
-* request (or caller) to renderer (`evt: ${component.name}` `sendToRenderer`)
-* renderer to converter (`evt: ${uid}` `sendToMain`)
-* converter to request (or caller, reply)
-
+* Request (or caller) to renderer (`evt: ${component.name}` `sendToRenderer`)
+* Renderer to converter (`evt: ${uid}` `sendToMain`)
+* Converter to request (or caller, reply)
 ```js
 comp.inject = function (opts) { }
 
 comp[/* parse, render, convert */] = function (info, opts, cb) { }
 ```
-with
-
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;…with:
 ```js
 opts // => component options container
 cb = (errorCode, result) => {}
