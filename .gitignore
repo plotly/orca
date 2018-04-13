@@ -5,6 +5,8 @@ coverage
 .nyc_output
 
 /build
-dist/
+/release
 
 deployment/*.retry
+
+/yarn-error.log

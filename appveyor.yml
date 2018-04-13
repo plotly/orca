@@ -1,0 +1,33 @@
+version: 0.1.{build}
+
+environment:
+  matrix:
+    - nodejs_version: 8
+
+platform:
+  - x64
+
+#services:
+
+cache:
+  - node_modules
+  - '%LOCALAPPDATA%\electron\Cache'
+  - '%LOCALAPPDATA%\electron-builder\cache'
+
+init:
+  - git config --global core.autocrlf input
+
+install:
+  - ps: Install-Product node $env:nodejs_version $env:platform
+
+build_script:
+  - npm run pack
+
+after_build:
+  - 7z a release.zip release/latest.yml release/*.exe
+
+artifacts:
+  - path: release.zip
+    name: release
+
+test: off

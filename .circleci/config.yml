@@ -13,12 +13,14 @@ workflows:
     jobs:
       - test-node-v6
       - test-node-v8
-      - docker-build
-      - docker-push:
+      - docker-build-and-push:
           requires:
             - test-node-v6
             - test-node-v8
-            - docker-build
+      - electron-pack-and-release:
+          requires:
+            - test-node-v6
+            - test-node-v8
 
 version: 2
 jobs:
@@ -31,11 +33,22 @@ jobs:
           command: |
             echo "npm: $(npm --version)"
             echo "node: $(node --version)"
-      - checkout
       - restore_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
           keys:
-            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
-            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-master-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
+            - v1-source-{{ .Branch }}-
+            - v1-source-
+      - checkout
+      - save_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
+      - restore_cache:
+          key: v2-npm-{{ checksum "package-lock.json" }}
+          keys:
+            - v2-npm-
+      - run: node --version
+      - run: npm --version
       - run:
           name: Install deps
           command: |
@@ -44,15 +57,15 @@ jobs:
       - run:
           name: List deps
           command: |
-            npm ls
+            npm list
             pdftops -v
       - save_cache:
+          key: v2-npm-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
-          key: v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-{{ .Branch }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package.json" }}
       - run:
           name: Test
-          command: npm test
+          command: npm run test
       - run:
           name: Coverage
           command: npm run coverage
@@ -62,43 +75,42 @@ jobs:
   test-node-v6:
     <<: *base
     docker:
-      - image: circleci/node:6.10.3-browsers
+      - image: circleci/node:6.14.1-browsers
 
   test-node-v8:
     <<: *base
     docker:
-      - image: circleci/node:8.4.0-browsers
+      - image: circleci/node:8.11.1-browsers
 
-  docker-build:
+  docker-build-and-push:
     docker:
-      - image: circleci/node:6.10.3-browsers
-
+      - image: circleci/node:8.11.1-browsers
     steps:
       - setup_remote_docker:
           reusable: true
 
+      - restore_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
+          keys:
+            - v1-source-{{ .Branch }}-
+            - v1-source-
       - checkout
-
+      - save_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
+      - restore_cache:
+          keys:
+            - v2-npm-{{ checksum "package-lock.json" }}
       - run:
           name: Build Docker image
           command: |
             docker build -f deployment/Dockerfile -t quay.io/plotly/image-exporter:$CIRCLE_SHA1 .
-
       - run:
           name: Smoke test Docker image
           command: |
             docker run -d -p 9091:9091/tcp --name imageserver quay.io/plotly/image-exporter:$CIRCLE_SHA1
             docker run --network container:imageserver quay.io/plotly/wget wget --retry-connrefused --waitretry=1 -t 60 -O /dev/null --progress=dot http://localhost:9091/ping
-
-
-  docker-push:
-    docker:
-      - image: circleci/node:6.10.3-browsers
-
-    steps:
-      - setup_remote_docker:
-          reusable: true
-
       - run:
           name: Push Docker image to Quay
           command: |
@@ -106,3 +118,41 @@ jobs:
             docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_BRANCH
             docker push quay.io/plotly/image-exporter:$CIRCLE_SHA1
             docker push quay.io/plotly/image-exporter:$CIRCLE_BRANCH
+      - save_cache:
+          paths:
+            - node_modules
+          key: v2-npm-{{ checksum "package-lock.json" }}
+
+  electron-pack-and-release:
+    docker:
+      - image: circleci/node:8.11.1-browsers
+    steps:
+      - restore_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
+          keys:
+            - v1-source-{{ .Branch }}-
+            - v1-source-
+      - checkout
+      - save_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
+      - restore_cache:
+          key: v2-npm-{{ checksum "package-lock.json" }}
+          keys:
+            - v2-npm-
+      - run: node --version
+      - run: npm --version
+      - run: npm install
+      - run:
+          name: Electron-Builder pack
+          command: npm run pack
+      - save_cache:
+          key: v2-npm-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - run: mkdir artifacts
+      - run: mv release/*.yml artifacts || true
+      - run: mv release/image-exporter* artifacts
+      - store_artifacts:
+          path: artifacts

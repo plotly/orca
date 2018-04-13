@@ -15,25 +15,42 @@
     "test:integration": "tap test/integration/*_test.js",
     "test": "npm run test:lint && npm run test:unit && npm run test:integration",
     "coverage": "npm run test:unit -- --cov",
-    "lint": "standard --fix"
+    "lint": "standard --fix",
+    "pack": "cross-env NODE_ENV=production electron-builder --publish=never"
   },
   "build": {
     "appId": "com.plotly.image-exporter.graph-exporter",
-    "electronCompile": false,
     "productName": "Plotly Graph Exporter",
-    "copyright": "Copyright © 2018 ${author}",
+    "files": [
+      "bin",
+      "src"
+    ],
+    "asar": false,
     "appImage": {
-      "systemIntegration": "doNotAsk",
-      "category": "Utility"
+      "systemIntegration": "doNotAsk"
+    },
+    "linux": {
+      "category": "Utility",
+      "executableName": "plotly-graph-exporter",
+      "maintainer": "chris@plot.ly",
+      "target": [
+        "appimage"
+      ]
     },
     "win": {
-      "target": [{
-        "target": "nsis"
-    }]},
+      "target": [
+        "nsis"
+      ]
+    },
     "mac": {
-      "target": [{
-        "target": "default"
-    }]}
+      "category": "public.app-category.tools",
+      "target": [
+        "dmg"
+      ]
+    },
+    "directories": {
+      "output": "release"
+    }
   },
   "author": "Plotly, Inc.",
   "keywords": [
@@ -61,8 +78,10 @@
     "uuid": "^3.1.0"
   },
   "devDependencies": {
+    "cross-env": "^5.1.4",
     "devtron": "^1.4.0",
     "electron": "^1.7.9",
+    "electron-builder": "^20.2.0",
     "electron-debug": "^1.4.0",
     "image-size": "^0.6.1",
     "sinon": "^3.2.0",

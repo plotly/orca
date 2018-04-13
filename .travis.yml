@@ -1,0 +1,31 @@
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode9.0
+      language: node_js
+      node_js: "8"
+      env:
+        - ELECTRON_CACHE=$HOME/.cache/electron
+        - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+
+cache:
+  directories:
+  - node_modules
+  - $HOME/.cache/electron
+  - $HOME/.cache/electron-builder
+
+install:
+  - npm install
+
+script:
+  - npm run pack
+  - zip mac-release.zip release/Plotly\ Graph\ Exporter*
+
+before_cache:
+  - rm -rf $HOME/.cache/electron-builder/wine
+
+addons:
+  artifacts:
+    s3_region: us-east-1
+    paths: mac-release.zip
+    debug: true
