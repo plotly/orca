@@ -18,9 +18,9 @@ The environment you're installing this into may require Poppler.
 
 This image exporter is not a completely new tool. Rather, it is comprised of much preexisting functionality which has been organized and isolated into a single canonical repository. Plotly Cloud, plotly.js and eventually the R, Python and Julia libraries will require it and optionally configure it for their needs.
 
-This Image Exporter suite consists broadly of two commandline tools:
-* The "image server," which renders graphs as specified by commandline arguments
-* The "image runner," which renders graphs as specified by files in the local filesystem
+This Image Exporter suite consists broadly of two tools:
+* The "image server," which renders graphs as specified by POST requests
+* The "image runner," which renders graphs as specified by commandline statements
 
 The image runner makes the suite easier to use for plotly.js testing and the R, Python and Julia libraries.
 
