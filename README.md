@@ -1,79 +1,58 @@
-# image-exporter
-
-aka image server 2.0.
-
-See https://github.com/plotly/streambed/issues/9655 for info on the requirements.
+# Plotly Image Exporter
 
 ## Install
 
-- `npm i`
-- install `poppler`:
-    - Linux: `apt-get poppler-utils`
-    - OS X: `brew install poppler`
-- `npm test`
+### Dependencies
 
-## In brief
+The environment you're installing this into may require Poppler.
 
-The new image exporter will be in a repo of its own. Streambed, plotly.js and
-eventually the R, Python and Julia libraries will require it and optionally
-configure it for their needs.
+#### Poppler Installation via Aptitude (used by some \*nix/BSD, e.g. Ubuntu)
 
-Note that I don't want to call this project _image server 2.0_ because I also
-want to expose an image _runner_ that reads files from the file system instead
-of handling HTTP requests - which will make it easier to use for plotly.js
-testing and the R, Python and Julia libraries.
+`apt-get poppler-utils` (requires `sudo` or root privileges)
+
+#### Poppler Installation via Homebrew (third-party package manager for Mac OS X)
+
+`brew install poppler`
+
+## In Brief
+
+This image exporter is not a completely new tool. Rather, it is comprised of much preexisting functionality which has been organized and isolated into a single canonical repository. Streambed, plotly.js and eventually the R, Python and Julia libraries will require it and optionally configure it for their needs.
+
+This Image Exporter suite consists broadly of two commandline tools:
+* The "image server," which renders graphs as specified by commandline arguments
+* The "image runner," which renders graphs as specified by files in the local filesystem
+
+The image runner makes the suite easier to use for plotly.js testing and the R, Python and Julia libraries.
 
 ### Electron
 
-It's way better than `nw.js`, a lot of people are using it. Using it for this
-project is a no-brainier.
+It's way better than `nw.js`, a lot of people are using it. Using it for this project is a no-brainier.
 
-Electron apps juggle between a node.js process (called the **main** process) and
-browser scripts (call the **renderer** process). Compared to `nw.js`, creating
-electron apps requires a little more boiler plate, but electron makes it much
-easier to know what globals you have available.
+Electron apps juggle between a node.js process (called the **main** process) and browser scripts (call the **renderer** process). Compared to `nw.js`, creating Electron apps requires a little more boiler plate, but Electron makes it much easier to know what globals you have available.
 
-Electron creates an executable environment. That is, `require('electron')` does
-not do the same when executed as `node index.js` and `electron index.js`. So, to
-write good unit tests, it becomes important to split logic that only runs in
-electron from other things that can be run in node. That's why in `src/app/*`,
-only `index.js` requires electron modules. The other modules are _pure_
-node.js and are tested in `test/unit/` using [TAP](http://www.node-tap.org/).
-The electron logic is itself tested using
-[spectron](https://github.com/electron/spectron) which is much slower.
+Electron creates an executable environment. That is, `require('electron')` does not do the same when executed as `node index.js` and `electron index.js`. So, to write good unit tests, it becomes important to split logic that only runs in Electron from other things that can be run in Node.js. That's why in `src/app/*`, only `index.js` requires Electron modules. The other modules are _pure_ Node.js and are tested in `test/unit/` using [TAP](http://www.node-tap.org/). The Electron logic is itself tested using [Spectron](https://github.com/electron/spectron) which is much slower.
 
 ### Components
 
 This project has a larger scope than the current image server.
 
-We want to export not just plotly `"data"/"layout"`, but dashboard print and
-thumbnail views.  Eventually, we could even export plotly animations to gifs.
-Moreover, we probably want some export types to be open-source while others
-streambed-only. Therefore, this package defines a _component_ framework. See
-`src/component/` for two examples.
+We want to export not just Plotly `"data"/"layout"`, but dashboard, print and thumbnail views.  Eventually, we could even export Plotly animations to gifs. Moreover, we probably want some export types to be open-source while others Streambed-only. Therefore, this package defines a _component_ framework. See `src/component/` for two examples.
 
 Each component has an `inject`, a `parse`, a `render` and a `convert` method:
+* `inject` (optional, main process) returns a string or an array of strings which is injected in the head of the app's HTML index file (e.g `<script src="plotly.js"></script>`)
+* `parse` (required, main process) takes in a request body and coerces its options
+* `render` (required, renderer process) takes options and returns image data
+* `convert` (required, main process) converts image data to output head and body
 
-- `inject` (optional, main process) returns a string or an array of strings
-  which is injected in the head of the app's HTML index file
-  (e.g `<script src="plotly.js"></script>`)
-- `parse` (required, main process) takes in a request body and coerces its options.
-- `render` (required, renderer process) takes options and returns image data
-- `convert` (required, main process) converts image data to output head and body
-
-Component modules are _just_ plain objects, listing methods. Components aren't
-instantiated, their methods shouldn't depend on any `this`.
+Component modules are _just_ plain objects, listing methods. Components aren't instantiated, their methods shouldn't depend on any `this`.
 
 ### Logging
 
-I propose that this package won't assume anything logging related. Logging will
-be achieved by listening to `app` events and piping their info into a
-user-chosen logger package (e.g. `bunyan` for the streambed image server).
+I propose that this package won't assume anything logging-related. Logging will be achieved by listening to `app` events and piping their info into a user-chosen logger package (e.g. `bunyan` for the Streambed image server).
 
 ## API
 
-We export two electron app creator methods: `run`, `serve`. Both methods return
-an electron `app` object (which is an event listener/emitter).
+We export two Electron app creator methods: `run`, `serve`. Both methods return an Electron `app` object (which is an event listener/emitter).
 
 ### `run`
 
@@ -148,65 +127,63 @@ and launch it with `electron main.js`.
 
 See `./bin/`.
 
-### Graph exporter
+### Graph Exporter
 
-A specialised `runner` for plotly graphs:
+A specialized "runner" for Plotly graphs:
 
-```
+```sh
 plotly-graph-exporter 20.json https://plot.ly/~empet/14324.json --format svg
 ```
 
-where `20.json` is a local `"data"/"layout"` JSON file and
-`https://plot.ly/~empet/14324` is a JSON URL.
+where `20.json` is a local `"data"/"layout"` JSON file and `https://plot.ly/~empet/14324` is a JSON URL.
 
-I'm thinking the R, Python and Julia libraries could simply call
-`plotly-graph-exporter` to offer offline image generation to their users.
+I'm thinking the R, Python and Julia libraries could simply call `plotly-graph-exporter` to offer offline image generation to their users.
 
-### Export server
+### Export Server
 
-Export server very similar to the current image server but with support
-for multiple components:
+The Export Server very similar to the current image server but with support for multiple components:
 
-```
-plotly-image-server --port 9090
+`plotly-image-server --port 9090`
 
-# Dispatch to one component based on url of request
-curl localhost:9090/plotly-graph/ <payload>
+Dispatch to one component based on the URL of the request:
 
-# or e.g.
-curl localhost:9090/plotly-dashboard/ <payload>
-```
+`curl localhost:9090/plotly-graph/ <payload>`
 
-### Pixel comparisons
+…or e.g.:
 
-Similar to the current plotly.js pixel comparison runner, but as a standalone
-version that our R, Python, Julia libraries could use too for testing purposes.
+`curl localhost:9090/plotly-dashboard/ <payload>`
 
-## Other useful links
+### Pixel Comparisons
+
+Similar to the current plotly.js pixel comparison runner, but as a standalone version that our R, Python, Julia libraries could use too for testing purposes.
+
+## Other Useful Links
 
 Debugging:
 
-+ https://github.com/electron/devtron
-+ https://electron.atom.io/docs/api/app/#event-gpu-process-crashed
+* https://github.com/electron/devtron
+* https://electron.atom.io/docs/api/app/#event-gpu-process-crashed
 
-Perf:
+Performance:
 
-+ https://github.com/electron/asar
-+ https://github.com/pixijs/pixi.js/issues/2233
-+ https://github.com/pixijs/pixi.js/pull/2481/files
+* https://github.com/electron/asar
+* https://github.com/pixijs/pixi.js/issues/2233
+* https://github.com/pixijs/pixi.js/pull/2481/files
 
 ## Nomenclature
 
-- request (or caller) to renderer (`evt: ${component.name}` sendToRenderer)
-- renderer to converter (`evt: ${uid}` sendToMain)
-- converter to request (or caller, reply)
+* request (or caller) to renderer (`evt: ${component.name}` `sendToRenderer`)
+* renderer to converter (`evt: ${uid}` `sendToMain`)
+* converter to request (or caller, reply)
 
 ```js
 comp.inject = function (opts) { }
 
 comp[/* parse, render, convert */] = function (info, opts, cb) { }
+```
+with
 
-// with
+```js
 opts // => component options container
 cb = (errorCode, result) => {}
 ```
