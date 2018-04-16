@@ -44,9 +44,9 @@ jobs:
           paths:
             - ".git"
       - restore_cache:
-          key: v2-npm-{{ checksum "package-lock.json" }}
+          key: v3-npm-{{ checksum "package-lock.json" }}
           keys:
-            - v2-npm-
+            - v3-npm-
       - run: node --version
       - run: npm --version
       - run:
@@ -57,10 +57,10 @@ jobs:
       - run:
           name: List deps
           command: |
-            npm list
+            npm list || true
             pdftops -v
       - save_cache:
-          key: v2-npm-{{ checksum "package-lock.json" }}
+          key: v3-npm-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
       - run:
@@ -101,7 +101,7 @@ jobs:
             - ".git"
       - restore_cache:
           keys:
-            - v2-npm-{{ checksum "package-lock.json" }}
+            - v3-npm-{{ checksum "package-lock.json" }}
       - run:
           name: Build Docker image
           command: |
@@ -121,7 +121,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-          key: v2-npm-{{ checksum "package-lock.json" }}
+          key: v3-npm-{{ checksum "package-lock.json" }}
 
   electron-pack-and-release:
     docker:
@@ -138,9 +138,9 @@ jobs:
           paths:
             - ".git"
       - restore_cache:
-          key: v2-npm-{{ checksum "package-lock.json" }}
+          key: v3-npm-{{ checksum "package-lock.json" }}
           keys:
-            - v2-npm-
+            - v3-npm-
       - run: node --version
       - run: npm --version
       - run: npm install
@@ -148,7 +148,7 @@ jobs:
           name: Electron-Builder pack
           command: npm run pack
       - save_cache:
-          key: v2-npm-{{ checksum "package-lock.json" }}
+          key: v3-npm-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
       - run: mkdir artifacts
