@@ -44,10 +44,6 @@ Each component has an `inject`, a `parse`, a `render` and a `convert` method:
 
 Component modules are _just_ plain objects, listing methods. Components aren't instantiated, their methods shouldn't depend on any `this`.
 
-### Logging
-
-Logging can be achieved by listening to `app` events and piping their info into a user-chosen logger package (e.g. `bunyan` for the Plotly Cloud image server).
-
 ## API
 
 We export two Electron app creator methods: `run`, `serve`. Both methods return an Electron `app` object (which is an event listener/emitter).
@@ -165,19 +161,6 @@ Dispatch to one component based on the URL of the request:
 …or e.g.:
 
 `curl localhost:9090/plotly-dashboard/ <payload>`
-
-## Other Useful Links
-
-Debugging:
-
-* https://github.com/electron/devtron
-* https://electron.atom.io/docs/api/app/#event-gpu-process-crashed
-
-Performance:
-
-* https://github.com/electron/asar
-* https://github.com/pixijs/pixi.js/issues/2233
-* https://github.com/pixijs/pixi.js/pull/2481/files
 
 ## Nomenclature
 
