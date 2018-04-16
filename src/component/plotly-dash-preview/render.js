@@ -14,7 +14,10 @@ const cst = require('./constants')
 function render (info, opts, sendToMain) {
   const result = {}
 
-  let win = remote.createBrowserWindow(info.browserSize)
+  let createBrowserWindowOpts = info.browserSize ? info.browserSize : {}
+  createBrowserWindowOpts['show'] = opts.debug
+
+  let win = remote.createBrowserWindow(createBrowserWindowOpts)
   win.loadURL(info.url)
 
   const contents = win.webContents
@@ -51,7 +54,7 @@ function render (info, opts, sendToMain) {
             if (${info.timeOut}) {
               resolve(true)
             } else {
-              reject('fail to load')  
+              reject('fail to load')
             }
           }
         }, ${cst.minInterval})

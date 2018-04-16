@@ -22,7 +22,8 @@ function render (info, opts, sendToMain) {
 
   let win = remote.createBrowserWindow({
     width: winWidth,
-    height: winHeight
+    height: winHeight,
+    show: !!opts.debug
   })
 
   const config = {
@@ -39,7 +40,7 @@ function render (info, opts, sendToMain) {
           width: ${winWidth};
           height: ${winHeight};
           background-color: ${info.backgroundColor};
-          margin: 0; 
+          margin: 0;
           padding: 0;
           overflow: hidden;
         }

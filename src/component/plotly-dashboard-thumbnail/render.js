@@ -23,7 +23,8 @@ const winHeight = 2 * (imgHeight + 2 * pad)
 function render (info, opts, sendToMain) {
   let win = remote.createBrowserWindow({
     width: winWidth,
-    height: winHeight
+    height: winHeight,
+    show: !!opts.debug
   })
 
   const config = {

@@ -23,7 +23,7 @@ function coerceOpts (_opts = {}) {
     : cst.dflt.maxNumberOfWindows
 
   opts.debug = !!_opts.debug
-  opts._browserWindowOpts = {}
+  opts._browserWindowOpts = { show: !!opts.debug }
 
   const _components = Array.isArray(_opts.component) ? _opts.component : [_opts.component]
   const componentLookup = {}
