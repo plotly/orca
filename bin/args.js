@@ -96,7 +96,12 @@ const SERVER_MINIMIST_CONFIG = {
 }
 
 exports.getExporterArgs = function () {
-  return minimist(process.argv.slice(2), EXPORTER_MINIMIST_CONFIG)
+  // https://electronjs.org/docs/api/process#processdefaultapp
+  // https://github.com/electron/electron/issues/4690#issuecomment-217435222
+  // https://github.com/tj/commander.js/issues/512
+  const sliceBegin = process.defaultApp ? 2 : 1
+
+  return minimist(process.argv.slice(sliceBegin), EXPORTER_MINIMIST_CONFIG)
 }
 
 exports.getServerArgs = function () {
