@@ -33,11 +33,6 @@ jobs:
           command: |
             echo "npm: $(npm --version)"
             echo "node: $(node --version)"
-      - restore_cache:
-          key: v1-source-{{ .Branch }}-{{ .Revision }}
-          keys:
-            - v1-source-{{ .Branch }}-
-            - v1-source-
       - checkout
       - save_cache:
           key: v1-source-{{ .Branch }}-{{ .Revision }}
