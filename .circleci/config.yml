@@ -38,6 +38,10 @@ jobs:
           key: v1-source-{{ .Branch }}-{{ .Revision }}
           paths:
             - ".git"
+      - restore_cache:
+          key: v2-npm-{{ checksum "package-lock.json" }}
+          keys:
+            - v2-npm-
       - run: node --version
       - run: npm --version
       - run:
