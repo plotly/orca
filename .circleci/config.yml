@@ -57,7 +57,7 @@ jobs:
       - run:
           name: List deps
           command: |
-            npm list
+            npm list || true
             pdftops -v
       - save_cache:
           key: v2-npm-{{ checksum "package-lock.json" }}
