@@ -1,11 +1,11 @@
 # Plotly Image Exporter
 
-[![circle ci](https://circleci.com/gh/plotly/image-exporter.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/image-exporter)
+[![CircleCI](https://circleci.com/gh/plotly/image-exporter.svg?style=svg)](https://circleci.com/gh/plotly/image-exporter)
 
 This repo contains source code for:
 
 - `plotly-graph-exporter` standalone app,
-- @plotly/image-exporter npm package, and
+- `@plotly/image-exporter` npm package, and
 - Plotly's image server
 
 ## `plotly-graph-exporter` standalone app
@@ -79,7 +79,7 @@ generates an SVG from a plotly.js JSON hosted on [plot.ly](https://plot.ly/).
 In turn, the `plotly-export-server`executable work similarly to plotly's own
 image server where not only plotly.js graphs can be exported, but also plotly
 dashboards, thumbnails and dash reports (see full list
-[here](https://github.com/plotly/image-exporter/tree/master/src/component).
+[here](https://github.com/plotly/image-exporter/tree/master/src/component)).
 
 Boot up the server with:
 
@@ -103,6 +103,7 @@ listener/emitter).
 
 To create a _runner_ app:
 
+<details>
 ```js
 // main.js
 
@@ -125,9 +126,11 @@ app.on('renderer-error', () => {})
 ```
 
 then launch it with `electron main.js`
+</details>
 
 Or to create a _server_ app:
 
+<details>
 ```js
 // main.js
 
@@ -167,6 +170,7 @@ app.on('renderer-error', () => {})
 ```
 
 then launch it with `electron main.js`
+</details>
 
 ## Plotly's image server
 

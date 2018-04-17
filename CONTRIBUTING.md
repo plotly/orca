@@ -72,7 +72,7 @@ npm run test:integration
 
 ## Packaging
 
-We use (`electron-builder`](https://github.com/electron-userland/electron-builder) to pack up
+We use [`electron-builder`](https://github.com/electron-userland/electron-builder) to pack up
 the `plotly-graph-exporter` executable. To do so locally, run:
 
 ```
@@ -103,7 +103,8 @@ _pure_ Node.js and are tested in `test/unit/` using
 Along with a `name` field, each component has a `ping`, an `inject`, a `parse`,
 a `render` and a `convert` method:
 
-* `ping` (render process): method that send healthy signal renderer to main process
+* `ping` (required, renderer process): method that send healthy signal renderer
+  to main process
 * `inject` (optional, main process): returns a string or an array of strings
   which is injected in the head of the app's HTML index file (e.g `<script
   src="plotly.js"></script>`)
@@ -121,13 +122,13 @@ main and renderer process at once.
 ### Nomenclature for IPC callbacks
 
 Image exporter is a heavy user of Electron's IPC (inter-process-communication)
-which is in turn callback heavy. To help us stay out of _callback hell_, we use
+which in turn is callback heavy. To help us stay out of _callback hell_, we use
 the following terms to designates callbacks:
 
 - At the end of the data-parse callback, we call the component module `parse`
   method as `parse(body, componentOpts, sendToRenderer)` where `sendToRenderer`
-  is callback.
-- `sendToRenderer` is the callback that transfers info from the main to the
+  is a callback.
+- `sendToRenderer` transfers info from the main to the
   renderer process as `sendToRenderer(errorCode, parseInfo)`.
 - In the renderer process we then call the component module `render` method as
   `render(info, componentOpts, sendToMain)` where `sendToMain` is a callback.
@@ -141,8 +142,8 @@ the following terms to designates callbacks:
 ### What happened to `nw.js`?
 
 Older plotly devs might remember our old `nw.js` image server, but yeah
-Electron is way better than `nw.js` a lot of people are using it. Using it for
-this project was a no-brainier.
+Electron is way better than `nw.js` and a lot more people are using it. Using
+it for this project was a no-brainier.
 
 Devs more experienced with `nw.js` should note: Electron apps juggle between a
 Node.js process (called the **main** process) and browser scripts (call the
