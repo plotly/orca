@@ -30,3 +30,4 @@ retry () {
 npm run test:lint || EXIT_STATE=$?
 npm run test:unit || EXIT_STATE=$?
 retry npm run test:integration
+exit EXIT_STATE
