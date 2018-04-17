@@ -59,7 +59,7 @@ system(cmd)
 With Node.js (v6.x or v8.x) and npm installed:
 
 ```
-npm install -g electron @plotly/image-exporter
+$ npm install -g electron @plotly/image-exporter
 ```
 
 which installs two executables `plotly-graph-exporter` and `plotly-export-server`
@@ -103,7 +103,6 @@ listener/emitter).
 
 To create a _runner_ app:
 
-<details>
 ```js
 // main.js
 
@@ -126,11 +125,9 @@ app.on('renderer-error', () => {})
 ```
 
 then launch it with `electron main.js`
-</details>
 
 Or to create a _server_ app:
 
-<details>
 ```js
 // main.js
 
@@ -170,7 +167,6 @@ app.on('renderer-error', () => {})
 ```
 
 then launch it with `electron main.js`
-</details>
 
 ## Plotly's image server
 
@@ -186,13 +182,13 @@ The environment you're installing this into may require Poppler for EPS exports.
 #### Poppler Installation via Aptitude (used by some \*nix/BSD, e.g. Ubuntu)
 
 ```
-apt-get poppler-utils (requires `sudo` or root privileges)
+$ apt-get poppler-utils (requires `sudo` or root privileges)
 ```
 
 #### Poppler Installation via Homebrew (third-party package manager for Mac OS X)
 
 ```
-brew install poppler
+$ brew install poppler
 ```
 
 ## Contributing
