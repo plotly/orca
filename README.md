@@ -1,83 +1,107 @@
-# image-exporter
+# Plotly Image Exporter
 
-aka image server 2.0.
+[![CircleCI](https://circleci.com/gh/plotly/image-exporter.svg?style=svg)](https://circleci.com/gh/plotly/image-exporter)
 
-See https://github.com/plotly/streambed/issues/9655 for info on the requirements.
+This repo contains source code for:
 
-## Install
+- `plotly-graph-exporter` standalone app,
+- `@plotly/image-exporter` npm package, and
+- Plotly's image server
 
-- `npm i`
-- install `poppler`:
-    - Linux: `apt-get poppler-utils`
-    - OS X: `brew install poppler`
-- `npm test`
+## `plotly-graph-exporter` standalone app
 
-## In brief
+### Install
 
-The new image exporter will be in a repo of its own. Streambed, plotly.js and
-eventually the R, Python and Julia libraries will require it and optionally
-configure it for their needs.
+To start using the `plotly-graph-exporter` standalone app, simply download the
+binaries corresponding to your operation system from the
+[release](https://github.com/plotly/image-exporter/releases) page.
 
-Note that I don't want to call this project _image server 2.0_ because I also
-want to expose an image _runner_ that reads files from the file system instead
-of handling HTTP requests - which will make it easier to use for plotly.js
-testing and the R, Python and Julia libraries.
+### Usage
 
-### Electron
+From the command line:
 
-It's way better than `nw.js`, a lot of people are using it. Using it for this
-project is a no-brainier.
+```
+$ plotly-graph-exporter '{ "data": ["y": [1,2,3]] }' -o fig.png
+```
 
-Electron apps juggle between a node.js process (called the **main** process) and
-browser scripts (call the **renderer** process). Compared to `nw.js`, creating
-electron apps requires a little more boiler plate, but electron makes it much
-easier to know what globals you have available.
+generates a PNG from the inputted plotly.js JSON attribute. To print info
+about the supported arguments:
 
-Electron creates an executable environment. That is, `require('electron')` does
-not do the same when executed as `node index.js` and `electron index.js`. So, to
-write good unit tests, it becomes important to split logic that only runs in
-electron from other things that can be run in node. That's why in `src/app/*`,
-only `index.js` requires electron modules. The other modules are _pure_
-node.js and are tested in `test/unit/` using [TAP](http://www.node-tap.org/).
-The electron logic is itself tested using
-[spectron](https://github.com/electron/spectron) which is much slower.
+```
+$ plotly-graph-exporter --help
+```
 
-### Components
+From a Python script:
 
-This project has a larger scope than the current image server.
+```python
+from subprocess import call
+import json
 
-We want to export not just plotly `"data"/"layout"`, but dashboard print and
-thumbnail views.  Eventually, we could even export plotly animations to gifs.
-Moreover, we probably want some export types to be open-source while others
-streambed-only. Therefore, this package defines a _component_ framework. See
-`src/component/` for two examples.
+fig = {"data": [{"y": [1,2,1]}]}
+call(['plotly-graph-exporter', json.dumps(fig)])
+```
 
-Each component has an `inject`, a `parse`, a `render` and a `convert` method:
+From an R script:
 
-- `inject` (optional, main process) returns a string or an array of strings
-  which is injected in the head of the app's HTML index file
-  (e.g `<script src="plotly.js"></script>`)
-- `parse` (required, main process) takes in a request body and coerces its options.
-- `render` (required, renderer process) takes options and returns image data
-- `convert` (required, main process) converts image data to output head and body
+```R
+library(plotly)
+p <- plot_ly(x = 1:10, y = 1:10, color = 1:10)
+b <- plotly_build(p)$x[c("data", "layout")]
+json <- plotly:::to_JSON(b)
+cmd <- sprintf("plotly-graph-exporter '%s' -o r-export-test.png", json)
+system(cmd)
+```
 
-Component modules are _just_ plain objects, listing methods. Components aren't
-instantiated, their methods shouldn't depend on any `this`.
+## `@plotly/image-exporter` npm package
 
-### Logging
+### Install
 
-I propose that this package won't assume anything logging related. Logging will
-be achieved by listening to `app` events and piping their info into a
-user-chosen logger package (e.g. `bunyan` for the streambed image server).
+With Node.js (v6.x or v8.x) and npm installed:
 
-## API
+```
+$ npm install -g electron @plotly/image-exporter
+```
 
-We export two electron app creator methods: `run`, `serve`. Both methods return
-an electron `app` object (which is an event listener/emitter).
+which installs two executables `plotly-graph-exporter` and `plotly-export-server`
 
-### `run`
+### CLI Usage
 
-Creates a _runner_ app (code in `src/app/runner/`):
+The `plotly-graph-exporter` executable works the same as the
+`plotly-graph-exporter` standalone app except that it uses the Node.js and
+Electron versions that are installed locally. For example,
+
+```
+$ plotly-graph-exporter https://plot.ly/~empet/14324.json --format svg
+```
+
+generates an SVG from a plotly.js JSON hosted on [plot.ly](https://plot.ly/).
+
+In turn, the `plotly-export-server`executable work similarly to plotly's own
+image server where not only plotly.js graphs can be exported, but also plotly
+dashboards, thumbnails and dash reports (see full list
+[here](https://github.com/plotly/image-exporter/tree/master/src/component)).
+
+Boot up the server with:
+
+```
+$ plotly-export-server --port 9090 &
+```
+
+then make POST requests as:
+
+```
+$ curl localhost:9090/plotly-graph/ <payload>
+$ curl localhost:9090/plotly-dashboard/ <payload>
+```
+
+### API Usage
+
+Using the `plotly/image-exporter` module allows developers to build their own
+plotly exporting tool. We export two Electron app creator methods `run` and
+`server`.  Both methods return an Electron `app` object (which is an event
+listener/emitter).
+
+To create a _runner_ app:
 
 ```js
 // main.js
@@ -85,25 +109,24 @@ Creates a _runner_ app (code in `src/app/runner/`):
 var plotlyExporter = require('plotly-exporter')
 
 var app = plotlyExporter.run({
-  component: 'component name' || {/* component options, see `serve` below */},
+  component: 'plotly-graph',
   input: 'path-to-file' || 'glob*' || url || '{data: [], layout: {}}' || [/* array of those */],
-  debug: false || true
+  debug: true
 })
 
 app.on('after-export', (info) => {
   fs.writeFile('output.png', info.body, (err) => console.warn(err))
 })
 
+// other available events:
 app.on('after-export-all', () => {})
 app.on('export-error', () => {})
 app.on('renderer-error', () => {})
 ```
 
-and launch it with `electron main.js`.
+then launch it with `electron main.js`
 
-### `serve`
-
-Creates a _server_ app (code in `src/app/server/`):
+Or to create a _server_ app:
 
 ```js
 // main.js
@@ -114,7 +137,7 @@ var app = plotlyExporter.serve({
   port: 9090,
   component: 'component name ' || [{
     name: 'plotly-graph',
-    path: /* path to module if none given, try to resolve ${name} */,
+    path: /* path to module if none given, tries to resolve ${name} */,
     route: /* default to same as ${name} */,
 
     // other options passed to component methods
@@ -137,76 +160,45 @@ app.on('after-export', (info) => {
   console.log(info)
 })
 
+// other available events:
 app.on('after-connect', () => {})
 app.on('export-error', () => {})
 app.on('renderer-error', () => {})
 ```
 
-and launch it with `electron main.js`.
+then launch it with `electron main.js`
 
-## CLI
+## Plotly's image server
 
-See `./bin/`.
+Plotly's image server is dockerized and deployed here. See the `deployment/`
+[README](https://github.com/plotly/image-exporter/tree/master/deployment) for more info.
 
-### Graph exporter
+## System dependencies
 
-A specialised `runner` for plotly graphs:
+**If you don't care about exporting EPS you can skip this section.**
 
-```
-plotly-graph-exporter 20.json https://plot.ly/~empet/14324.json --format svg
-```
+The environment you're installing this into may require Poppler for EPS exports.
 
-where `20.json` is a local `"data"/"layout"` JSON file and
-`https://plot.ly/~empet/14324` is a JSON URL.
-
-I'm thinking the R, Python and Julia libraries could simply call
-`plotly-graph-exporter` to offer offline image generation to their users.
-
-### Export server
-
-Export server very similar to the current image server but with support
-for multiple components:
+#### Poppler Installation via Aptitude (used by some \*nix/BSD, e.g. Ubuntu)
 
 ```
-plotly-image-server --port 9090
-
-# Dispatch to one component based on url of request
-curl localhost:9090/plotly-graph/ <payload>
-
-# or e.g.
-curl localhost:9090/plotly-dashboard/ <payload>
+$ apt-get poppler-utils (requires `sudo` or root privileges)
 ```
 
-### Pixel comparisons
+#### Poppler Installation via Homebrew (third-party package manager for Mac OS X)
 
-Similar to the current plotly.js pixel comparison runner, but as a standalone
-version that our R, Python, Julia libraries could use too for testing purposes.
-
-## Other useful links
-
-Debugging:
-
-+ https://github.com/electron/devtron
-+ https://electron.atom.io/docs/api/app/#event-gpu-process-crashed
-
-Perf:
-
-+ https://github.com/electron/asar
-+ https://github.com/pixijs/pixi.js/issues/2233
-+ https://github.com/pixijs/pixi.js/pull/2481/files
-
-## Nomenclature
-
-- request (or caller) to renderer (`evt: ${component.name}` sendToRenderer)
-- renderer to converter (`evt: ${uid}` sendToMain)
-- converter to request (or caller, reply)
-
-```js
-comp.inject = function (opts) { }
-
-comp[/* parse, render, convert */] = function (info, opts, cb) { }
-
-// with
-opts // => component options container
-cb = (errorCode, result) => {}
 ```
+$ brew install poppler
+```
+
+## Contributing
+
+See
+[CONTRIBUTING.md](https://github.com/plotly/image-exporter/blob/master/CONTRIBUTING.md).
+You can also [contact us](https://plot.ly/products/consulting-and-oem/) if you
+would like a specific feature added.
+
+## License
+
+Code released under the MIT ©
+[License](https://github.com/plotly/image-exporter/blob/master/LICENSE).
