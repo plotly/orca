@@ -13,7 +13,7 @@ This repo contains source code for:
 ### Install
 
 To start using the `plotly-graph-exporter` standalone app, simply download the
-binaries corresponding to your operation system from the
+binaries corresponding to your operating system from the
 [release](https://github.com/plotly/image-exporter/releases) page.
 
 ### Usage
@@ -24,7 +24,7 @@ From the command line:
 $ plotly-graph-exporter '{ "data": ["y": [1,2,3]] }' -o fig.png
 ```
 
-generates a PNG from the inputted plotly.js JSON attribute. To print info
+generates a PNG from the inputted plotly.js JSON attributes. To print info
 about the supported arguments:
 
 ```
