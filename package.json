@@ -1,5 +1,5 @@
 {
-  "name": "@plotly/image-exporter",
+  "name": "plotly-image-exporter",
   "version": "0.0.1",
   "description": "Plotly's image exporting utilities",
   "license": "MIT",

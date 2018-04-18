@@ -5,7 +5,7 @@
 This repo contains source code for:
 
 - `plotly-graph-exporter` standalone app,
-- `@plotly/image-exporter` npm package, and
+- `plotly-image-exporter` npm package, and
 - Plotly's image server
 
 ## `plotly-graph-exporter` standalone app
@@ -52,14 +52,14 @@ cmd <- sprintf("plotly-graph-exporter '%s' -o r-export-test.png", json)
 system(cmd)
 ```
 
-## `@plotly/image-exporter` npm package
+## `plotly-image-exporter` npm package
 
 ### Install
 
 With Node.js (v6.x or v8.x) and npm installed:
 
 ```
-$ npm install -g electron @plotly/image-exporter
+$ npm install -g electron plotly-image-exporter
 ```
 
 which installs two executables `plotly-graph-exporter` and `plotly-export-server`
