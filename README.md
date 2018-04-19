@@ -96,7 +96,7 @@ $ curl localhost:9090/plotly-dashboard/ <payload>
 
 ### API Usage
 
-Using the `plotly/image-exporter` module allows developers to build their own
+Using the `plotly-image-exporter` module allows developers to build their own
 plotly exporting tool. We export two Electron app creator methods `run` and
 `server`.  Both methods return an Electron `app` object (which is an event
 listener/emitter).
