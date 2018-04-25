@@ -31,7 +31,7 @@
     },
     "linux": {
       "category": "Utility",
-      "executableName": "plotly-orca",
+      "executableName": "orca",
       "maintainer": "chris@plot.ly",
       "target": [
         "appimage"
