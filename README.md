@@ -97,7 +97,7 @@ $ curl localhost:9090/plotly-dashboard/ <payload>
 ### API usage
 
 Using the `orca` module allows developers to build their own
-plotly exporting tool. We export two Electron app creator methods `run` and
+Plotly exporting tool. We export two Electron app creator methods `run` and
 `server`.  Both methods return an Electron `app` object (which is an event
 listener/emitter).
 
@@ -106,9 +106,9 @@ To create a _runner_ app:
 ```js
 // main.js
 
-var plotlyExporter = require('orca')
+var orca = require('orca')
 
-var app = plotlyExporter.run({
+var app = orca.run({
   component: 'plotly-graph',
   input: 'path-to-file' || 'glob*' || url || '{data: [], layout: {}}' || [/* array of those */],
   debug: true
@@ -131,9 +131,9 @@ Or to create a _server_ app:
 ```js
 // main.js
 
-var plotlyExporter = require('orca')
+var orca = require('orca')
 
-var app = plotlyExporter.serve({
+var app = orca.serve({
   port: 9090,
   component: 'component name ' || [{
     name: 'plotly-graph',
