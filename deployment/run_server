@@ -2,7 +2,7 @@
 
 fc-cache -v /usr/share/fonts/user
 
-BUILD_DIR=/var/www/image-exporter/build
+BUILD_DIR=/var/www/orca/build
 if [[ -n "${PLOTLY_JS_SRC}" ]]; then
   # Fetch plotly js bundle and save it locally:
   mkdir -p $BUILD_DIR
