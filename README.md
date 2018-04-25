@@ -64,7 +64,7 @@ $ npm install -g electron @plotly/orca
 
 which installs two executables `orca` and `plotly-export-server`
 
-### CLI Usage
+### CLI usage
 
 The `orca` executable works the same as the
 `orca` standalone app except that it uses the Node.js and
@@ -94,7 +94,7 @@ $ curl localhost:9090/plotly-graph/ <payload>
 $ curl localhost:9090/plotly-dashboard/ <payload>
 ```
 
-### API Usage
+### API usage
 
 Using the `orca` module allows developers to build their own
 plotly exporting tool. We export two Electron app creator methods `run` and
@@ -179,13 +179,13 @@ Plotly's image server is dockerized and deployed here. See the `deployment/`
 
 The environment you're installing this into may require Poppler for EPS exports.
 
-#### Poppler Installation via Aptitude (used by some \*nix/BSD, e.g. Ubuntu)
+#### Poppler installation via Aptitude (used by some \*nix/BSD, e.g. Ubuntu)
 
 ```
 $ apt-get poppler-utils (requires `sudo` or root privileges)
 ```
 
-#### Poppler Installation via Homebrew (third-party package manager for Mac OS X)
+#### Poppler installation via Homebrew (third-party package manager for Mac OS X)
 
 ```
 $ brew install poppler
