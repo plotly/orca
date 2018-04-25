@@ -5,7 +5,7 @@
 - debug: msg="Deploying rev {{ sha1_to_deploy }}"
 
 - name: Ensure image exists
-  local_action: shell curl -o /dev/null --silent --head --fail https://quay.io/api/v1/repository/plotly/orca/tag/{{ sha1_to_deploy }}/images
+  local_action: shell curl -o /dev/null --silent --head --fail https://quay.io/api/v1/repository/plotly/image-exporter/tag/{{ sha1_to_deploy }}/images
 
 - name: Rollout new image
   local_action: command kubectl set image deployments/imageserver imageserver-app=quay.io/plotly/image-exporter:{{ sha1_to_deploy }}
