@@ -1,6 +1,6 @@
 # Plotly Image Exporter
 
-[![CircleCI](https://circleci.com/gh/plotly/image-exporter.svg?style=svg)](https://circleci.com/gh/plotly/image-exporter)
+[![CircleCI](https://circleci.com/gh/plotly/orca.svg?style=svg)](https://circleci.com/gh/plotly/orca)
 
 This repo contains source code for:
 
