@@ -73,7 +73,7 @@ npm run test:integration
 ## Packaging
 
 We use [`electron-builder`](https://github.com/electron-userland/electron-builder) to pack up
-the `plotly-graph-exporter` executable. To do so locally, run:
+the `orca` executable. To do so locally, run:
 
 ```
 npm run pack

@@ -119,13 +119,13 @@ const makeFormatAliases = (config) => {
 exports.getExporterHelpMsg = function () {
   const formatAliases = makeFormatAliases(EXPORTER_MINIMIST_CONFIG)
 
-  return `plotly-graph-exporter
+  return `orca
 
   Usage:
 
-    $ plotly-graph-exporter [path/to/json/file(s), URL(s), glob(s), '{"data":[],"layout":{}}'] {options}
+    $ orca [path/to/json/file(s), URL(s), glob(s), '{"data":[],"layout":{}}'] {options}
 
-    $ cat plot.json | plotly-graph-exporter {options} > plot.png
+    $ cat plot.json | orca {options} > plot.png
 
   Options:
 

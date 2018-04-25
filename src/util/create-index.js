@@ -5,7 +5,7 @@ const isNonEmptyString = require('./is-non-empty-string')
 const os = require('os')
 
 const COMPONENT_GLOBAL = 'PlotlyExporterComponent'
-const PATH_TO_BUILD = path.join(os.tmpdir(), 'plotly-graph-exporter-build')
+const PATH_TO_BUILD = path.join(os.tmpdir(), 'plotly-orca-build')
 try {
   fs.mkdirSync(PATH_TO_BUILD)
 } catch (e) {}
