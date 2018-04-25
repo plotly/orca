@@ -1,11 +1,11 @@
-# Plotly Orca: Open-source Report Creator App
+# Plotly Orca
 
 [![CircleCI](https://circleci.com/gh/plotly/orca.svg?style=svg)](https://circleci.com/gh/plotly/orca)
 
 This repo contains source code for:
 
 - `orca` standalone app,
-- `@plotly/orca` npm package, and
+- `orca` npm package, and
 - Plotly's image server
 
 ## `orca` standalone app
@@ -52,14 +52,14 @@ cmd <- sprintf("orca '%s' -o r-export-test.png", json)
 system(cmd)
 ```
 
-## `@plotly/orca` npm package
+## `orca` npm package
 
 ### Install
 
 With Node.js (v6.x or v8.x) and npm installed:
 
 ```
-$ npm install -g electron @plotly/orca
+$ npm install -g electron orca
 ```
 
 which installs two executables `orca` and `plotly-export-server`
