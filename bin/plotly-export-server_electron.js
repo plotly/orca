@@ -16,9 +16,6 @@ if (argv.help) {
   process.exit(0)
 }
 
-// TODO
-// - try https://github.com/indexzero/node-portfinder
-
 let app
 
 const plotlyJsOpts = {
@@ -100,6 +97,15 @@ app.on('export-error', (info) => {
         fid: info.fid,
         head: info.head
       }
+    }))
+  }
+})
+
+app.on('renderer-error', (info) => {
+  if (SHOW_LOGS) {
+    console.log(JSON.stringify({
+      severity: 'ERROR',
+      textPayload: `${info.msg} - ${info.error}`
     }))
   }
 })

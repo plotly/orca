@@ -1,4 +1,4 @@
-# Contributing to @plotly/image-exporter
+# Contributing to Plotly Image Exporter
 
 Note that this section targets contributors. If you're interested in using the
 standalone app, [download the latest

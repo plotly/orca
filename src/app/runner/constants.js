@@ -6,6 +6,6 @@ module.exports = {
     501: 'failed export'
   },
   dflt: {
-    parallelLimit: 4
+    parallelLimit: 1
   }
 }

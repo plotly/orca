@@ -1,7 +1,7 @@
 {
-  "name": "image-exporter",
+  "name": "plotly-image-exporter",
   "version": "0.0.1",
-  "description": "Plotly's image exporting utility",
+  "description": "Plotly's image exporting utilities",
   "license": "MIT",
   "main": "./bin/plotly-graph-exporter_electron.js",
   "bin": {
