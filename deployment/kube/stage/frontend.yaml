@@ -28,7 +28,7 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       containers:
       - name: imageserver-app
-        image: quay.io/plotly/orca:master
+        image: quay.io/plotly/image-exporter:master
         args: ["--plotlyJS", "https://stage.plot.ly/static/plotlyjs/build/plotlyjs-bundle.js"]
         env:
           - name: MAPBOX_ACCESS_TOKEN

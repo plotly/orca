@@ -93,11 +93,11 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     apt-get install -y google-chrome-stable xvfb poppler-utils && \
     rm -rf /var/lib/apt/lists/* && apt-get clean
 
-COPY package.json /var/www/orca/
-COPY bin /var/www/orca/bin
-COPY src /var/www/orca/src
+COPY package.json /var/www/image-exporter/
+COPY bin /var/www/image-exporter/bin
+COPY src /var/www/image-exporter/src
 
-WORKDIR /var/www/orca
+WORKDIR /var/www/image-exporter
 RUN npm install && mkdir build
 
 ####################
