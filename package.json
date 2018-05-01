@@ -1,11 +1,11 @@
 {
-  "name": "plotly-image-exporter",
-  "version": "0.0.1",
-  "description": "Plotly's image exporting utilities",
+  "name": "orca",
+  "version": "1.0.0",
+  "description": "Plotly's image-exporting utilities",
   "license": "MIT",
-  "main": "./bin/plotly-graph-exporter_electron.js",
+  "main": "./bin/orca_electron.js",
   "bin": {
-    "plotly-graph-exporter": "./bin/plotly-graph-exporter.js",
+    "orca": "./bin/orca.js",
     "plotly-export-server": "./bin/plotly-export-server.js"
   },
   "scripts": {
@@ -19,8 +19,8 @@
     "pack": "cross-env NODE_ENV=production electron-builder --publish=never"
   },
   "build": {
-    "appId": "com.plotly.image-exporter.graph-exporter",
-    "productName": "Plotly Graph Exporter",
+    "appId": "com.plotly.orca",
+    "productName": "Plotly Orca",
     "files": [
       "bin",
       "src"
@@ -31,7 +31,7 @@
     },
     "linux": {
       "category": "Utility",
-      "executableName": "plotly-graph-exporter",
+      "executableName": "orca",
       "maintainer": "chris@plot.ly",
       "target": [
         "appimage"

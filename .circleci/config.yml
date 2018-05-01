@@ -153,6 +153,6 @@ jobs:
             - node_modules
       - run: mkdir artifacts
       - run: mv release/*.yml artifacts || true
-      - run: mv release/plotly-image-exporter* artifacts
+      - run: mv release/orca* artifacts
       - store_artifacts:
           path: artifacts

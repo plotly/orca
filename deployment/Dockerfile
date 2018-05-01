@@ -85,7 +85,7 @@ RUN apt-get update -y && apt-get install -y subversion && \
     apt-get --auto-remove -y remove subversion
 
 ####################
-# Copy and set up image-exporter
+# Copy and set up Orca
 
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
     sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' && \

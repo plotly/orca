@@ -1,8 +1,8 @@
-# Contributing to Plotly Image Exporter
+# Contributing to Orca
 
 Note that this section targets contributors. If you're interested in using the
 standalone app, [download the latest
-release.](https://github.com/plotly/image-exporter/releases).
+release.](https://github.com/plotly/orca/releases).
 
 ## Dev Installation
 
@@ -73,7 +73,7 @@ npm run test:integration
 ## Packaging
 
 We use [`electron-builder`](https://github.com/electron-userland/electron-builder) to pack up
-the `plotly-graph-exporter` executable. To do so locally, run:
+the `orca` executable. To do so locally, run:
 
 ```
 npm run pack
@@ -98,7 +98,7 @@ _pure_ Node.js and are tested in `test/unit/` using
 [TAP](http://www.node-tap.org/). The Electron logic is itself tested using
 [Spectron](https://github.com/electron/spectron) which is much slower.
 
-### Anatomy of an image-exporter component
+### Anatomy of an Orca component
 
 Along with a `name` field, each component has a `ping`, an `inject`, a `parse`,
 a `render` and a `convert` method:
@@ -121,7 +121,7 @@ main and renderer process at once.
 
 ### Nomenclature for IPC callbacks
 
-Image exporter is a heavy user of Electron's IPC (inter-process-communication)
+Orca is a heavy user of Electron's IPC (inter-process-communication)
 which in turn is callback heavy. To help us stay out of _callback hell_, we use
 the following terms to designates callbacks:
 
@@ -141,7 +141,7 @@ the following terms to designates callbacks:
 
 ### What happened to `nw.js`?
 
-Older plotly devs might remember our old `nw.js` image server, but yeah
+Older Plotly devs might remember our old `nw.js` image server, but yeah
 Electron is way better than `nw.js` and a lot more people are using it. Using
 it for this project was a no-brainier.
 
