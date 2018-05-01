@@ -6,7 +6,7 @@ const series = require('run-series')
 const uuid = require('uuid/v4')
 const os = require('os')
 
-const PATH_TO_BUILD = path.join(os.tmpdir(), 'plotly-orca-build')
+const PATH_TO_BUILD = path.join(os.tmpdir(), 'orca-build')
 try {
   fs.mkdirSync(PATH_TO_BUILD)
 } catch (e) {}
