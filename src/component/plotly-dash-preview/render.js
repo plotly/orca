@@ -18,9 +18,13 @@ function render (info, opts, sendToMain) {
   createBrowserWindowOpts['show'] = opts.debug
 
   let win = remote.createBrowserWindow(createBrowserWindowOpts)
-  win.loadURL(info.url)
-
   const contents = win.webContents
+  const session = contents.session
+
+  // Clear cookies before loading URL
+  session.clearStorageData({}, () => {
+    win.loadURL(info.url)
+  })
 
   const done = errorCode => {
     win.close()
