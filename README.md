@@ -2,19 +2,28 @@
 
 [![CircleCI](https://circleci.com/gh/plotly/orca.svg?style=svg)](https://circleci.com/gh/plotly/orca)
 
-This repo contains source code for:
+Orca is the CLI app for Plotly's image-exporting utilities. In brief, Orca is
+an Electron app that generates images and reports of Plotly things like
+plotly.js graphs, dash apps, dashboards and so on from the command line. In
+addition, Orca is the backbone of Plotly's Image Server. Orca is also an
+acronym for Open-source Report Creator App.
 
-- `orca` standalone app,
-- `orca` npm package, and
-- Plotly's image server
-
-## `orca` standalone app
 
 ### Install
 
-To start using the `orca` standalone app, simply download the
-binaries corresponding to your operating system from the
+To easiest way to install `orca` is to download the standalone binaries
+corresponding to your operating system from the
 [release](https://github.com/plotly/orca/releases) page.
+
+Alternatively, if you have Node.js installed (recommended v8.x), you can
+install `orca` using npm as:
+
+```
+$ npm install -g electron orca
+```
+
+which makes the `orca` executable available in your path.
+
 
 ### Usage
 
@@ -24,14 +33,23 @@ From the command line:
 $ orca graph '{ "data": [{"y": [1,2,1]}] }' -o fig.png
 ```
 
-generates a PNG from the inputted plotly.js JSON attributes. To print info
-about the supported arguments:
+generates a PNG from the inputted plotly.js JSON attributes. Or,
+
+
+```
+$ orca graph https://plot.ly/~empet/14324.json --format svg
+```
+
+generates an SVG from a plotly.js JSON hosted on [plot.ly](https://plot.ly/).
+
+To print info about the supported arguments, run:
 
 ```
 $ orca --help
+$ orca <command> --help
 ```
 
-From a Python script:
+To call `orca` from a Python script:
 
 ```python
 from subprocess import call
@@ -41,7 +59,7 @@ fig = {"data": [{"y": [1,2,1]}]}
 call(['orca', 'graph', json.dumps(fig)])
 ```
 
-From an R script:
+To call `orca` from an R script:
 
 ```R
 library(plotly)
@@ -54,54 +72,11 @@ cmd <- sprintf("orca graph '%s' -o r-export-test.png", json)
 system(cmd)
 ```
 
-## `orca` npm package
-
-### Install
-
-With Node.js (v6.x or v8.x) and npm installed:
-
-```
-$ npm install -g electron orca
-```
-
-which installs the `orca` executable in your path.
-
-### CLI usage
-
-The `orca` executable works the same as the
-`orca` standalone app except that it uses the Node.js and
-Electron versions that are installed locally. For example,
-
-```
-$ orca graph https://plot.ly/~empet/14324.json --format svg
-```
-
-generates an SVG from a plotly.js JSON hosted on [plot.ly](https://plot.ly/).
-
-In turn, the `orca`executable work similarly to Plotly's own
-image server where not only plotly.js graphs can be exported, but also Plotly
-dashboards, thumbnails and Dash reports (see full list
-[here](https://github.com/plotly/orca/tree/master/src/component)).
-
-Boot up the server with:
-
-```
-$ orca serve --port 9090 &
-```
-
-then make POST requests as:
-
-```
-$ curl localhost:9090/ <plotly graph payload>
-$ curl localhost:9090/dash-report/ <dash report payload>
-$ curl localhost:9090/plotly-dashboard/ <plotly dashboard payload>
-```
-
 ### API usage
 
-Using the `orca` module allows developers to build their own
+Using the `orca` npm module allows developers to build their own
 Plotly exporting tool. We export two Electron app creator methods `run` and
-`server`.  Both methods return an Electron `app` object (which is an event
+`serve`.  Both methods return an Electron `app` object (which is an event
 listener/emitter).
 
 To create a _runner_ app:
