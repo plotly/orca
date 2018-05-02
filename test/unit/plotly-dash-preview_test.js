@@ -99,6 +99,22 @@ tap.test('render:', t => {
     })
   })
 
+  t.test('should clear session cookies before loading dash-app', t => {
+    const win = createMockWindow()
+    sinon.stub(remote, 'createBrowserWindow').returns(win)
+    win.webContents.executeJavaScript.resolves(true)
+    win.webContents.printToPDF.yields(null, '-> image data <-')
+
+    fn({
+      url: 'https://dummy.com'
+    }, {}, (errorCode, result) => {
+      t.ok(win.webContents.session.clearStorageData.calledOnce)
+      t.equal(errorCode, undefined, 'code')
+      t.equal(result.imgData, '-> image data <-', 'result')
+      t.end()
+    })
+  })
+
   t.test('should handle executeJavascript errors', t => {
     const win = createMockWindow()
     sinon.stub(remote, 'createBrowserWindow').returns(win)
