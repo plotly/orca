@@ -13,6 +13,11 @@ const OPTS_META = [].concat([{
   dflt: process.env.ORCA_PORT || 9091,
   description: 'Sets the server\'s port number.'
 }], PLOTLYJS_OPTS_META, [{
+  name: 'request-limit',
+  type: 'string',
+  alias: ['requestLimit'],
+  description: 'Sets a request limit that makes orca exits when reached.'
+}, {
   name: 'keep-alive',
   type: 'boolean',
   alias: ['keepAlive'],
@@ -47,6 +52,7 @@ function main (args) {
   const opts = extractOpts(args, OPTS_META)
   const SHOW_LOGS = !opts.quiet
   const DEBUG = opts.debug
+  const requestLimit = opts.requestLimit ? Number(opts.requestLimit) : Infinity
 
   if (opts.help) {
     console.log(HELP_MSG)
@@ -116,7 +122,7 @@ function main (args) {
         }))
       }
 
-      if (requestCount++ >= 1000) {
+      if (requestCount++ >= requestLimit) {
         app.quit()
       }
     })
