@@ -21,7 +21,7 @@ binaries corresponding to your operating system from the
 From the command line:
 
 ```
-$ orca '{ "data": ["y": [1,2,3]] }' -o fig.png
+$ orca graph '{ "data": [{"y": [1,2,1]}] }' -o fig.png
 ```
 
 generates a PNG from the inputted plotly.js JSON attributes. To print info
@@ -38,17 +38,19 @@ from subprocess import call
 import json
 
 fig = {"data": [{"y": [1,2,1]}]}
-call(['orca', json.dumps(fig)])
+call(['orca', 'graph', json.dumps(fig)])
 ```
 
 From an R script:
 
 ```R
 library(plotly)
+
 p <- plot_ly(x = 1:10, y = 1:10, color = 1:10)
 b <- plotly_build(p)$x[c("data", "layout")]
 json <- plotly:::to_JSON(b)
-cmd <- sprintf("orca '%s' -o r-export-test.png", json)
+
+cmd <- sprintf("orca graph '%s' -o r-export-test.png", json)
 system(cmd)
 ```
 
@@ -62,7 +64,7 @@ With Node.js (v6.x or v8.x) and npm installed:
 $ npm install -g electron orca
 ```
 
-which installs two executables `orca` and `plotly-export-server`
+which installs the `orca` executable in your path.
 
 ### CLI usage
 
@@ -71,7 +73,7 @@ The `orca` executable works the same as the
 Electron versions that are installed locally. For example,
 
 ```
-$ orca https://plot.ly/~empet/14324.json --format svg
+$ orca graph https://plot.ly/~empet/14324.json --format svg
 ```
 
 generates an SVG from a plotly.js JSON hosted on [plot.ly](https://plot.ly/).
@@ -84,14 +86,15 @@ dashboards, thumbnails and Dash reports (see full list
 Boot up the server with:
 
 ```
-$ plotly-export-server --port 9090 &
+$ orca serve --port 9090 &
 ```
 
 then make POST requests as:
 
 ```
-$ curl localhost:9090/plotly-graph/ <payload>
-$ curl localhost:9090/plotly-dashboard/ <payload>
+$ curl localhost:9090/ <plotly graph payload>
+$ curl localhost:9090/dash-report/ <dash report payload>
+$ curl localhost:9090/plotly-dashboard/ <plotly dashboard payload>
 ```
 
 ### API usage

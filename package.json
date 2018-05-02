@@ -5,8 +5,7 @@
   "license": "MIT",
   "main": "./bin/orca_electron.js",
   "bin": {
-    "orca": "./bin/orca.js",
-    "plotly-export-server": "./bin/plotly-export-server.js"
+    "orca": "./bin/orca.js"
   },
   "scripts": {
     "pretest": "node test/pretest.js",
