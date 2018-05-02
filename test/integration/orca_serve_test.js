@@ -12,8 +12,8 @@ const PORT = 9109
 const SERVER_URL = `http://localhost:${PORT}`
 
 const app = new Application({
-  path: path.join(paths.bin, 'plotly-export-server.js'),
-  args: ['--port', PORT]
+  path: paths.bin,
+  args: ['serve', '--port', PORT]
 })
 
 tap.tearDown(() => {
