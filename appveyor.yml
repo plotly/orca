@@ -19,6 +19,7 @@ init:
 
 install:
   - ps: Install-Product node $env:nodejs_version $env:platform
+  - npm i
 
 build_script:
   - npm run pack
