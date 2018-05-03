@@ -19,7 +19,7 @@
   },
   "build": {
     "appId": "com.plotly.orca",
-    "productName": "Plotly Orca",
+    "productName": "orca",
     "files": [
       "bin",
       "src"
