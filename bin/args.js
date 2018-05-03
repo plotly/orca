@@ -24,6 +24,10 @@ exports.PLOTLYJS_OPTS_META = [{
   alias: ['MathJax'],
   dflt: '',
   description: `Sets path to MathJax files. Required to export LaTeX characters.`
+}, {
+  name: 'safe-mode',
+  alias: ['safeMode', 'safe'],
+  description: 'Turns on safe mode: where figures likely to make browser window hang during image generating are skipped.'
 }]
 
 exports.sliceArgs = function (args) {

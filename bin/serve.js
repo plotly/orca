@@ -63,7 +63,8 @@ function main (args) {
     plotlyJS: opts.plotlyJS,
     mapboxAccessToken: opts['mapbox-access-token'],
     mathjax: opts.mathjax,
-    topojson: opts.topojson
+    topojson: opts.topojson,
+    safeMode: opts.safeMode
   }
 
   function launch () {
