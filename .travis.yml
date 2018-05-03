@@ -19,7 +19,7 @@ install:
 
 script:
   - npm run pack
-  - zip mac-release.zip release/Plotly\ Orca*
+  - zip mac-release.zip release/Plotly\ Graph\ Exporter*
 
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine
