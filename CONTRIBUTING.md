@@ -96,13 +96,13 @@ automate this process somehow.
 
 ### Checklist
 
-- Make sure tests are passing off the `master` on [CircleCI](https://circleci.com/gh/plotly/workflows/orca/tree/master)
+- Make sure tests are passing off `master` on [CircleCI](https://circleci.com/gh/plotly/workflows/orca/tree/master)
 - Update and commit the [CHANGELOG.md](https://github.com/plotly/plotly.js/blob/master/CHANGELOG.md)
   according to the [keepachangelog](http://keepachangelog.com/) specs. **Pro tip**:
   use the GitHub compare URLs `https://github.com/plotly/orca/compare/v<X.Y.Z>...master` replacing
   `<X.Y.Z>` with the most recent orca version.
 - Run [`npm version {patch | minor | major}`](https://docs.npmjs.com/cli/version)
-  + bumps the version in the plotly.js package.json
+  + bumps the version in the orca package.json
   + `git commit`, with message `'vX.Y.Z'`
   + [`git tag -a`](https://git-scm.com/book/en/v2/Git-Basics-Tagging), adding a tag `'vX.Y.Z'`
 - Review version commit by e.g. `git show HEAD`
@@ -111,7 +111,7 @@ automate this process somehow.
   make a new release with title `vX.Y.Z` same as the git tag, then:
   + Copy the CHANGELOG items in the description field and add some extra info if you feel like it.
   + Grab the Linux build from CircleCI `electron-pack-and-release` job artifacts under the latest [master](https://circleci.com/gh/plotly/workflows/orca/tree/master) build -> Artifacts -> release.zip
-  + Grab the Windows build from [AppVeyor](https://ci.appveyor.com/project/AppVeyorDashAdmin/orca)  under Latest Build -> Artifacts -> release.zip
+  + Grab the Windows build from [AppVeyor](https://ci.appveyor.com/project/AppVeyorDashAdmin/image-exporter) under Latest Build -> Artifacts -> release.zip
   + Grab the Mac build automatically pushed to [Amazon S3](https://s3.console.aws.amazon.com/s3/buckets/image-exporter-travis-artifacts/plotly/orca/?region=us-east-1&tab=overview) from Travis.
     **N.B.** Select the latest build (largest number *note:* the folders are not necessarily sequential) -> release.zip
 - Run `npm publish`
