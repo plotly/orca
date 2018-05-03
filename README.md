@@ -35,7 +35,6 @@ $ orca graph '{ "data": [{"y": [1,2,1]}] }' -o fig.png
 
 generates a PNG from the inputted plotly.js JSON attributes. Or,
 
-
 ```
 $ orca graph https://plot.ly/~empet/14324.json --format svg
 ```

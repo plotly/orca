@@ -16,7 +16,7 @@ const OPTS_META = [].concat([{
   name: 'request-limit',
   type: 'string',
   alias: ['requestLimit'],
-  description: 'Sets a request limit that makes orca exits when reached.'
+  description: 'Sets a request limit that makes orca exit when reached.'
 }, {
   name: 'keep-alive',
   type: 'boolean',
@@ -26,7 +26,7 @@ const OPTS_META = [].concat([{
   name: 'window-max-number',
   type: 'string',
   alias: ['windowMaxNumber', 'maxNumberOfWindows'],
-  description: 'Sets maximum number of browser window that the server can keep open at a given time.'
+  description: 'Sets maximum number of browser windows the server can keep open at a given time.'
 }, {
   name: 'quiet',
   type: 'boolean',
