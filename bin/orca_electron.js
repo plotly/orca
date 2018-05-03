@@ -16,15 +16,15 @@ const BAD_CMD = 'Unrecognized orca command. Run `orca --help` for more info'
 
 const HELP = `Plotly's image-exporting utilities
 
-  Usage: orca [--version] [--help] <command> [<args]
+  Usage: orca [--version] [--help] <command> [<args>]
 
   Available commands:
   - graph [or plotly-graph, plotly_graph]
     Generates an image of plotly graph from inputted plotly.js JSON attributes.
     For more info, run \`orca graph --help\`.
-  - serve
+  - serve [or server]
     Boots up a server with one route per available export component
-    For more info, run \`orca server --help\`
+    For more info, run \`orca serve --help\`.
 `
 
 if (opts._.length) {
@@ -39,6 +39,7 @@ if (opts._.length) {
       break
 
     case 'serve':
+    case 'server':
       require('./serve')(cmdArgs)
       break
 

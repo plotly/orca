@@ -13,12 +13,12 @@ exports.PLOTLYJS_OPTS_META = [{
   alias: ['mapboxAccessToken'],
   dflt: process.env.MAPBOX_ACCESS_TOKEN || '',
   description: `Sets mapbox access token. Required to export mapbox graphs.
-    Alternatively, one can set a \`mapboxAccessToken\` environment variable.`
+    Alternatively, one can set a \`MAPBOX_ACCESS_TOKEN\` environment variable.`
 }, {
   name: 'topojson',
   dflt: '',
   description: `Sets path to topojson files.
-    By default topojson files on the plot.ly CDN are used.`
+    By default, topojson files on the plot.ly CDN are used.`
 }, {
   name: 'mathjax',
   alias: ['MathJax'],

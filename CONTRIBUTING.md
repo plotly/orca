@@ -2,7 +2,7 @@
 
 Note that this section targets contributors. If you're interested in using the
 standalone app, [download the latest
-release.](https://github.com/plotly/orca/releases).
+release](https://github.com/plotly/orca/releases).
 
 ## Dev Installation
 
@@ -10,7 +10,7 @@ release.](https://github.com/plotly/orca/releases).
 
 - git
 - [Node.js](https://nodejs.org/en/). We recommend using Node.js v8.x, but all
-  versions starting from v4 should work.  Upgrading and managing node versions
+  versions starting from v6 should work.  Upgrading and managing node versions
   can be easily done using [`nvm`](https://github.com/creationix/nvm) or its
   Windows alternatives.
 - [`npm`](https://www.npmjs.com/) v5.x and up (which ships by default with
@@ -21,8 +21,8 @@ release.](https://github.com/plotly/orca/releases).
 ### Clone the plotly.js repo
 
 ```bash
-git clone https://github.com/plotly/plotly.js.git
-cd plotly.js
+git clone https://github.com/plotly/orca.git
+cd orca
 ```
 
 ### Install Node.js dependencies
@@ -34,7 +34,7 @@ npm install
 ### Install poppler
 
 We haven't found a Node.js library that converts PDF files to EPS,
-so we use `poppler`:
+so we use [poppler](https://poppler.freedesktop.org/):
 
 On Debian-flavored Linux:
 
@@ -70,6 +70,12 @@ npm run test:unit
 npm run test:integration
 ```
 
+To check test coverage:
+
+```
+npm run coverage
+```
+
 ## Packaging
 
 We use [`electron-builder`](https://github.com/electron-userland/electron-builder) to pack up
@@ -79,9 +85,14 @@ the `orca` executable. To do so locally, run:
 npm run pack
 ```
 
+the new executable will appear in the `release/` directory.
+
 ## Releases
 
-_to do_
+At the moment, we manually upload the OS X, Windows, and Linux executables
+(built on Travis, AppVeyor and CircleCI respectively) on the Github
+[release](https://github.com/plotly/orca/releases). It would be nice to
+automate this process somehow.
 
 ## Overview
 
@@ -93,18 +104,18 @@ index.js`.
 
 So, to write good unit tests, it becomes important to split logic that only
 runs in Electron from other things that can be run in Node.js. That's why in
-`src/app/*`, only `index.js` requires Electron modules. The other modules are
-_pure_ Node.js and are tested in `test/unit/` using
+`src/app/*`, only the `index.js` files require Electron modules. The other
+modules are _pure_ Node.js and are tested in `test/unit/` using
 [TAP](http://www.node-tap.org/). The Electron logic is itself tested using
-[Spectron](https://github.com/electron/spectron) which is much slower.
+[Spectron](https://github.com/electron/spectron) which is much slower and brittle.
 
 ### Anatomy of an Orca component
 
 Along with a `name` field, each component has a `ping`, an `inject`, a `parse`,
 a `render` and a `convert` method:
 
-* `ping` (required, renderer process): method that send healthy signal renderer
-  to main process
+* `ping` (required, renderer process): method that send healthy signal from the
+  renderer to main process
 * `inject` (optional, main process): returns a string or an array of strings
   which is injected in the head of the app's HTML index file (e.g `<script
   src="plotly.js"></script>`)
@@ -116,8 +127,8 @@ a `render` and a `convert` method:
 
 Component modules are _just_ plain objects, listing methods. Components aren't
 instantiated, their methods shouldn't depend on any `this`. We chose to not
-turn components into classes as this practice would be difficult to implement in the
-main and renderer process at once.
+turn components into classes as this practice would be difficult to implement
+correctly in the main and renderer process at once.
 
 ### Nomenclature for IPC callbacks
 

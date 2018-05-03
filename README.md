@@ -4,7 +4,7 @@
 
 Orca is the CLI app for Plotly's image-exporting utilities. In brief, Orca is
 an Electron app that generates images and reports of Plotly things like
-plotly.js graphs, dash apps, dashboards and so on from the command line. In
+plotly.js graphs, dash apps, dashboards from the command line. In
 addition, Orca is the backbone of Plotly's Image Server. Orca is also an
 acronym for Open-source Report Creator App.
 
@@ -83,9 +83,9 @@ To create a _runner_ app:
 ```js
 // main.js
 
-var orca = require('orca')
+const orca = require('orca')
 
-var app = orca.run({
+const app = orca.run({
   component: 'plotly-graph',
   input: 'path-to-file' || 'glob*' || url || '{data: [], layout: {}}' || [/* array of those */],
   debug: true
@@ -103,14 +103,14 @@ app.on('renderer-error', () => {})
 
 then launch it with `electron main.js`
 
-Or to create a _server_ app:
+Or, to create a _server_ app:
 
 ```js
 // main.js
 
-var orca = require('orca')
+const orca = require('orca')
 
-var app = orca.serve({
+const app = orca.serve({
   port: 9090,
   component: 'component name ' || [{
     name: 'plotly-graph',
