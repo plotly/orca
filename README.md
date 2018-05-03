@@ -1,6 +1,4 @@
-# Plotly Orca
-
-[![CircleCI](https://circleci.com/gh/plotly/orca.svg?style=svg)](https://circleci.com/gh/plotly/orca)
+# Orca
 
 Orca is the CLI app for Plotly's image-exporting utilities. In brief, Orca is
 an Electron app that generates images and reports of Plotly things like
@@ -8,8 +6,11 @@ plotly.js graphs, dash apps, dashboards from the command line. In
 addition, Orca is the backbone of Plotly's Image Server. Orca is also an
 acronym for Open-source Report Creator App.
 
+Visit [plot.ly](https://plot.ly) to learn more or visit the [Plotly forum](https://community.plot.ly/).
 
-### Install
+Follow [@plotlygraphs](https://twitter.com/plotlygraphs) on Twitter for Orca announcements.
+
+## Installation
 
 To easiest way to install `orca` is to download the standalone binaries
 corresponding to your operating system from the
@@ -25,7 +26,7 @@ $ npm install -g electron orca
 which makes the `orca` executable available in your path.
 
 
-### Usage
+## Quick start
 
 From the command line:
 
@@ -71,7 +72,7 @@ cmd <- sprintf("orca graph '%s' -o r-export-test.png", json)
 system(cmd)
 ```
 
-### API usage
+## API usage
 
 Using the `orca` npm module allows developers to build their own
 Plotly exporting tool. We export two Electron app creator methods `run` and
@@ -174,6 +175,11 @@ See
 [CONTRIBUTING.md](https://github.com/plotly/orca/blob/master/CONTRIBUTING.md).
 You can also [contact us](https://plot.ly/products/consulting-and-oem/) if you
 would like a specific feature added.
+
+| Tests and Linux builds | Mac OS build | Windows build |
+| ---------------------- | ------------ | ------------- |
+| [![CircleCI](https://circleci.com/gh/plotly/orca.svg?style=svg)](https://circleci.com/gh/plotly/orca) | [![Build Status](https://travis-ci.org/plotly/orca.svg?branch=master)](https://travis-ci.org/plotly/orca) | [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/plotly/orca?svg=true)](https://ci.appveyor.com/project/AppVeyorDashAdmin/image-exporter) |
+
 
 ## License
 
