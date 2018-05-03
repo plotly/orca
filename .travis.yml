@@ -19,7 +19,8 @@ install:
 
 script:
   - npm run pack
-  - zip mac-release.zip release/Plotly\ Orca*
+  - ls release/
+  - zip mac-release.zip release/orca*
 
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine
