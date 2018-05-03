@@ -20,7 +20,7 @@ install:
 script:
   - npm run pack
   - ls release/
-  - zip mac-release.zip release/orca*
+  - zip mac-release.zip release/orca* --junk-paths
 
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine
