@@ -84,7 +84,7 @@ To create a _runner_ app:
 ```js
 // main.js
 
-const orca = require('orca')
+const orca = require('orca/src')
 
 const app = orca.run({
   component: 'plotly-graph',
@@ -109,7 +109,7 @@ Or, to create a _server_ app:
 ```js
 // main.js
 
-const orca = require('orca')
+const orca = require('orca/src')
 
 const app = orca.serve({
   port: 9090,
