@@ -2,8 +2,8 @@
 
 Orca is the CLI app for Plotly's image-exporting utilities. In brief, Orca is
 an Electron app that generates images and reports of Plotly things like
-plotly.js graphs, dash apps, dashboards from the command line. In
-addition, Orca is the backbone of Plotly's Image Server. Orca is also an
+plotly.js graphs, dash apps, dashboards from the command line. Additionally,
+Orca is the backbone of Plotly's Image Server. Orca is also an
 acronym for Open-source Report Creator App.
 
 Visit [plot.ly](https://plot.ly) to learn more or visit the [Plotly forum](https://community.plot.ly/).
