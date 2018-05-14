@@ -45,7 +45,7 @@ if (opts._.length) {
 
     default:
       console.log(BAD_CMD)
-      process.exit(0)
+      process.exit(1)
   }
 } else {
   if (opts.help) {

@@ -2,6 +2,7 @@ const minimist = require('minimist')
 
 exports.PLOTLYJS_OPTS_META = [{
   name: 'plotly',
+  type: 'string',
   alias: ['plotlyjs', 'plotly-js', 'plotly_js', 'plotlyJS', 'plotlyJs'],
   dflt: '',
   description: `Sets the path to the plotly.js bundle to use.
@@ -10,22 +11,26 @@ exports.PLOTLYJS_OPTS_META = [{
     By default, the 'latest' CDN bundle is used.`
 }, {
   name: 'mapbox-access-token',
+  type: 'string',
   alias: ['mapboxAccessToken'],
   dflt: process.env.MAPBOX_ACCESS_TOKEN || '',
   description: `Sets mapbox access token. Required to export mapbox graphs.
     Alternatively, one can set a \`MAPBOX_ACCESS_TOKEN\` environment variable.`
 }, {
   name: 'topojson',
+  type: 'string',
   dflt: '',
   description: `Sets path to topojson files.
     By default, topojson files on the plot.ly CDN are used.`
 }, {
   name: 'mathjax',
+  type: 'string',
   alias: ['MathJax'],
   dflt: '',
   description: `Sets path to MathJax files. Required to export LaTeX characters.`
 }, {
   name: 'safe-mode',
+  type: 'boolean',
   alias: ['safeMode', 'safe'],
   description: 'Turns on safe mode: where figures likely to make browser window hang during image generating are skipped.'
 }]
