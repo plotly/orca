@@ -40,8 +40,6 @@ your operating system from the
 - Right-click on the orca icon, then click on _Properties_ and copy the _Starts in_ field
 - In the command prompt, run `PATH %PATH%;<paste the "Starts in" field here>`
 
-Note that, step 2 creates an orca icon on your Desktop.
-
 ### Linux
 
 - Run `$ chmod +x orca-X.Y.Z-x86_64.AppImage`

@@ -1,8 +1,7 @@
 # Contributing to Orca
 
-Note that this section targets contributors. If you're interested in using the
-standalone app, [download the latest
-release](https://github.com/plotly/orca/releases).
+Note that this section targets contributors. If you're interested in using Orca
+see the [installation instructions](https://github.com/plotly/orca#installation).
 
 ## Dev Installation
 
