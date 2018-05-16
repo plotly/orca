@@ -1,10 +1,9 @@
 # Orca
 
-Orca is the CLI app for Plotly's image-exporting utilities. In brief, Orca is
-an Electron app that generates images and reports of Plotly things like
+Orca is an Electron app that generates images and reports of Plotly things like
 plotly.js graphs, dash apps, dashboards from the command line. Additionally,
-Orca is the backbone of Plotly's Image Server. Orca is also an
-acronym for Open-source Report Creator App.
+Orca is the backbone of Plotly's Image Server. Orca is also an acronym for
+Open-source Report Creator App.
 
 Visit [plot.ly](https://plot.ly) to learn more or visit the [Plotly forum](https://community.plot.ly/).
 
@@ -12,19 +11,41 @@ Follow [@plotlygraphs](https://twitter.com/plotlygraphs) on Twitter for Orca ann
 
 ## Installation
 
-To easiest way to install `orca` is to download the standalone binaries
-corresponding to your operating system from the
-[release](https://github.com/plotly/orca/releases) page.
-
-Alternatively, if you have Node.js installed (recommended v8.x), you can
-install `orca` using npm as:
+If you have Node.js installed (recommended v8.x), you can easily install Orca
+using npm as:
 
 ```
-$ npm install -g electron orca
+$ npm install -g electron@1.8.4 orca
 ```
 
 which makes the `orca` executable available in your path.
 
+Alternatively, you can download the standalone Orca binaries corresponding to
+your operating system from the
+[release](https://github.com/plotly/orca/releases) page. Then, on
+
+### Mac OS
+
+- Unzip `mac-release.zip` from your `Downloads/` folder
+- Double-click on `orca-X.Y.Z.dmg` file, that should open an installation window
+- Drag the orca icon into _Applications_
+- In finder, go to the `Applications/` folder
+- Right-click on the orca icon and click on _Open_, this should open an _Installation Succeeded_ window
+- Open the terminal and start using Orca!
+
+### Windows
+
+- Extract the `window-release.zip` file
+- In the `release` folder, double-click on `orca Setup X.Y.Z`, this will create an orca icon on your Desktop
+- Right-click on the orca icon, then click on _Properties_ and copy the _Starts in_ field
+- In the command prompt, run `PATH %PATH%;<paste the "Starts in" field here>`
+
+Note that, step 2 creates an orca icon on your Desktop.
+
+### Linux
+
+- Run `$ chmod +x orca-X.Y.Z-x86_64.AppImage`
+- Add it to your `$PATH`
 
 ## Quick start
 
