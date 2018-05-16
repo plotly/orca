@@ -184,3 +184,7 @@ Node.js process (called the **main** process) and browser scripts (call the
 **renderer** process). Compared to `nw.js`, creating Electron apps requires a
 little more boiler plate, but Electron makes it much easier to know what
 globals you have available.
+
+## Code style
+
+[![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
