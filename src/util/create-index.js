@@ -44,6 +44,10 @@ function createIndex (comp, opts, cb) {
     }
   }
 
+  const req = (p) => {
+    return `require(${JSON.stringify(p)})`
+  }
+
   const html = `<!DOCTYPE html>
   <html>
     <head>
@@ -53,9 +57,9 @@ function createIndex (comp, opts, cb) {
     </head>
     <body>
       <script>
-        ${COMPONENT_GLOBAL} = require('${comp.path}')
-        require('${PATH_TO_INIT_RENDERERS}')([${COMPONENT_GLOBAL}])
-        require('${PATH_TO_INIT_PINGS}')([${COMPONENT_GLOBAL}])
+        ${COMPONENT_GLOBAL} = ${req(comp.path)}
+        ${req(PATH_TO_INIT_RENDERERS)}([${COMPONENT_GLOBAL}])
+        ${req(PATH_TO_INIT_PINGS)}([${COMPONENT_GLOBAL}])
       </script>
     </body>
   </html>`

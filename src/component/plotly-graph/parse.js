@@ -21,6 +21,7 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
  *  - scale (only for plotly.js v.1.31.0 and up)
  *  - width
  *  - height
+ *  - safeMode
  * @param {function} sendToRenderer
  *  - errorCode
  *  - result
@@ -93,7 +94,7 @@ function parse (body, _opts, sendToRenderer) {
   result.width = parseDim(result, opts, 'width')
   result.height = parseDim(result, opts, 'height')
 
-  if (willFigureHang(result)) {
+  if (_opts.safeMode && willFigureHang(result)) {
     return errorOut(400, 'figure data is likely to make exporter hang, rejecting request')
   }
 

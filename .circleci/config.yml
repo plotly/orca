@@ -53,7 +53,7 @@ jobs:
           name: Install deps
           command: |
             npm install
-            sudo apt-get install poppler-utils
+            sudo apt-get install poppler-utils libgconf-2-4
       - run:
           name: List deps
           command: |

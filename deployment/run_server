@@ -26,7 +26,7 @@ fi
 pkill Xvfb
 pkill node
 
-xvfb-run --auto-servernum --server-args '-screen 0 640x480x24' ./bin/plotly-export-server.js $PLOTLYJS_ARG $@ 1>/proc/1/fd/1 2>/proc/1/fd/2 &
+xvfb-run --auto-servernum --server-args '-screen 0 640x480x24' ./bin/orca.js serve --request-limit=1000 --safe-mode $PLOTLYJS_ARG $@ 1>/proc/1/fd/1 2>/proc/1/fd/2 &
 echo \$! > \$PIDFILE
 
 EOF

@@ -9,7 +9,7 @@ const mocks = {}
 
 paths.root = path.join(__dirname, '..')
 paths.build = path.join(path.join(paths.root, 'build'))
-paths.bin = path.join(paths.root, 'bin')
+paths.bin = path.join(paths.root, 'bin', 'orca.js')
 paths.readme = path.join(paths.root, 'README.md')
 paths.pkg = path.join(paths.root, 'package.json')
 paths.glob = path.join(paths.root, 'src', 'util', '*')

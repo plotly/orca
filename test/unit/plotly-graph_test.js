@@ -326,7 +326,7 @@ tap.test('parse:', t => {
     })
   })
 
-  t.test('should not access figures that a likely to make renderer hang', t => {
+  t.test('should not access figures that a likely to make renderer hang under *safeMode*', t => {
     t.test('failing svg scatter case', t => {
       var x = new Array(1e6)
 
@@ -335,7 +335,7 @@ tap.test('parse:', t => {
           type: 'scatter',
           x: x
         }]
-      }, {}, (errorCode, result) => {
+      }, {safeMode: true}, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -350,7 +350,7 @@ tap.test('parse:', t => {
           type: 'scattergl',
           x: x
         }]
-      }, {}, (errorCode, result) => {
+      }, {safeMode: true}, (errorCode, result) => {
         t.equal(errorCode, null, 'code')
         t.type(result.figure, 'object', 'figure type')
         t.end()
@@ -369,7 +369,7 @@ tap.test('parse:', t => {
             values: x
           }]
         }]
-      }, {}, (errorCode, result) => {
+      }, {safeMode: true}, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -388,7 +388,7 @@ tap.test('parse:', t => {
           type: 'heatmap',
           z: z
         }]
-      }, {}, (errorCode, result) => {
+      }, {safeMode: true}, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -400,7 +400,7 @@ tap.test('parse:', t => {
 
       fn({
         data: data
-      }, {}, (errorCode, result) => {
+      }, {safeMode: true}, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -414,7 +414,7 @@ tap.test('parse:', t => {
           x: new Array(1e5),
           boxpoints: 'all'
         }]
-      }, {}, (errorCode, result) => {
+      }, {safeMode: true}, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -428,7 +428,7 @@ tap.test('parse:', t => {
           x: new Array(1e5),
           points: 'all'
         }]
-      }, {}, (errorCode, result) => {
+      }, {safeMode: true}, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -444,7 +444,7 @@ tap.test('parse:', t => {
           x: data,
           alphahull: 1
         }]
-      }, {}, (errorCode, result) => {
+      }, {safeMode: true}, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -456,7 +456,7 @@ tap.test('parse:', t => {
 
       fn({
         data: data
-      }, {}, (errorCode, result) => {
+      }, {safeMode: true}, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -475,7 +475,7 @@ tap.test('parse:', t => {
             new Array(4e5)
           ]
         }]
-      }, {}, (errorCode, result) => {
+      }, {safeMode: true}, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -493,7 +493,7 @@ tap.test('parse:', t => {
           boxpoints: 'all',
           x: new Array(4e4) // below 5e4 threshold
         }]
-      }, {}, (errorCode, result) => {
+      }, {safeMode: true}, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -506,7 +506,7 @@ tap.test('parse:', t => {
           type: 'scatter',
           x: new Array(1e6)
         }]
-      }, {}, (errorCode, result) => {
+      }, {safeMode: true}, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()

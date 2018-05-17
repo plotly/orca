@@ -1,104 +1,101 @@
-# Plotly Orca
+# Orca
 
-[![CircleCI](https://circleci.com/gh/plotly/orca.svg?style=svg)](https://circleci.com/gh/plotly/orca)
+Orca is an Electron app that generates images and reports of Plotly things like
+plotly.js graphs, dash apps, dashboards from the command line. Additionally,
+Orca is the backbone of Plotly's Image Server. Orca is also an acronym for
+Open-source Report Creator App.
 
-This repo contains source code for:
+Visit [plot.ly](https://plot.ly) to learn more or visit the [Plotly forum](https://community.plot.ly/).
 
-- `orca` standalone app,
-- `orca` npm package, and
-- Plotly's image server
+Follow [@plotlygraphs](https://twitter.com/plotlygraphs) on Twitter for Orca announcements.
 
-## `orca` standalone app
+## Installation
 
-### Install
+If you have Node.js installed (recommended v8.x), you can easily install Orca
+using npm as:
 
-To start using the `orca` standalone app, simply download the
-binaries corresponding to your operating system from the
-[release](https://github.com/plotly/orca/releases) page.
+```
+$ npm install -g electron@1.8.4 orca
+```
 
-### Usage
+which makes the `orca` executable available in your path.
+
+Alternatively, you can download the standalone Orca binaries corresponding to
+your operating system from the
+[release](https://github.com/plotly/orca/releases) page. Then, on
+
+### Mac OS
+
+- Unzip `mac-release.zip` from your `Downloads/` folder
+- Double-click on `orca-X.Y.Z.dmg` file, that should open an installation window
+- Drag the orca icon into _Applications_
+- In finder, go to the `Applications/` folder
+- Right-click on the orca icon and click on _Open_, this should open an _Installation Succeeded_ window
+- Open the terminal and start using Orca!
+
+### Windows
+
+- Extract the `window-release.zip` file
+- In the `release` folder, double-click on `orca Setup X.Y.Z`, this will create an orca icon on your Desktop
+- Right-click on the orca icon, then click on _Properties_ and copy the _Starts in_ field
+- In the command prompt, run `PATH %PATH%;<paste the "Starts in" field here>`
+
+### Linux
+
+- Run `$ chmod +x orca-X.Y.Z-x86_64.AppImage`
+- Add it to your `$PATH`
+
+## Quick start
 
 From the command line:
 
 ```
-$ orca '{ "data": ["y": [1,2,3]] }' -o fig.png
+$ orca graph '{ "data": [{"y": [1,2,1]}] }' -o fig.png
 ```
 
-generates a PNG from the inputted plotly.js JSON attributes. To print info
-about the supported arguments:
+generates a PNG from the inputted plotly.js JSON attributes. Or,
+
+```
+$ orca graph https://plot.ly/~empet/14324.json --format svg
+```
+
+generates an SVG from a plotly.js JSON hosted on [plot.ly](https://plot.ly/).
+
+To print info about the supported arguments, run:
 
 ```
 $ orca --help
+$ orca <command> --help
 ```
 
-From a Python script:
+To call `orca` from a Python script:
 
 ```python
 from subprocess import call
 import json
 
 fig = {"data": [{"y": [1,2,1]}]}
-call(['orca', json.dumps(fig)])
+call(['orca', 'graph', json.dumps(fig)])
 ```
 
-From an R script:
+To call `orca` from an R script:
 
 ```R
 library(plotly)
+
 p <- plot_ly(x = 1:10, y = 1:10, color = 1:10)
 b <- plotly_build(p)$x[c("data", "layout")]
 json <- plotly:::to_JSON(b)
-cmd <- sprintf("orca '%s' -o r-export-test.png", json)
+
+cmd <- sprintf("orca graph '%s' -o r-export-test.png", json)
 system(cmd)
 ```
 
-## `orca` npm package
+## API usage
 
-### Install
-
-With Node.js (v6.x or v8.x) and npm installed:
-
-```
-$ npm install -g electron orca
-```
-
-which installs two executables `orca` and `plotly-export-server`
-
-### CLI usage
-
-The `orca` executable works the same as the
-`orca` standalone app except that it uses the Node.js and
-Electron versions that are installed locally. For example,
-
-```
-$ orca https://plot.ly/~empet/14324.json --format svg
-```
-
-generates an SVG from a plotly.js JSON hosted on [plot.ly](https://plot.ly/).
-
-In turn, the `orca`executable work similarly to Plotly's own
-image server where not only plotly.js graphs can be exported, but also Plotly
-dashboards, thumbnails and Dash reports (see full list
-[here](https://github.com/plotly/orca/tree/master/src/component)).
-
-Boot up the server with:
-
-```
-$ plotly-export-server --port 9090 &
-```
-
-then make POST requests as:
-
-```
-$ curl localhost:9090/plotly-graph/ <payload>
-$ curl localhost:9090/plotly-dashboard/ <payload>
-```
-
-### API usage
-
-Using the `orca` module allows developers to build their own
+Using the `orca` npm module allows developers to build their own
 Plotly exporting tool. We export two Electron app creator methods `run` and
-`server`.  Both methods return an Electron `app` object (which is an event
+`serve`.  Both methods return an Electron `app` object (which is an event
 listener/emitter).
 
 To create a _runner_ app:
@@ -106,9 +103,9 @@ To create a _runner_ app:
 ```js
 // main.js
 
-var orca = require('orca')
+const orca = require('orca/src')
 
-var app = orca.run({
+const app = orca.run({
   component: 'plotly-graph',
   input: 'path-to-file' || 'glob*' || url || '{data: [], layout: {}}' || [/* array of those */],
   debug: true
@@ -126,14 +123,14 @@ app.on('renderer-error', () => {})
 
 then launch it with `electron main.js`
 
-Or to create a _server_ app:
+Or, to create a _server_ app:
 
 ```js
 // main.js
 
-var orca = require('orca')
+const orca = require('orca/src')
 
-var app = orca.serve({
+const app = orca.serve({
   port: 9090,
   component: 'component name ' || [{
     name: 'plotly-graph',
@@ -197,6 +194,11 @@ See
 [CONTRIBUTING.md](https://github.com/plotly/orca/blob/master/CONTRIBUTING.md).
 You can also [contact us](https://plot.ly/products/consulting-and-oem/) if you
 would like a specific feature added.
+
+| Tests and Linux builds | Mac OS build | Windows build |
+| ---------------------- | ------------ | ------------- |
+| [![CircleCI](https://circleci.com/gh/plotly/orca.svg?style=svg)](https://circleci.com/gh/plotly/orca) | [![Build Status](https://travis-ci.org/plotly/orca.svg?branch=master)](https://travis-ci.org/plotly/orca) | [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/plotly/orca?svg=true)](https://ci.appveyor.com/project/AppVeyorDashAdmin/image-exporter) |
+
 
 ## License
 

@@ -1,8 +1,7 @@
 # Contributing to Orca
 
-Note that this section targets contributors. If you're interested in using the
-standalone app, [download the latest
-release.](https://github.com/plotly/orca/releases).
+Note that this section targets contributors. If you're interested in using Orca
+see the [installation instructions](https://github.com/plotly/orca#installation).
 
 ## Dev Installation
 
@@ -10,7 +9,7 @@ release.](https://github.com/plotly/orca/releases).
 
 - git
 - [Node.js](https://nodejs.org/en/). We recommend using Node.js v8.x, but all
-  versions starting from v4 should work.  Upgrading and managing node versions
+  versions starting from v6 should work.  Upgrading and managing node versions
   can be easily done using [`nvm`](https://github.com/creationix/nvm) or its
   Windows alternatives.
 - [`npm`](https://www.npmjs.com/) v5.x and up (which ships by default with
@@ -21,8 +20,8 @@ release.](https://github.com/plotly/orca/releases).
 ### Clone the plotly.js repo
 
 ```bash
-git clone https://github.com/plotly/plotly.js.git
-cd plotly.js
+git clone https://github.com/plotly/orca.git
+cd orca
 ```
 
 ### Install Node.js dependencies
@@ -34,7 +33,7 @@ npm install
 ### Install poppler
 
 We haven't found a Node.js library that converts PDF files to EPS,
-so we use `poppler`:
+so we use [poppler](https://poppler.freedesktop.org/):
 
 On Debian-flavored Linux:
 
@@ -70,6 +69,12 @@ npm run test:unit
 npm run test:integration
 ```
 
+To check test coverage:
+
+```
+npm run coverage
+```
+
 ## Packaging
 
 We use [`electron-builder`](https://github.com/electron-userland/electron-builder) to pack up
@@ -79,9 +84,37 @@ the `orca` executable. To do so locally, run:
 npm run pack
 ```
 
+the new executable will appear in the `release/` directory.
+
 ## Releases
 
-_to do_
+At the moment, we manually upload the OS X, Windows, and Linux executables
+(built on Travis, AppVeyor and CircleCI respectively) on the Github
+[release](https://github.com/plotly/orca/releases). It would be nice to
+automate this process somehow.
+
+### Checklist
+
+- Make sure tests are passing off `master` on [CircleCI](https://circleci.com/gh/plotly/workflows/orca/tree/master)
+- Update and commit the [CHANGELOG.md](https://github.com/plotly/plotly.js/blob/master/CHANGELOG.md)
+  according to the [keepachangelog](http://keepachangelog.com/) specs. **Pro tip**:
+  use the GitHub compare URLs `https://github.com/plotly/orca/compare/v<X.Y.Z>...master` replacing
+  `<X.Y.Z>` with the most recent orca version.
+- Run [`npm version {patch | minor | major}`](https://docs.npmjs.com/cli/version)
+  + bumps the version in the orca package.json
+  + `git commit`, with message `'vX.Y.Z'`
+  + [`git tag -a`](https://git-scm.com/book/en/v2/Git-Basics-Tagging), adding a tag `'vX.Y.Z'`
+- Review version commit by e.g. `git show HEAD`
+- Run `git push && git push --tags`
+- Go to the [release section](https://github.com/plotly/orca/releases) and
+  make a new release with title `vX.Y.Z` same as the git tag, then:
+  + Copy the CHANGELOG items in the description field and add some extra info if you feel like it.
+  + Grab the Linux build from CircleCI `electron-pack-and-release` job artifacts under the latest [master](https://circleci.com/gh/plotly/workflows/orca/tree/master) build -> Artifacts -> release.zip
+  + Grab the Windows build from [AppVeyor](https://ci.appveyor.com/project/AppVeyorDashAdmin/image-exporter) under Latest Build -> Artifacts -> release.zip
+  + Grab the Mac build automatically pushed to [Amazon S3](https://s3.console.aws.amazon.com/s3/buckets/image-exporter-travis-artifacts/plotly/orca/?region=us-east-1&tab=overview) from Travis.
+    **N.B.** Select the latest build (largest number *note:* the folders are not necessarily sequential) -> release.zip
+- Run `npm publish`
+- :beers:
 
 ## Overview
 
@@ -93,18 +126,18 @@ index.js`.
 
 So, to write good unit tests, it becomes important to split logic that only
 runs in Electron from other things that can be run in Node.js. That's why in
-`src/app/*`, only `index.js` requires Electron modules. The other modules are
-_pure_ Node.js and are tested in `test/unit/` using
+`src/app/*`, only the `index.js` files require Electron modules. The other
+modules are _pure_ Node.js and are tested in `test/unit/` using
 [TAP](http://www.node-tap.org/). The Electron logic is itself tested using
-[Spectron](https://github.com/electron/spectron) which is much slower.
+[Spectron](https://github.com/electron/spectron) which is much slower and brittle.
 
 ### Anatomy of an Orca component
 
 Along with a `name` field, each component has a `ping`, an `inject`, a `parse`,
 a `render` and a `convert` method:
 
-* `ping` (required, renderer process): method that send healthy signal renderer
-  to main process
+* `ping` (required, renderer process): method that send healthy signal from the
+  renderer to main process
 * `inject` (optional, main process): returns a string or an array of strings
   which is injected in the head of the app's HTML index file (e.g `<script
   src="plotly.js"></script>`)
@@ -116,8 +149,8 @@ a `render` and a `convert` method:
 
 Component modules are _just_ plain objects, listing methods. Components aren't
 instantiated, their methods shouldn't depend on any `this`. We chose to not
-turn components into classes as this practice would be difficult to implement in the
-main and renderer process at once.
+turn components into classes as this practice would be difficult to implement
+correctly in the main and renderer process at once.
 
 ### Nomenclature for IPC callbacks
 
@@ -150,3 +183,7 @@ Node.js process (called the **main** process) and browser scripts (call the
 **renderer** process). Compared to `nw.js`, creating Electron apps requires a
 little more boiler plate, but Electron makes it much easier to know what
 globals you have available.
+
+## Code style
+
+[![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
