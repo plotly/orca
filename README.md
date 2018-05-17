@@ -1,5 +1,8 @@
 # Orca
 
+[![npm version](https://badge.fury.io/js/orca.svg)](https://badge.fury.io/js/orca)
+[![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/orca/blob/master/LICENSE)
+
 Orca is an Electron app that generates images and reports of Plotly things like
 plotly.js graphs, dash apps, dashboards from the command line. Additionally,
 Orca is the backbone of Plotly's Image Server. Orca is also an acronym for
