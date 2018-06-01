@@ -87,11 +87,7 @@ To call `orca` from an R script:
 library(plotly)
 
 p <- plot_ly(x = 1:10, y = 1:10, color = 1:10)
-b <- plotly_build(p)$x[c("data", "layout")]
-json <- plotly:::to_JSON(b)
-
-cmd <- sprintf("orca graph '%s' -o r-export-test.png", json)
-system(cmd)
+orca(p, "plot.svg")
 ```
 
 ## API usage
