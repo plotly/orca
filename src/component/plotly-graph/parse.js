@@ -148,7 +148,12 @@ function findMaxArrayLength (cont) {
     }
   })
 
-  return Math.max(0, ...lengths)
+  let l = Math.max(0, ...lengths)
+
+  if (cont.type === 'table' && isPlainObj(cont.cells)) {
+    l = Math.max(l, findMaxArrayLength(cont.cells))
+  }
+  return l
 }
 
 function estimateDataLength (trace) {
@@ -169,6 +174,7 @@ function maxPtsPerTrace (trace) {
     case 'scattergl':
     case 'splom':
     case 'pointcloud':
+    case 'table':
       return 1e7
 
     case 'scatterpolargl':
