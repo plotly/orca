@@ -76,9 +76,10 @@ To call `orca` from a Python script:
 ```python
 from subprocess import call
 import json
+import plotly
 
 fig = {"data": [{"y": [1,2,1]}]}
-call(['orca', 'graph', json.dumps(fig)])
+call(['orca', 'graph', json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)])
 ```
 
 To call `orca` from an R script:
