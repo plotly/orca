@@ -100,7 +100,7 @@ automate this process somehow.
   according to the [keepachangelog](http://keepachangelog.com/) specs. **Pro tip**:
   use the GitHub compare URLs `https://github.com/plotly/orca/compare/v<X.Y.Z>...master` replacing
   `<X.Y.Z>` with the most recent orca version.
-- Run [`npm version {patch | minor | major}`](https://docs.npmjs.com/cli/version)
+- Run [`npm version {patch | minor | major}`](https://docs.npmjs.com/cli/version), which automatically
   + bumps the version in the orca package.json
   + `git commit`, with message `'vX.Y.Z'`
   + [`git tag -a`](https://git-scm.com/book/en/v2/Git-Basics-Tagging), adding a tag `'vX.Y.Z'`
