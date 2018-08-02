@@ -1,6 +1,6 @@
 {
   "name": "orca",
-  "version": "1.0.1-alpha.1",
+  "version": "1.0.1-rc.1",
   "description": "Plotly's image-exporting utilities",
   "license": "MIT",
   "main": "./bin/orca_electron.js",

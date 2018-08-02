@@ -11,4 +11,10 @@ import json
 with open('package.json') as f:
     package_json=json.load(f)
 
-setup(version=package_json['version'])
+# Convert NPM-compatible semantic version (e.g. "1.0.1-rc.1")
+# to setup tools compatible version string (e.g. "1.0.1rc1")
+npm_version = package_json['version']
+ver_split = npm_version.split('-')
+py_version = ver_split[0] + ''.join(ver_split[1:]).replace('.', '')
+
+setup(version=py_version)
