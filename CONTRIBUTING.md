@@ -115,11 +115,17 @@ automate this process somehow.
     **N.B.** Select the latest build (largest number *note:* the folders are not necessarily sequential) -> release.zip
 - Run `npm publish`
 - Publish conda packages:
-  + Download the conda package build artifact (named `plotly-orca-*.tar.bz2`) for each operating system as above. 
-    Be careful to place the files in separate directories on download since they all have the same file name.
+  + Download the following artifacts as above:
+    - `conda-linux-64.zip` (CircleCI)
+    - `conda-win-64.zip` (AppVeyor)
+    - `conda-osx-64.zip` (Travis)
+  + Unzip each artifact
+    + `conda-linux-64.zip` becomes `linux-64/plotly-orca-*.tar.bz2`
+    + `conda-win-64.zip` becomes `win-64/plotly-orca-*.tar.bz2`
+    + `conda-osx-64.zip` becomes `osx-64/plotly-orca-*.tar.bz2`
   + From a conda environment with the `anaconda-client` package installed run `anaconda login`
   + Enter the credentials for the plotly anaconda channel
-  + For each of the three `tar.bz2` files listed above, run `anaconda upload /path/to/plotly-orca-*.tar.bz2`
+  + For each of the three `plotly-orca-*.tar.bz2` files listed above, run `anaconda upload /path/to/XX-64/plotly-orca-*.tar.bz2`
   + Run `anaconda logout`
 - :beers:
 
