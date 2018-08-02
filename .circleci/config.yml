@@ -186,6 +186,7 @@ jobs:
       - run: $HOME/miniconda/bin/conda install --yes conda-build
       - run: $HOME/miniconda/bin/conda build recipe/
       - run: ls $HOME/miniconda/conda-bld/linux-64
+      - run: mkdir artifacts
       - run: zip -r artifacts/conda-linux-64.zip $HOME/miniconda/conda-bld/linux-64
       - store_artifacts:
           path: artifacts
