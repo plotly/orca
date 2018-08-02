@@ -1,0 +1,16 @@
+{% set data = load_setup_py_data() %}
+
+package:
+  name: plotly-orca
+  version: {{ data.get('version') }}
+
+source:
+  path: ../
+
+build:
+  number: 1
+  binary_relocation: False
+
+requirements:
+  build:
+    - nodejs =8
