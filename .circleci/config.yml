@@ -177,10 +177,12 @@ jobs:
           keys:
             - v3-npm-
 
-      - run: wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+      - run: wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
       - run: chmod +x miniconda.sh
       - run: ./miniconda.sh -b -p $HOME/miniconda
       - run: export PATH="$HOME/miniconda/bin:$PATH"
+      - run: echo $PATH
+      - run: ls $HOME/miniconda/bin
       - run: conda install --yes conda-build
       - run: conda build recipe/
       - run: ls $HOME/miniconda/conda-bld/linux-64
