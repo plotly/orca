@@ -31,7 +31,7 @@ build_script:
 
 after_build:
   - 7z a release.zip release/latest.yml release/*.exe
-  - 7z a conda-win-64.zip C:\Miniconda36-x64\conda-bld\win-64\*.tar.bz2
+  - 7z a conda-win-64.zip C:\Miniconda36-x64\conda-bld\win-64\
 
 artifacts:
   - path: release.zip
