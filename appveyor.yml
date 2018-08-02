@@ -35,5 +35,7 @@ after_build:
 artifacts:
   - path: release.zip
     name: release
+  - path: C:\Miniconda36-x64\conda-bld
+    name: conda_package
 
 test: off

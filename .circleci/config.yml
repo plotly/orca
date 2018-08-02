@@ -21,7 +21,10 @@ workflows:
           requires:
             - test-node-v6
             - test-node-v8
-      - conda-build-and-upload
+      - conda-build-package:
+          requires:
+            - test-node-v6
+            - test-node-v8
 
 version: 2
 jobs:
@@ -158,7 +161,7 @@ jobs:
       - store_artifacts:
           path: artifacts
 
-  conda-build-and-upload:
+  conda-build-package:
     docker:
       - image: circleci/node:8.11.1-browsers
     steps:
@@ -183,3 +186,5 @@ jobs:
       - run: $HOME/miniconda/bin/conda install --yes conda-build
       - run: $HOME/miniconda/bin/conda build recipe/
       - run: ls $HOME/miniconda/conda-bld/linux-64
+      - store_artifacts:
+          path: $HOME/miniconda/conda-bld/
