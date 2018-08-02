@@ -32,6 +32,7 @@ build_script:
 
 after_build:
   - 7z a release.zip release/latest.yml release/*.exe
+  - 7z a conda-win-64.zip win-64/*
 
 artifacts:
   - path: release.zip

@@ -42,5 +42,5 @@ addons:
     s3_region: us-east-1
     paths:
       - mac-release.zip
-      - /Users/travis/miniconda/conda-bld/
+      - /Users/travis/miniconda/conda-bld/osx-64/*.tar.bz2
     debug: true
