@@ -21,6 +21,7 @@ workflows:
           requires:
             - test-node-v6
             - test-node-v8
+      - conda-build-and-upload
 
 version: 2
 jobs:
@@ -156,3 +157,30 @@ jobs:
       - run: mv release/orca* artifacts
       - store_artifacts:
           path: artifacts
+
+  conda-build-and-upload:
+    docker:
+      - image: circleci/node:8.11.1-browsers
+    steps:
+      - restore_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
+          keys:
+            - v1-source-{{ .Branch }}-
+            - v1-source-
+      - checkout
+      - save_cache:
+          key: v1-source-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
+      - restore_cache:
+          key: v3-npm-{{ checksum "package-lock.json" }}
+          keys:
+            - v3-npm-
+
+      - run: wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+      - run: chmod +x miniconda.sh
+      - run: ./miniconda.sh -b -p $HOME/miniconda
+      - run: export PATH="$HOME/miniconda/bin:$PATH"
+      - run: conda install --yes conda-build
+      - run: conda build recipe/
+      - run: ls $HOME/miniconda/conda-bld/linux-64
