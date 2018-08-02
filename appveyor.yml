@@ -37,7 +37,7 @@ after_build:
 artifacts:
   - path: release.zip
     name: release
-  - path: win-64
+  - path: conda-win-64.zip
     name: conda_package
 
 test: off
