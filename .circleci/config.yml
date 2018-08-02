@@ -187,4 +187,4 @@ jobs:
       - run: $HOME/miniconda/bin/conda build recipe/
       - run: ls $HOME/miniconda/conda-bld/linux-64
       - store_artifacts:
-          path: /home/circleci/miniconda/conda-bld/linux-64/*.tar.bz2
+          path: /home/circleci/miniconda/conda-bld/linux-64/
