@@ -25,6 +25,7 @@ install:
   - npm i
   - conda build recipe\
   - dir C:\Miniconda36-x64\conda-bld\win-64
+  - copy C:\Miniconda36-x64\conda-bld\win-64 win-64
 
 build_script:
   - npm run pack
@@ -35,7 +36,7 @@ after_build:
 artifacts:
   - path: release.zip
     name: release
-  - path: C:\Miniconda36-x64\conda-bld
+  - path: win-64
     name: conda_package
 
 test: off
