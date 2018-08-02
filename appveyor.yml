@@ -3,6 +3,7 @@ version: 0.1.{build}
 environment:
   matrix:
     - nodejs_version: 8
+      MINICONDA: C:\Miniconda36-x64
 
 platform:
   - x64
@@ -16,10 +17,14 @@ cache:
 
 init:
   - git config --global core.autocrlf input
+  - "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%MINICONDA%\\Library\\bin;%PATH%"
+  - conda install -y conda-build
 
 install:
   - ps: Install-Product node $env:nodejs_version $env:platform
   - npm i
+  - conda build recipe\
+  - dir C:\Miniconda36-x64\conda-bld\win-64
 
 build_script:
   - npm run pack
