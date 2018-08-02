@@ -21,9 +21,8 @@ before_install:
   # Here we just install Miniconda, which you shouldn't have to change.
   - wget http://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - export PATH=/home/travis/miniconda/bin:$PATH
-  - conda install --yes conda-build
+  - ./miniconda.sh -b -p $HOME/miniconda
+  - $HOME/miniconda/bin/conda install --yes conda-build
 
 install:
   - npm install
@@ -32,8 +31,8 @@ script:
   - npm run pack
   - ls release/
   - zip mac-release.zip release/orca* --junk-paths
-  - conda build recipe/
-  - ls /home/travis/miniconda/conda-bld/osx-64
+  - $HOME/miniconda/bin/conda build recipe/
+  - ls $HOME/miniconda/conda-bld/osx-64
 
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine
