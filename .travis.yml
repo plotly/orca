@@ -33,6 +33,7 @@ script:
   - zip mac-release.zip release/orca* --junk-paths
   - $HOME/miniconda/bin/conda build recipe/
   - ls $HOME/miniconda/conda-bld/osx-64
+  - zip -r conda-osx-64.zip $HOME/miniconda/conda-bld/osx-64
 
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine
@@ -42,5 +43,6 @@ addons:
     s3_region: us-east-1
     paths:
       - mac-release.zip
-      - /Users/travis/miniconda/conda-bld/osx-64/
+      - conda-osx-64.zip
+
     debug: true
