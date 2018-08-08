@@ -114,6 +114,19 @@ automate this process somehow.
   + Grab the Mac build automatically pushed to [Amazon S3](https://s3.console.aws.amazon.com/s3/buckets/image-exporter-travis-artifacts/plotly/orca/?region=us-east-1&tab=overview) from Travis.
     **N.B.** Select the latest build (largest number *note:* the folders are not necessarily sequential) -> release.zip
 - Run `npm publish`
+- Publish conda packages:
+  + Download the following artifacts as above:
+    - `conda-linux-64.zip` (CircleCI)
+    - `conda-win-64.zip` (AppVeyor)
+    - `conda-osx-64.zip` (Travis)
+  + Unzip each artifact
+    + `conda-linux-64.zip` becomes `linux-64/plotly-orca-*.tar.bz2`
+    + `conda-win-64.zip` becomes `win-64/plotly-orca-*.tar.bz2`
+    + `conda-osx-64.zip` becomes `osx-64/plotly-orca-*.tar.bz2`
+  + From a conda environment with the `anaconda-client` package installed run `anaconda login`
+  + Enter the credentials for the plotly anaconda channel
+  + For each of the three `plotly-orca-*.tar.bz2` files listed above, run `anaconda upload /path/to/XX-64/plotly-orca-*.tar.bz2`
+  + Run `anaconda logout`
 - :beers:
 
 ## Overview
