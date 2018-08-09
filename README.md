@@ -14,17 +14,6 @@ Follow [@plotlygraphs](https://twitter.com/plotlygraphs) on Twitter for Orca ann
 
 ## Installation
 
-### Method 1: conda
-If you have conda installed, you can easily install Orca from the plotly
-conda channel using:
-```
-$ conda install -c plotly plotly-orca
-```
-
-which makes the `orca` executable available on the path of current conda
-environment.
-
-### Method 2: npm
 If you have Node.js installed (recommended v8.x), you can easily install Orca
 using npm as:
 
@@ -34,13 +23,11 @@ $ npm install -g electron@1.8.4 orca
 
 which makes the `orca` executable available in your path.
 
-### Method 3: Standalone binaries 
-
 Alternatively, you can download the standalone Orca binaries corresponding to
 your operating system from the
 [release](https://github.com/plotly/orca/releases) page. Then, on
 
-#### Mac OS
+### Mac OS
 
 - Unzip `mac-release.zip` from your `Downloads/` folder
 - Double-click on `orca-X.Y.Z.dmg` file, that should open an installation window
@@ -49,14 +36,14 @@ your operating system from the
 - Right-click on the orca icon and click on _Open_, this should open an _Installation Succeeded_ window
 - Open the terminal and start using Orca!
 
-#### Windows
+### Windows
 
 - Extract the `window-release.zip` file
 - In the `release` folder, double-click on `orca Setup X.Y.Z`, this will create an orca icon on your Desktop
 - Right-click on the orca icon, then click on _Properties_ and copy the _Starts in_ field
 - In the command prompt, run `PATH %PATH%;<paste the "Starts in" field here>`
 
-#### Linux
+### Linux
 
 - Run `$ chmod +x orca-X.Y.Z-x86_64.AppImage`
 - Add it to your `$PATH`
