@@ -28,6 +28,11 @@ const OPTS_META = [].concat([{
   alias: ['windowMaxNumber', 'maxNumberOfWindows'],
   description: 'Sets maximum number of browser windows the server can keep open at a given time.'
 }, {
+  name: 'graph-only',
+  type: 'boolean',
+  alias: ['graphOnly'],
+  description: 'Launches only the graph component (not thumbnails, dash, etc.) to save memory and reduce the number of processes'
+}, {
   name: 'quiet',
   type: 'boolean',
   description: 'Suppress all logging info.'
@@ -72,15 +77,14 @@ function main (args) {
       console.log(`Spinning up server with pid: ${process.pid}`)
     }
 
-    app = orca.serve({
-      port: opts.port,
-      maxNumberOfWindows: opts.maxNumberOfWindows,
-      debug: opts.debug,
-      component: [{
-        name: 'plotly-graph',
-        route: '/',
-        options: plotlyJsOpts
-      }, {
+    let component = [{
+      name: 'plotly-graph',
+      route: '/',
+      options: plotlyJsOpts
+    }]
+
+    if (!opts.graphOnly) {
+      component.push({
         name: 'plotly-dashboard',
         route: '/dashboard'
       }, {
@@ -98,7 +102,14 @@ function main (args) {
       }, {
         name: 'plotly-dash-preview',
         route: '/dash-preview'
-      }]
+      })
+    }
+
+    app = orca.serve({
+      port: opts.port,
+      maxNumberOfWindows: opts.maxNumberOfWindows,
+      debug: opts.debug,
+      component: component
     })
 
     app.on('after-connect', (info) => {
