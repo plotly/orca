@@ -1,2 +1,2 @@
 #!/bin/bash
-"/Applications/orca.app/Contents/MacOS/orca" "$@"
+exec "/Applications/orca.app/Contents/MacOS/orca" "$@"
