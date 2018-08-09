@@ -31,7 +31,7 @@ const OPTS_META = [].concat([{
   name: 'graph-only',
   type: 'boolean',
   alias: ['graphOnly'],
-  description: 'Launches only the graph component (not thumbnails, dash, etc.) to save memory and reduce the number of processes'
+  description: 'Launches only the graph component (not thumbnails, dash, etc.) to save memory and reduce the number of processes.'
 }, {
   name: 'quiet',
   type: 'boolean',
