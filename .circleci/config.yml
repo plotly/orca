@@ -17,6 +17,14 @@ workflows:
           requires:
             - test-node-v6
             - test-node-v8
+          filters:
+              branches:
+                  # Do not run on branches based off forks as
+                  # this job requires plotly's quay.io credentials.
+                  # Note that branches based off forks are labels pull/???/ on CI.
+                  # Solution taken from:
+                  # https://discuss.circleci.com/t/create-separate-steps-jobs-for-pr-forks-versus-branches/13419/4
+                  only: /^(?!pull\/).*$/
       - electron-pack-and-release:
           requires:
             - test-node-v6
