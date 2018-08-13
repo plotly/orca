@@ -72,12 +72,12 @@
     "minimist": "^1.2.0",
     "read-chunk": "^2.1.0",
     "request": "^2.81.0",
-    "run-parallel": "^1.1.6",
-    "run-parallel-limit": "^1.0.3",
-    "run-series": "^1.1.4",
+    "run-parallel": "^1.1.9",
+    "run-parallel-limit": "^1.0.5",
+    "run-series": "^1.1.8",
     "semver": "^5.4.1",
-    "string-to-stream": "^1.1.0",
-    "uuid": "^3.1.0"
+    "string-to-stream": "^1.1.1",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "cross-env": "^5.1.4",
@@ -85,7 +85,7 @@
     "electron": "^1.8.4",
     "electron-builder": "^20.9.2",
     "electron-debug": "^1.4.0",
-    "image-size": "^0.6.1",
+    "image-size": "^0.6.3",
     "sinon": "^4.5.0",
     "snazzy": "^7.0.0",
     "spectron": "^3.8.0",
