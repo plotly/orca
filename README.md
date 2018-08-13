@@ -1,5 +1,7 @@
 # Orca
 
+![orca logo](orca_logo.png)
+
 [![npm version](https://badge.fury.io/js/orca.svg)](https://badge.fury.io/js/orca)
 [![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/orca/blob/master/LICENSE)
 
