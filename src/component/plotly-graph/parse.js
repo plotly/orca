@@ -152,14 +152,23 @@ function findMaxArrayLength (cont) {
 }
 
 function estimateDataLength (trace) {
+  const topLevel = findMaxArrayLength(trace)
+  let dimLevel = 0
+  let cellLevel = 0
+
   // special case for e.g. parcoords and splom traces
   if (Array.isArray(trace.dimensions)) {
-    return trace.dimensions
+    dimLevel = trace.dimensions
       .map(findMaxArrayLength)
       .reduce((a, v) => a + v)
   }
 
-  return findMaxArrayLength(trace)
+  // special case for e.g. table traces
+  if (isPlainObj(trace.cells)) {
+    cellLevel = findMaxArrayLength(trace.cells)
+  }
+
+  return Math.max(topLevel, dimLevel, cellLevel)
 }
 
 function maxPtsPerTrace (trace) {
@@ -169,6 +178,7 @@ function maxPtsPerTrace (trace) {
     case 'scattergl':
     case 'splom':
     case 'pointcloud':
+    case 'table':
       return 1e7
 
     case 'scatterpolargl':

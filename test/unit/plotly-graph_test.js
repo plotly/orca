@@ -395,6 +395,25 @@ tap.test('parse:', t => {
       })
     })
 
+    t.test('failing table case', t => {
+      fn({
+        data: [{
+          type: 'table',
+          cells: {
+            values: [
+              new Array(5e6),
+              new Array(5e6),
+              new Array(5e6)
+            ]
+          }
+        }]
+      }, {safeMode: true}, (errorCode, result) => {
+        t.equal(errorCode, 400, 'code')
+        t.type(result.msg, 'string', 'msg type')
+        t.end()
+      })
+    })
+
     t.test('failing case from too many traces', t => {
       var data = new Array(3e3)
 
