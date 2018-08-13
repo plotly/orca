@@ -148,23 +148,27 @@ function findMaxArrayLength (cont) {
     }
   })
 
-  let l = Math.max(0, ...lengths)
-
-  if (cont.type === 'table' && isPlainObj(cont.cells)) {
-    l = Math.max(l, findMaxArrayLength(cont.cells))
-  }
-  return l
+  return Math.max(0, ...lengths)
 }
 
 function estimateDataLength (trace) {
+  const topLevel = findMaxArrayLength(trace)
+  let dimLevel = 0
+  let cellLevel = 0
+
   // special case for e.g. parcoords and splom traces
   if (Array.isArray(trace.dimensions)) {
-    return trace.dimensions
+    dimLevel = trace.dimensions
       .map(findMaxArrayLength)
       .reduce((a, v) => a + v)
   }
 
-  return findMaxArrayLength(trace)
+  // special case for e.g. table traces
+  if (isPlainObj(trace.cells)) {
+    cellLevel = findMaxArrayLength(trace.cells)
+  }
+
+  return Math.max(topLevel, dimLevel, cellLevel)
 }
 
 function maxPtsPerTrace (trace) {
