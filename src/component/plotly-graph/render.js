@@ -60,7 +60,7 @@ function render (info, opts, sendToMain) {
     // blend jpeg background color as jpeg does not support transparency
     setBackground: format === 'jpeg' ? 'opaque'
       : PRINT_TO_PDF ? pdfBackground
-      : ''
+        : ''
   }
 
   let promise
@@ -113,8 +113,7 @@ function render (info, opts, sendToMain) {
   promise.then((imgData) => {
     result.imgData = imgData
     return done()
-  })
-  .catch((err) => {
+  }).catch((err) => {
     errorCode = 525
     result.error = JSON.stringify(err, ['message', 'arguments', 'type', 'name'])
     return done()
@@ -188,8 +187,7 @@ function toPDF (imgData, imgOpts, bgColor) {
       img.onerror = reject
       img.src = "${imgData}"
       setTimeout(() => reject(new Error('too long to load image')), ${cst.pdfPageLoadImgTimeout})
-    })`)
-    .then(() => {
+    })`).then(() => {
       win.webContents.printToPDF(printOpts, (err, pdfData) => {
         if (err) {
           reject(err)
@@ -198,8 +196,7 @@ function toPDF (imgData, imgOpts, bgColor) {
         }
         win.close()
       })
-    })
-    .catch((err) => {
+    }).catch((err) => {
       reject(err)
       win.close()
     })
