@@ -114,9 +114,7 @@ tap.test('should work for *plotly-dashboard* component', {timeout: 1e5}, t => {
         url: 'https://plot.ly/dashboard/jackp:17872/embed',
         format: 'pdf'
       })
-    })
-    .on('error', t.fail)
-    .pipe(ws)
+    }).on('error', t.fail).pipe(ws)
 
     ws.on('error', t.fail)
     ws.on('finish', () => {
@@ -193,9 +191,7 @@ tap.test('should work for *plotly-dashboard-thumbnail* component', t => {
         }
       }
     })
-  })
-  .on('error', t.fail)
-  .pipe(ws)
+  }).on('error', t.fail).pipe(ws)
 
   ws.on('error', t.fail)
   ws.on('finish', () => {

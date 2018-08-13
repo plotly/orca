@@ -171,7 +171,7 @@ function main (args) {
       const time = info.totalProcessingTime
       const timeStr = time > 6e4 ? `${(time / 6e4).toFixed(2)} min`
         : time > 1e3 ? `${(time / 1e3).toFixed(2)} sec`
-        : `${time.toFixed(2)} ms`
+          : `${time.toFixed(2)} ms`
 
       if (DEBUG) {
         console.log(DEBUG_INFO)
