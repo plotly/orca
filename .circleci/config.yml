@@ -112,8 +112,9 @@ jobs:
           paths:
             - ".git"
       - restore_cache:
+          key: v3-npm-{{ checksum "package-lock.json" }}
           keys:
-            - v3-npm-{{ checksum "package-lock.json" }}
+            - v3-npm-
       - run:
           name: Build Docker image
           command: |
