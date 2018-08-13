@@ -64,7 +64,7 @@
   "dependencies": {
     "body": "^5.1.0",
     "fast-isnumeric": "^1.1.1",
-    "file-type": "^7.2.0",
+    "file-type": "^9.0.0",
     "get-stdin": "^5.0.1",
     "glob": "^7.1.2",
     "is-plain-obj": "^1.1.0",
@@ -86,7 +86,7 @@
     "electron-builder": "^20.9.2",
     "electron-debug": "^1.4.0",
     "image-size": "^0.6.3",
-    "sinon": "^4.5.0",
+    "sinon": "^6.1.5",
     "snazzy": "^7.0.0",
     "spectron": "^3.8.0",
     "standard": "^11.0.1",
