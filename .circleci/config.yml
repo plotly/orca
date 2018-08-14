@@ -112,8 +112,9 @@ jobs:
           paths:
             - ".git"
       - restore_cache:
+          key: v3-npm-{{ checksum "package-lock.json" }}
           keys:
-            - v3-npm-{{ checksum "package-lock.json" }}
+            - v3-npm-
       - run:
           name: Build Docker image
           command: |
@@ -130,6 +131,10 @@ jobs:
             docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_BRANCH
             docker push quay.io/plotly/image-exporter:$CIRCLE_SHA1
             docker push quay.io/plotly/image-exporter:$CIRCLE_BRANCH
+            if [[ ! -z "${CIRCLE_TAG}" ]]; then
+              docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_TAG
+              docker push quay.io/plotly/image-exporter:$CIRCLE_TAG
+            fi
       - save_cache:
           paths:
             - node_modules
