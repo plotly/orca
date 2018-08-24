@@ -53,10 +53,23 @@ your operating system from the
 
 #### Windows
 
-- Extract the `window-release.zip` file
-- In the `release` folder, double-click on `orca Setup X.Y.Z`, this will create an orca icon on your Desktop
-- Right-click on the orca icon, then click on _Properties_ and copy the _Starts in_ field
-- In the command prompt, run `PATH %PATH%;<paste the "Starts in" field here>`
+- Extract the `windows-release.zip` file.
+- In the `release` folder, double-click on `orca Setup X.Y.Z`, this will create an orca icon on your Desktop.
+- Right-click on the orca icon and select _Properties_ from the context menu.
+- From the _Shortcut_ tab, copy the directory in the _Start in_ field.
+- Add this _Start in_ directory to you system `PATH` (see below).
+- Open a new Command Prompt and verify that the orca executable is available on your `PATH`.
+
+```
+> orca --help
+Plotly's image-exporting utilities
+
+  Usage: orca [--version] [--help] <command> [<args>]
+  ...
+```
+
+##### Windows References
+ - How to set the path and environment variables in Windows: https://www.computerhope.com/issues/ch000549.htm
 
 #### Linux
 
