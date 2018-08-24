@@ -44,12 +44,26 @@ your operating system from the
 
 #### Mac OS
 
-- Unzip `mac-release.zip` from your `Downloads/` folder
-- Double-click on `orca-X.Y.Z.dmg` file, that should open an installation window
-- Drag the orca icon into _Applications_
-- In finder, go to the `Applications/` folder
-- Right-click on the orca icon and click on _Open_, this should open an _Installation Succeeded_ window
-- Open the terminal and start using Orca!
+- Unzip the `mac-release.zip` file.
+- Double-click on the `orca-X.Y.Z.dmg` file. This will open an installation window.
+- Drag the orca icon into the `Applications` folder.
+- Open finder and navigate to the `Applications/` folder.
+- Right-click on the orca icon and select _Open_ from the context menu.
+- A password dialog will appear asking for permission to add orca to your system `PATH`.
+- Enter you password and click _OK_.
+- This should open an _Installation Succeeded_ window.
+- Open a new terminal and verify that the orca executable is available on your `PATH`. 
+
+```
+$ which orca
+/usr/local/bin/orca
+
+$ orca --help
+Plotly's image-exporting utilities
+
+  Usage: orca [--version] [--help] <command> [<args>]
+  ...
+```
 
 #### Windows
 

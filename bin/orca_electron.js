@@ -44,24 +44,54 @@ if (process.platform === 'darwin' && process.argv.length === 1) {
       'To create your first image, open a terminal and run:\n\norca graph \'{ "data": [{"y": [1,2,1]}] }\' -o fig.png'
   }
 
-  const source = path.join(__dirname, 'orca.sh')
-  const target = '/usr/local/bin/orca'
+  let showMessage = false;
 
-  if (!fs.existsSync(target)) {
-    try {
-      execSync(`cp ${source} ${target}`)
+  try {
+      execSync('which orca');
+      // Orca is already on the path, nothing to do
     } catch (err) {
-      options.type = 'error'
-      options.message = 'Installation Failed!'
-      options.detail = err.message
-    }
+
+      // Check if this is a standalone installation (not conda or npm)
+      const standalonePath = '/Applications/orca.app/Contents/MacOS/orca'
+      if (fs.existsSync(standalonePath)) {
+
+        // Now we know that orca is not on the path, but it is installed
+        // in the /Applications directory.  So we'll ask the user if they
+        // want to add it to the path
+        const source = path.join(__dirname, 'orca.sh')
+        const target = '/usr/local/bin/orca'
+
+        if (!fs.existsSync(target)) {
+          // Build copy command
+          const copyCmd = `"cp ${source} ${target}"`;
+
+          // Use apple script to perform copy so that we can launch a GUI
+          // prompt for administrator credentials
+          const prompt = '"Add orca to system PATH (/usr/local/bin)?"';
+          const cmd = `osascript -e 'do shell script ${copyCmd} with prompt ${prompt} with administrator privileges'`;
+
+          try {
+            execSync(cmd);
+            showMessage = true;
+          } catch (cmdErr) {
+            // User cancelled. Nothing more to do
+          }
+        }
+      } else {
+        options.message = "Executable in non-standard location"
+        options.detail = "No orca executable located at /Applications/orca.app/\nNo changes made"
+        showMessage = true;
+      }
   }
 
   app.on('ready', function () {
-    dialog.showMessageBox(options)
+    if (showMessage) {
+      dialog.showMessageBox(options)
+    }
     console.log(HELP)
     process.exit(options.type === 'error' ? 1 : 0)
   })
+
 } else if (opts._.length) {
   const cmd = opts._[0]
   const cmdArgs = args.slice(1)
