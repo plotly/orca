@@ -60,8 +60,35 @@ your operating system from the
 
 #### Linux
 
-- Run `$ chmod +x orca-X.Y.Z-x86_64.AppImage`
-- Add it to your `$PATH`
+- Make the orca AppImage executable.
+
+```
+$ chmod +x orca-X.Y.Z-x86_64.AppImage
+```
+
+- Create a symbolic link named `orca` somewhere on your `$PATH` that points
+to the AppImage.
+
+```
+$ ln -s /path/to/orca-X.Y.Z-x86_64.AppImage /somewhere/on/PATH/orca
+```
+
+- Open a new terminal and verify that the orca executable is available on your `PATH`. 
+
+```
+$ which orca
+/somewhere/on/PATH/orca
+
+$ orca --help
+Plotly's image-exporting utilities
+
+  Usage: orca [--version] [--help] <command> [<args>]
+  ...
+```
+
+##### Linux References
+ - How to add directory to system path in Linux: https://www.computerhope.com/issues/ch001647.htm
+ - AppImage: https://appimage.org/
 
 ## Quick start
 
