@@ -126,11 +126,11 @@ orca: error while loading shared libraries: libgtk-x11-2.0.so.0:
 cannot open shared object file: No such file or directory
 ```
 
-On Ubuntu Server, these additional libraries can be installed with:
-
-```
-sudo apt-get install libgtk2.0-0 libxtst6 libxss1 libgconf-2-4 libnss3 libasound2
-```
+These additional dependencies can be satisfied by installing:
+ - The `libgtk2.0-0` and `libgconf-2-4` packages from your distribution's
+ software repository.
+ - The `google-chrome-stable` package from the [Google Linux Software
+ Repository](https://www.google.com/linuxrepositories/).
 
 ##### Linux Troubleshooting: Headless server configuration
 The Electron runtime requires the presence of an active X11 display server,
