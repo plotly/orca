@@ -93,7 +93,7 @@ Plotly's image-exporting utilities
 $ chmod +x orca-X.Y.Z-x86_64.AppImage
 ```
 
-- Create a symbolic link named `orca` somewhere on your `$PATH` that points
+- Create a symbolic link named `orca` somewhere on your `PATH` that points
 to the AppImage.
 
 ```
@@ -112,11 +112,52 @@ Plotly's image-exporting utilities
   Usage: orca [--version] [--help] <command> [<args>]
   ...
 ```
+ 
+##### Linux Troubleshooting: Cannot open shared object
+The Electron runtime depends a several common system libraries. These
+libraries are pre-installed in most desktop Linux distributions
+(e.g. Ubuntu), but are not pre-installed on some server Linux distributions
+(e.g. Ubuntu Server). If a shared library is missing, you will see an error
+message like:
+
+```
+$ orca --help
+orca: error while loading shared libraries: libgtk-x11-2.0.so.0:
+cannot open shared object file: No such file or directory
+```
+
+On Ubuntu Server, these additional libraries can be installed with:
+
+```
+sudo apt-get install libgtk2.0-0 libxtst6 libxss1 libgconf-2-4 libnss3 libasound2
+```
+
+##### Linux Troubleshooting: Headless server configuration
+The Electron runtime requires the presence of an active X11 display server,
+but many server Linux distributions (e.g. Ubuntu Server) do not include X11
+by default.  If you do not wish to install X11 on your server, you may
+install and run orca with Xvfb instead.
+
+On Ubuntu Server, you can install Xvfb like this:
+```
+$ sudo apt-get install xvfb
+```
+
+To run orca under Xvfb, replace the symbolic link suggested above with a shell
+script that runs the orca AppImage executable using the `xvfb-run` command.
+
+```
+#!/bin/bash
+xvfb-run /path/to/orca-X.Y.Z-x86_64.AppImage "$@"
+```
+
+Name this shell script `orca` and place it somewhere or your system `PATH`.
 
 ##### Linux References
  - How to add directory to system path in Linux: https://www.computerhope.com/issues/ch001647.htm
  - AppImage: https://appimage.org/
-
+ - Xvfb: https://en.wikipedia.org/wiki/Xvfb
+ 
 ## Quick start
 
 From the command line:
