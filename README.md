@@ -31,7 +31,7 @@ If you have Node.js installed (recommended v8.x), you can easily install Orca
 using npm as:
 
 ```
-$ npm install -g electron@1.8.4 orca
+$ npm install -g electron@2.0.8 orca
 ```
 
 which makes the `orca` executable available in your path.
