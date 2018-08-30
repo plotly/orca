@@ -10,6 +10,17 @@ https://github.com/plotly/orca/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent Orca release.
 
 
+## [1.1.1] 2018-08-30
+
+This release is associated with improved standalone installation instructions
+in the repo README from #122.
+
+### Fixed
+- Mac OS installer fixups [#122]
+  + Don't make any changes if `orca` is already on the `PATH`
+  + Only copy `orca.sh` to `/usr/local/bin` if orca is installed as an application
+  + Perform `orca.sh` copy with administrator privileges to avoid permission denied errors
+
 ## [1.1.0] 2018-08-14
 
 Orca is now a `conda` package [#113]:
