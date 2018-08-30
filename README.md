@@ -44,25 +44,120 @@ your operating system from the
 
 #### Mac OS
 
-- Unzip `mac-release.zip` from your `Downloads/` folder
-- Double-click on `orca-X.Y.Z.dmg` file, that should open an installation window
-- Drag the orca icon into _Applications_
-- In finder, go to the `Applications/` folder
-- Right-click on the orca icon and click on _Open_, this should open an _Installation Succeeded_ window
-- Open the terminal and start using Orca!
+- Unzip the `mac-release.zip` file.
+- Double-click on the `orca-X.Y.Z.dmg` file. This will open an installation window.
+- Drag the orca icon into the `Applications` folder.
+- Open finder and navigate to the `Applications/` folder.
+- Right-click on the orca icon and select _Open_ from the context menu.
+- A password dialog will appear asking for permission to add orca to your system `PATH`.
+- Enter you password and click _OK_.
+- This should open an _Installation Succeeded_ window.
+- Open a new terminal and verify that the orca executable is available on your `PATH`. 
+
+```
+$ which orca
+/usr/local/bin/orca
+
+$ orca --help
+Plotly's image-exporting utilities
+
+  Usage: orca [--version] [--help] <command> [<args>]
+  ...
+```
 
 #### Windows
 
-- Extract the `window-release.zip` file
-- In the `release` folder, double-click on `orca Setup X.Y.Z`, this will create an orca icon on your Desktop
-- Right-click on the orca icon, then click on _Properties_ and copy the _Starts in_ field
-- In the command prompt, run `PATH %PATH%;<paste the "Starts in" field here>`
+- Extract the `windows-release.zip` file.
+- In the `release` folder, double-click on `orca Setup X.Y.Z`, this will create an orca icon on your Desktop.
+- Right-click on the orca icon and select _Properties_ from the context menu.
+- From the _Shortcut_ tab, copy the directory in the _Start in_ field.
+- Add this _Start in_ directory to you system `PATH` (see below).
+- Open a new Command Prompt and verify that the orca executable is available on your `PATH`.
+
+```
+> orca --help
+Plotly's image-exporting utilities
+
+  Usage: orca [--version] [--help] <command> [<args>]
+  ...
+```
+
+##### Windows References
+ - How to set the path and environment variables in Windows: https://www.computerhope.com/issues/ch000549.htm
 
 #### Linux
 
-- Run `$ chmod +x orca-X.Y.Z-x86_64.AppImage`
-- Add it to your `$PATH`
+- Make the orca AppImage executable.
 
+```
+$ chmod +x orca-X.Y.Z-x86_64.AppImage
+```
+
+- Create a symbolic link named `orca` somewhere on your `PATH` that points
+to the AppImage.
+
+```
+$ ln -s /path/to/orca-X.Y.Z-x86_64.AppImage /somewhere/on/PATH/orca
+```
+
+- Open a new terminal and verify that the orca executable is available on your `PATH`. 
+
+```
+$ which orca
+/somewhere/on/PATH/orca
+
+$ orca --help
+Plotly's image-exporting utilities
+
+  Usage: orca [--version] [--help] <command> [<args>]
+  ...
+```
+ 
+##### Linux Troubleshooting: Cannot open shared object
+The Electron runtime depends a several common system libraries. These
+libraries are pre-installed in most desktop Linux distributions
+(e.g. Ubuntu), but are not pre-installed on some server Linux distributions
+(e.g. Ubuntu Server). If a shared library is missing, you will see an error
+message like:
+
+```
+$ orca --help
+orca: error while loading shared libraries: libgtk-x11-2.0.so.0:
+cannot open shared object file: No such file or directory
+```
+
+These additional dependencies can be satisfied by installing:
+ - The `libgtk2.0-0` and `libgconf-2-4` packages from your distribution's
+ software repository.
+ - The `google-chrome-stable` package from the [Google Linux Software
+ Repository](https://www.google.com/linuxrepositories/).
+
+##### Linux Troubleshooting: Headless server configuration
+The Electron runtime requires the presence of an active X11 display server,
+but many server Linux distributions (e.g. Ubuntu Server) do not include X11
+by default.  If you do not wish to install X11 on your server, you may
+install and run orca with Xvfb instead.
+
+On Ubuntu Server, you can install Xvfb like this:
+```
+$ sudo apt-get install xvfb
+```
+
+To run orca under Xvfb, replace the symbolic link suggested above with a shell
+script that runs the orca AppImage executable using the `xvfb-run` command.
+
+```
+#!/bin/bash
+xvfb-run /path/to/orca-X.Y.Z-x86_64.AppImage "$@"
+```
+
+Name this shell script `orca` and place it somewhere or your system `PATH`.
+
+##### Linux References
+ - How to add directory to system path in Linux: https://www.computerhope.com/issues/ch001647.htm
+ - AppImage: https://appimage.org/
+ - Xvfb: https://en.wikipedia.org/wiki/Xvfb
+ 
 ## Quick start
 
 From the command line:
