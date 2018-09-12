@@ -33,6 +33,12 @@ This is done using plotbot. The following commands provide help:
 ```
 @plotbot deploy how
 @plotbot run how
+
+# for example,
+@plotbot deploy to imageserver stage
+
+@ or
+@plotbot deploy to imageserver prod
 ```
 
 # Font Support
