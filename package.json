@@ -83,7 +83,7 @@
     "cross-env": "^5.1.4",
     "devtron": "^1.4.0",
     "electron": "^2.0.9",
-    "electron-builder": "^20.9.2",
+    "electron-builder": "^20.28.4",
     "electron-debug": "^1.4.0",
     "image-size": "^0.6.3",
     "sinon": "^6.1.5",
