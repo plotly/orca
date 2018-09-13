@@ -192,7 +192,16 @@ jobs:
           key: v3-npm-{{ checksum "package-lock.json" }}
           keys:
             - v3-npm-
-
+      - run: node --version
+      - run: npm --version
+      - run: npm install
+      - run:
+          name: Electron-Builder pack
+          command: npm run pack
+      - save_cache:
+          key: v3-npm-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
       - run: wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
       - run: chmod +x miniconda.sh
       - run: ./miniconda.sh -b -p $HOME/miniconda
