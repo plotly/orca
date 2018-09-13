@@ -29,6 +29,7 @@ spec:
       containers:
       - name: imageserver-app
         image: quay.io/plotly/image-exporter:master
+        args: ["--plotlyJS", "https://plot.ly/static/plotlyjs/build/plotlyjs-bundle.js"]
         env:
           - name: MAPBOX_ACCESS_TOKEN
             valueFrom:
