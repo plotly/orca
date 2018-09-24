@@ -31,7 +31,20 @@ spec:
                 values:                                                         
                 - us-central1-a                                                 
                 - us-central1-b                                                 
-                - us-central1-c    
+                - us-central1-c
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: failure-domain.beta.kubernetes.io/zone
+                  operator: In
+                  values:
+                  - us-central1-a
+                  - us-central1-b
+                  - us-central1-c
+              topologyKey: kubernetes.io/hostname
+            weight: 1
       containers:
       - name: imageserver-app
         image: quay.io/plotly/image-exporter:master
