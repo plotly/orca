@@ -77,10 +77,3 @@ spec:
       - name: dshm
         emptyDir:
           medium: Memory
-      nodeSelector:                                                             
-        type: imageserver                                                       
-      tolerations:                                                              
-      - effect: NoSchedule                                                      
-        key: type                                                               
-        operator: Equal                                                         
-        value: imageserver      
