@@ -47,6 +47,15 @@ spec:
                   - us-central1-c
               topologyKey: kubernetes.io/hostname
             weight: 1
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - imageserver
+            topologyKey: kubernetes.io/hostname
       containers:
       - name: imageserver-app
         image: quay.io/plotly/image-exporter:master
