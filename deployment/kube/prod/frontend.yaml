@@ -32,20 +32,17 @@ spec:
                 - us-central1-a                                                 
                 - us-central1-b                                                 
                 - us-central1-c
-        podAffinity:
+        podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
           - podAffinityTerm:
               labelSelector:
                 matchExpressions:
-                - key: failure-domain.beta.kubernetes.io/zone
+                - key: app
                   operator: In
                   values:
-                  - us-central1-a
-                  - us-central1-b
-                  - us-central1-c
-              topologyKey: kubernetes.io/hostname
+                  - imageserver
+              topologyKey: failure-domain.beta.kubernetes.io/zone
             weight: 1
-        podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
