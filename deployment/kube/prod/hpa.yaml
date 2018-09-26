@@ -12,7 +12,7 @@ spec:
     kind: Deployment
     name: imageserver
   # Set this to 3x "min-nodes":
-  minReplicas: 12
+  minReplicas: 3
   # Set this to 3x "max-nodes":
-  maxReplicas: 12
-  targetCPUUtilizationPercentage: 50
+  maxReplicas: 18
+  targetCPUUtilizationPercentage: 30
