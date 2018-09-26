@@ -5,18 +5,11 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  annotations:
-    cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
   name: imageserver
   labels:
     app: imageserver
 spec:
   replicas: 3
-  strategy:
-    rollingUpdate:
-      maxSurge: 100%
-      maxUnavailable: 25%
-    type: RollingUpdate
   template:
     metadata:
       labels:
@@ -24,35 +17,15 @@ spec:
         tier: frontend
     spec:
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: failure-domain.beta.kubernetes.io/zone
-                operator: In
-                values:
-                - us-central1-a
-                - us-central1-b
-                - us-central1-c
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - imageserver
-              topologyKey: failure-domain.beta.kubernetes.io/zone
-            weight: 1
           requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - imageserver
-            topologyKey: kubernetes.io/hostname
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                    - imageserver
+              topologyKey: "kubernetes.io/hostname"
       containers:
       - name: imageserver-app
         image: quay.io/plotly/image-exporter:master
@@ -70,12 +43,6 @@ spec:
         ports:
         - name: http-server
           containerPort: 9091
-        resources:
-         limits:
-           memory: 2396Mi
-         requests:
-           cpu: 100m
-           memory: 1Gi
         volumeMounts:
         - mountPath: "/usr/share/fonts/user"
           name: plotly-cloud-licensed-fonts
