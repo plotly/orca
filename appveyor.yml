@@ -23,11 +23,11 @@ init:
 install:
   - ps: Install-Product node $env:nodejs_version $env:platform
   - npm i
-  - conda build recipe\
-  - dir C:\Miniconda36-x64\conda-bld\win-64
 
 build_script:
   - npm run pack
+  - conda build recipe\
+  - dir C:\Miniconda36-x64\conda-bld\win-64
 
 after_build:
   - 7z a release.zip release/latest.yml release/*.exe

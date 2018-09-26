@@ -29,10 +29,6 @@ workflows:
           requires:
             - test-node-v6
             - test-node-v8
-      - conda-build-package:
-          requires:
-            - test-node-v6
-            - test-node-v8
 
 version: 2
 jobs:
@@ -168,39 +164,27 @@ jobs:
           key: v3-npm-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
-      - run: mkdir artifacts
-      - run: mv release/*.yml artifacts || true
-      - run: mv release/orca* artifacts
-      - store_artifacts:
-          path: artifacts
-
-  conda-build-package:
-    docker:
-      - image: circleci/node:8.11.1-browsers
-    steps:
-      - restore_cache:
-          key: v1-source-{{ .Branch }}-{{ .Revision }}
-          keys:
-            - v1-source-{{ .Branch }}-
-            - v1-source-
-      - checkout
-      - save_cache:
-          key: v1-source-{{ .Branch }}-{{ .Revision }}
-          paths:
-            - ".git"
-      - restore_cache:
-          key: v3-npm-{{ checksum "package-lock.json" }}
-          keys:
-            - v3-npm-
-
-      - run: wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-      - run: chmod +x miniconda.sh
-      - run: ./miniconda.sh -b -p $HOME/miniconda
-      - run: $HOME/miniconda/bin/conda install --yes conda-build
-      - run: $HOME/miniconda/bin/conda build recipe/
-      - run: ls $HOME/miniconda/conda-bld/linux-64
-      - run: mkdir artifacts
-      - run: cp -r $HOME/miniconda/conda-bld/linux-64 ./linux-64
-      - run: zip -r artifacts/conda-linux-64.zip ./linux-64
+      - run:
+          name: Install miniconda
+          command: |
+            wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+            chmod +x miniconda.sh
+            ./miniconda.sh -b -p $HOME/miniconda
+      - run:
+          name: Conda pack
+          command: |
+            $HOME/miniconda/bin/conda install --yes conda-build
+            $HOME/miniconda/bin/conda build recipe/
+            ls $HOME/miniconda/conda-bld/linux-64
+      - run:
+          name: Collect artifacts
+          command: |
+            mkdir artifacts
+            # electron-pack
+            mv release/*.yml artifacts || true
+            mv release/orca* artifacts
+            # conda
+            cp -r $HOME/miniconda/conda-bld/linux-64 ./linux-64
+            zip -r artifacts/conda-linux-64.zip ./linux-64
       - store_artifacts:
           path: artifacts

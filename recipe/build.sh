@@ -1,6 +1,7 @@
-#!/bin/sh
-npm install
-npm run pack
+# !/bin/sh
+
+# assumes that `npm run pack` has ran successfully
+
 mkdir -p $PREFIX/lib
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
