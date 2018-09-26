@@ -169,10 +169,10 @@ jobs:
           command: |
             wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
             chmod +x miniconda.sh
+            ./miniconda.sh -b -p $HOME/miniconda
       - run:
           name: Conda pack
           command: |
-            ./miniconda.sh -b -p $HOME/miniconda
             $HOME/miniconda/bin/conda install --yes conda-build
             $HOME/miniconda/bin/conda build recipe/
             ls $HOME/miniconda/conda-bld/linux-64
