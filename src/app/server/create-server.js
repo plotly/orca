@@ -52,6 +52,17 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
       return simpleReply(code, fullInfo.msg)
     }
 
+    // Set CORS headers
+    if (opts.cors) {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Request-Method', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET', 'POST');
+      res.setHeader('Access-Control-Allow-Headers', '*');
+      if (req.method === 'OPTIONS') {
+        return simpleReply(200)
+      }
+    }
+
     req.once('error', () => simpleReply(401))
     req.once('close', () => simpleReply(499))
 

@@ -40,6 +40,10 @@ const OPTS_META = [].concat([{
   name: 'debug',
   type: 'boolean',
   description: 'Starts app in debug mode.'
+}, {
+  name: 'cors',
+  type: 'boolean',
+  description: 'Enables Cross-Origin Resource Sharing (CORS)'
 }])
 
 const HELP_MSG = `orca serve
@@ -109,7 +113,8 @@ function main (args) {
       port: opts.port,
       maxNumberOfWindows: opts.maxNumberOfWindows,
       debug: opts.debug,
-      component: component
+      component: component,
+      cors: opts.cors
     })
 
     app.on('after-connect', (info) => {
