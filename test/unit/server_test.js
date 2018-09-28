@@ -44,6 +44,7 @@ tap.test('coerceOpts:', t => {
 
     t.equal(out.port, 1000, 'port')
     t.equal(out.debug, false, 'debug')
+    t.equal(out.cors, false, 'cors')
     t.equal(out.maxNumberOfWindows, 50, 'maxNumberOfWindows')
     t.end()
   })
@@ -97,6 +98,15 @@ tap.test('createServer:', t => {
     }
   })
 
+  const optsCors = () => coerceOpts({
+    cors: true,
+    port: 8001,
+    component: {
+      name: 'plotly-graph',
+      route: '/'
+    }
+  })
+
   const body0 = () => JSON.stringify({
     figure: {
       data: [{ y: [1, 2, 1] }]
@@ -138,6 +148,34 @@ tap.test('createServer:', t => {
       _post('ping', '', (err, res, body) => {
         if (err) t.fail(err)
         t.equal(body, 'pong')
+        t.end()
+      })
+    })
+  })
+
+  t.test('should reply with access-control-* headers when CORS is enabled', t => {
+    _boot([false, false, false, optsCors()], () => {
+      _post('', '', (err, res, body) => {
+        if (err) t.fail(err)
+        t.equal(res.headers['access-control-allow-origin'], '*')
+        t.equal(res.headers['access-control-allow-headers'], '*')
+        t.match(res.headers['access-control-allow-methods'], 'GET')
+        t.match(res.headers['access-control-allow-methods'], 'POST')
+        t.match(res.headers['access-control-allow-methods'], 'OPTIONS')
+        t.end()
+      })
+    })
+  })
+
+  t.test('should reply with HTTP status code 200 to OPTIONS request', t => {
+    _boot([false, false, false, optsCors()], () => {
+      return request({
+        method: 'options',
+        url: `http://localhost:8001/`,
+        body: ''
+      }, (err, res, body) => {
+        if (err) t.fail(err)
+        t.equal(res.statusCode, 200)
         t.end()
       })
     })
