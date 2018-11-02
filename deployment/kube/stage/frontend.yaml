@@ -74,7 +74,7 @@ spec:
          limits:
            memory: 2396Mi
          requests:
-           cpu: 100m
+           cpu: 400m
            memory: 1Gi
         volumeMounts:
         - mountPath: "/usr/share/fonts/user"

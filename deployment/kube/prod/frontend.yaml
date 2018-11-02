@@ -69,7 +69,7 @@ spec:
          limits:                                                                
            memory: 2396Mi                                                       
          requests:                                                              
-           cpu: 100m
+           cpu: 400m
            memory: 1Gi
         ports:
         - name: http-server
