@@ -20,7 +20,7 @@ tap.test('inkscape.svg2emf', t => {
         if (err) t.fail(err)
 
         const size = fs.statSync(outPath).size
-        t.ok(size > 9e4, 'min emf file size')
+        t.ok(size > 2e4, 'min emf file size')
         t.end()
       })
     })

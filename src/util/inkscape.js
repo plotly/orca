@@ -128,7 +128,7 @@ class Inkscape {
 
       return false
     })
-    
+
     return svg
   }
 
