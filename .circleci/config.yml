@@ -61,7 +61,7 @@ jobs:
           name: Install deps
           command: |
             npm install
-            sudo apt-get install inkscape poppler-utils libgconf-2-4
+            sudo apt-get update && sudo apt-get install inkscape poppler-utils libgconf-2-4
       - run:
           name: List deps
           command: |
@@ -138,7 +138,7 @@ jobs:
 
   electron-pack-and-release:
     docker:
-      - image: circleci/node:8.11-browsers
+      - image: circleci/node:8.11-stretch-browsers
     steps:
       - restore_cache:
           key: v1-source-{{ .Branch }}-{{ .Revision }}
