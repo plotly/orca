@@ -12,12 +12,12 @@ try {
   fs.mkdirSync(PATH_TO_BUILD)
 } catch (e) {}
 
-const fullyTransparentColorbarRegexp = /<rect class="cbbg"(\s+\w+="[^"]+")*\s+style="[^"]*fill-opacity: 0;[^"]*"(\s+\w+="[^"]+")*\/>/g
-const fullyTransparentRectRegexp = /<rect class="bg"(\s+\w+="[^"]+")*\s+style="[^"]*stroke-opacity: 0;[^"]*fill-opacity: 0;[^"]*"(\s+\w+="[^"]+")*\/>/g
-const transparentFillRectRegexp = /<rect class="bg"(\s+\w+="[^"]+")*\s+style="[^"]*fill-opacity: 0;[^"]*"(\s+\w+="[^"]+")*\/>/g
-const transparentStrokeRectRegexp = /<rect class="bg"(\s+\w+="[^"]+")*\s+style="[^"]*stroke-opacity: 0;[^"]*"(\s+\w+="[^"]+")*\/>/g
+const fullyTransparentColorbarRegexp = /<rect class="cbbg"(\s+[-\w]+="[^"]+")*\s+style="[^"]*fill-opacity: 0;[^"]*"(\s+[-\w]+="[^"]+")*\/>/g
+const fullyTransparentRectRegexp = /<rect(\s+[-\w]+="[^"]+")*\s+style="[^"]*stroke-opacity: 0;[^"]*fill-opacity: 0;[^"]*"(\s+[-\w]+="[^"]+")*\/>/g
+const transparentFillRectRegexp = /<rect(\s+[-\w]+="[^"]+")*\s+style="[^"]*fill-opacity: 0;[^"]*"(\s+[-\w]+="[^"]+")*\/>/g
+const transparentStrokeRectRegexp = /<rect(\s+[-\w]+="[^"]+")*\s+style="[^"]*stroke-opacity: 0;[^"]*"(\s+[-\w]+="[^"]+")*\/>/g
 const imgRegexp = /<image\s+xmlns="http:\/\/www.w3.org\/2000\/svg"\s+xlink:href="data:image\/png;base64,([^"]*)"[^>]*>/
-const colorbarRegexp = /<rect class="cbfill"[^>]*\/>/
+const colorbarFillRegexp = /<rect class="cbfill"[^>]*\/>/
 const xlinkHrefDataImageRegexp = /xlink:href="data:image\/png;base64,([^"]*)"/
 
 /** Node wrapper for Inkscape
@@ -75,7 +75,6 @@ class Inkscape {
     svg = svg.replace(/<rect class="legendtoggle"[^>]+>/g, '')
 
     // Remove colorbar background if it's transparent
-
     svg = svg.replace(fullyTransparentColorbarRegexp, '')
     // Remove annotation's background if it's compleletely transparent
     svg = svg.replace(fullyTransparentRectRegexp, '')
@@ -114,7 +113,7 @@ class Inkscape {
     })
 
     // Inkscape doesn't convert well gradientUnits="objectBoundingBox" into EMF
-    svg.replace(colorbarRegexp, function (match) {
+    svg.replace(colorbarFillRegexp, function (match) {
       // var width = match.match(/width="(\d+)"/)[1]
       var height = match.match(/height="(\d+)"/)[1]
       var gradientId = match.match(/url\('#([^']*)'\)/)
@@ -129,7 +128,7 @@ class Inkscape {
 
       return false
     })
-
+    
     return svg
   }
 
