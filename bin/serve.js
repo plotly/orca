@@ -73,7 +73,8 @@ function main (args) {
     mapboxAccessToken: opts['mapbox-access-token'],
     mathjax: opts.mathjax,
     topojson: opts.topojson,
-    safeMode: opts.safeMode
+    safeMode: opts.safeMode,
+    inkscape: opts.inkscape
   }
 
   function launch () {

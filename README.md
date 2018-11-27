@@ -36,7 +36,7 @@ $ npm install -g electron@1.8.4 orca
 
 which makes the `orca` executable available in your path.
 
-### Method 3: Standalone binaries 
+### Method 3: Standalone binaries
 
 Alternatively, you can download the standalone Orca binaries corresponding to
 your operating system from the
@@ -52,7 +52,7 @@ your operating system from the
 - A password dialog will appear asking for permission to add orca to your system `PATH`.
 - Enter you password and click _OK_.
 - This should open an _Installation Succeeded_ window.
-- Open a new terminal and verify that the orca executable is available on your `PATH`. 
+- Open a new terminal and verify that the orca executable is available on your `PATH`.
 
 ```
 $ which orca
@@ -100,7 +100,7 @@ to the AppImage.
 $ ln -s /path/to/orca-X.Y.Z-x86_64.AppImage /somewhere/on/PATH/orca
 ```
 
-- Open a new terminal and verify that the orca executable is available on your `PATH`. 
+- Open a new terminal and verify that the orca executable is available on your `PATH`.
 
 ```
 $ which orca
@@ -112,7 +112,7 @@ Plotly's image-exporting utilities
   Usage: orca [--version] [--help] <command> [<args>]
   ...
 ```
- 
+
 ##### Linux Troubleshooting: Cannot open shared object
 The Electron runtime depends a several common system libraries. These
 libraries are pre-installed in most desktop Linux distributions
@@ -157,7 +157,7 @@ Name this shell script `orca` and place it somewhere or your system `PATH`.
  - How to add directory to system path in Linux: https://www.computerhope.com/issues/ch001647.htm
  - AppImage: https://appimage.org/
  - Xvfb: https://en.wikipedia.org/wiki/Xvfb
- 
+
 ## Quick start
 
 From the command line:
@@ -286,14 +286,14 @@ Plotly's image server is dockerized and deployed here. See the `deployment/`
 
 ## System dependencies
 
-**If you don't care about exporting EPS you can skip this section.**
+**If you don't care about exporting EPS or EMF you can skip this section.**
 
-The environment you're installing this into may require Poppler for EPS exports.
+The environment you're installing this into may require Poppler for EPS exports and Inkscape for EMF exports.
 
 #### Poppler installation via Aptitude (used by some \*nix/BSD, e.g. Ubuntu)
 
 ```
-$ apt-get poppler-utils (requires `sudo` or root privileges)
+$ apt-get install poppler-utils (requires `sudo` or root privileges)
 ```
 
 #### Poppler installation via Homebrew (third-party package manager for Mac OS X)
@@ -302,6 +302,17 @@ $ apt-get poppler-utils (requires `sudo` or root privileges)
 $ brew install poppler
 ```
 
+#### Inkscape installation via Aptitude (used by some \*nix/BSD, e.g. Ubuntu)
+
+```
+$ apt-get install inkscape (requires `sudo` or root privileges)
+```
+
+#### Inkscape installation via Homebrew (third-party package manager for Mac OS X)
+
+```
+$ brew install inkscape
+```
 ## Contributing
 
 See

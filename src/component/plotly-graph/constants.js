@@ -5,7 +5,8 @@ module.exports = {
     webp: 'image/webp',
     svg: 'image/svg+xml',
     pdf: 'application/pdf',
-    eps: 'application/postscript'
+    eps: 'application/postscript',
+    emf: 'image/emf'
   },
 
   statusMsg: {

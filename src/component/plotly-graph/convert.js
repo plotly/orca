@@ -1,4 +1,5 @@
 const Pdftops = require('../../util/pdftops')
+const Inkscape = require('../../util/inkscape')
 const cst = require('./constants')
 
 /** plotly-graph convert
@@ -55,6 +56,21 @@ function convert (info, opts, reply) {
     })
   }
 
+  const svg2emf = (svg, cb) => {
+    const inkscape = opts.inkscape instanceof Inkscape
+      ? opts.inkscape
+      : new Inkscape(opts.inkscape)
+
+    inkscape.svg2emf(svg, {id: info.id}, (err, emf) => {
+      if (err) {
+        errorCode = 530
+        result.error = err
+        return done()
+      }
+      cb(emf)
+    })
+  }
+
   switch (format) {
     case 'png':
     case 'jpeg':
@@ -80,6 +96,15 @@ function convert (info, opts, reply) {
         body = encoded
           ? `data:${cst.contentFormat.eps};base64,${eps.toString('base64')}`
           : Buffer.from(eps, 'base64')
+        bodyLength = body.length
+        return done()
+      })
+      break
+    case 'emf':
+      svg2emf(imgData, (emf) => {
+        body = encoded
+          ? `data:${cst.contentFormat.emf};base64,${emf.toString('base64')}`
+          : Buffer.from(emf, 'base64')
         bodyLength = body.length
         return done()
       })
