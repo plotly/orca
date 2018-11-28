@@ -11,8 +11,8 @@ spec:
     apiVersion: extensions/v1beta1
     kind: Deployment
     name: imageserver
-  # Set this to 3x "min-nodes":
-  minReplicas: 3
-  # Set this to 3x "max-nodes":
-  maxReplicas: 18
+  # Normally this would be set to 3x "min-nodes":
+  minReplicas: 51
+  # Normally this would be set to 3x "max-nodes":
+  maxReplicas: 51
   targetCPUUtilizationPercentage: 30
