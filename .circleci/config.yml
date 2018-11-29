@@ -61,7 +61,8 @@ jobs:
           name: Install deps
           command: |
             npm install
-            sudo apt-get update && sudo apt-get install inkscape poppler-utils libgconf-2-4
+            sudo apt-get update
+            sudo apt-get install inkscape poppler-utils libgconf-2-4
       - run:
           name: List deps
           command: |
