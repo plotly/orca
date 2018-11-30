@@ -6,6 +6,7 @@ const series = require('run-series')
 const uuid = require('uuid/v4')
 const os = require('os')
 const PNG = require('pngjs').PNG
+const semver = require('semver')
 
 const PATH_TO_BUILD = path.join(os.tmpdir(), 'orca-build')
 try {
@@ -135,7 +136,7 @@ class Inkscape {
   /** Is Inkscape installed?
    * @return {boolean}
    */
-  static isInkscapeInstalled () {
+  isInstalled () {
     try {
       childProcess.execSync(`${this.cmdBase} --version`, {
         stdio: 'ignore'
@@ -144,6 +145,30 @@ class Inkscape {
       return false
     }
     return true
+  }
+
+  /** Returns inkscape version
+   * @return {string}
+   */
+  Version () {
+    try {
+      var out = childProcess.execSync(`${this.cmdBase} --version`)
+      out = out.toString()
+      var found = out.match(/Inkscape (\d+\.\d+\.\d+)/)
+      return found[1]
+    } catch (e) {
+      return ''
+    }
+  }
+
+  CheckInstallation () {
+    if (!this.isInstalled()) {
+      throw new Error('Inkscape is not installed')
+    }
+
+    if (!this.Version() || !semver.gte(this.Version(), '0.92.3')) {
+      throw new Error('Inkscape version should be greater than or equal to 0.92.3')
+    }
   }
 }
 

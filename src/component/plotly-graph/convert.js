@@ -61,6 +61,14 @@ function convert (info, opts, reply) {
       ? opts.inkscape
       : new Inkscape(opts.inkscape)
 
+    try {
+      inkscape.CheckInstallation()
+    } catch (e) {
+      errorCode = 530
+      result.error = e
+      return done()
+    }
+
     inkscape.svg2emf(svg, {id: info.id}, (err, emf) => {
       if (err) {
         errorCode = 530

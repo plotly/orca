@@ -58,7 +58,7 @@ tap.test('inkscape.svg2emf', t => {
   t.end()
 })
 
-tap.test('isInkscapeInstalled', t => {
+tap.test('Inkscape installation', t => {
   t.afterEach((done) => {
     childProcess.execSync.restore()
     done()
@@ -66,13 +66,41 @@ tap.test('isInkscapeInstalled', t => {
 
   t.test('should return true when binary execute correctly', t => {
     sinon.stub(childProcess, 'execSync').returns(true)
-    t.ok(Inkscape.isInkscapeInstalled())
+    var inkscape = new Inkscape()
+    t.ok(inkscape.isInstalled())
     t.end()
   })
 
   t.test('should return false when binary does not execute correctly', t => {
     sinon.stub(childProcess, 'execSync').throws()
-    t.notOk(Inkscape.isInkscapeInstalled())
+    var inkscape = new Inkscape()
+    t.notOk(inkscape.isInstalled())
+    t.end()
+  })
+
+  t.test('should return Inkscape version', t => {
+    var inkscape = new Inkscape()
+    sinon.stub(childProcess, 'execSync').returns('Inkscape 0.92.3 (2405546, 2018-03-11)')
+    t.ok(inkscape.Version() === '0.92.3')
+
+    childProcess.execSync.restore()
+    sinon.stub(childProcess, 'execSync').returns('Inkscape 0.48.5 r10040 (Oct  7 2014)')
+    t.ok(inkscape.Version() === '0.48.5')
+
+    t.end()
+  })
+
+  t.test('CheckInstallation() should throw error with older version of Inkscape', t => {
+    var inkscape = new Inkscape()
+    sinon.stub(childProcess, 'execSync').returns('Inkscape 0.48.5 r10040 (Oct  7 2014)')
+    t.throws(function () { inkscape.CheckInstallation() })
+    t.end()
+  })
+
+  t.test('CheckInstallation() should NOT throw error with newer version of Inkscape', t => {
+    var inkscape = new Inkscape()
+    sinon.stub(childProcess, 'execSync').returns('Inkscape 0.92.3 (2405546, 2018-03-11)')
+    t.doesNotThrow(function () { inkscape.CheckInstallation() })
     t.end()
   })
 
