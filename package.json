@@ -69,6 +69,7 @@
     "glob": "^7.1.2",
     "is-plain-obj": "^1.1.0",
     "is-url": "^1.2.4",
+    "jsdom": "^13.0.0",
     "minimist": "^1.2.0",
     "pngjs": "^3.3.3",
     "read-chunk": "^2.1.0",

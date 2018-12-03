@@ -7,19 +7,22 @@ const uuid = require('uuid/v4')
 const os = require('os')
 const PNG = require('pngjs').PNG
 const semver = require('semver')
+const jsdom = require('jsdom')
+const { JSDOM } = jsdom
 
 const PATH_TO_BUILD = path.join(os.tmpdir(), 'orca-build')
 try {
   fs.mkdirSync(PATH_TO_BUILD)
 } catch (e) {}
 
-const fullyTransparentColorbarRegexp = /<rect class="cbbg"(\s+[-\w]+="[^"]+")*\s+style="[^"]*fill-opacity: 0;[^"]*"(\s+[-\w]+="[^"]+")*\/>/g
-const fullyTransparentRectRegexp = /<rect(\s+[-\w]+="[^"]+")*\s+style="[^"]*stroke-opacity: 0;[^"]*fill-opacity: 0;[^"]*"(\s+[-\w]+="[^"]+")*\/>/g
-const transparentFillRectRegexp = /<rect(\s+[-\w]+="[^"]+")*\s+style="[^"]*fill-opacity: 0;[^"]*"(\s+[-\w]+="[^"]+")*\/>/g
-const transparentStrokeRectRegexp = /<rect(\s+[-\w]+="[^"]+")*\s+style="[^"]*stroke-opacity: 0;[^"]*"(\s+[-\w]+="[^"]+")*\/>/g
 const imgRegexp = /<image\s+xmlns="http:\/\/www.w3.org\/2000\/svg"\s+xlink:href="data:image\/png;base64,([^"]*)"[^>]*>/
-const colorbarFillRegexp = /<rect class="cbfill"[^>]*\/>/
 const xlinkHrefDataImageRegexp = /xlink:href="data:image\/png;base64,([^"]*)"/
+
+const fillUrl = /(^|; )fill: url\('#([^']*)'\);/
+const fillRgbaColor = /(^|; )fill: rgba\(([^)]*)\);/
+const fillOpacityZero = /(^|\s*)fill-opacity: 0;/
+const strokeOpacityZero = /(^|; )stroke-opacity: 0;/
+const opacityZero = /(^|; )opacity: 0;/
 
 /** Node wrapper for Inkscape
  *
@@ -71,25 +74,75 @@ class Inkscape {
 
   cleanSvg (svg) {
     var bgColor = [255, 255, 255]
+    const fragment = JSDOM.fragment(svg)
+
+    // Remove path and rectangles that are compleletely transparent
+    fragment.querySelectorAll('rect, path').forEach(function (node) {
+      var style = node.getAttribute('style')
+      if (style && (
+        (style.match(fillOpacityZero) && style.match(strokeOpacityZero)) ||
+        style.match(opacityZero)
+      )) node.remove()
+    })
+
+    // Set fill color to background color if its fill-opacity is 0 but stroke-opacity isn't 0
+    fragment.querySelectorAll('rect').forEach(function (node) {
+      var style = node.getAttribute('style')
+      if (!style) return
+      var m = style.match(fillOpacityZero)
+
+      if (m) {
+        var rgbFill = m[1] + `fill: rgb(${bgColor[0]},${bgColor[1]},${bgColor[2]});`
+        style = style.replace(m[0], rgbFill)
+        node.setAttribute('style', style)
+      }
+    })
 
     // Fix black legends by removing rect.legendtoggle
-    svg = svg.replace(/<rect class="legendtoggle"[^>]+>/g, '')
+    // regexp: svg = svg.replace(/<rect class="legendtoggle"[^>]+>/g, '')
+    fragment.querySelectorAll('rect.legendtoggle').forEach(node => node.remove())
 
     // Remove colorbar background if it's transparent
-    svg = svg.replace(fullyTransparentColorbarRegexp, '')
-    // Remove annotation's background if it's compleletely transparent
-    svg = svg.replace(fullyTransparentRectRegexp, '')
-
-    // Set fill color to background color if its opacity is 0
-    svg = svg.replace(transparentFillRectRegexp, function (match, p) {
-      return match.replace(/fill: [^;]*;/, `fill: rgb(${bgColor[0]},${bgColor[1]},${bgColor[2]});`)
-    })
-    // Set stroke color to background color if its opacity is 0
-    svg = svg.replace(transparentStrokeRectRegexp, function (match, p) {
-      return match.replace(/stroke: [^;]*;/, `stroke: rgb(${bgColor[0]},${bgColor[1]},${bgColor[2]});`)
+    fragment.querySelectorAll('rect.cbbg').forEach(function (node) {
+      var style = node.getAttribute('style')
+      if (style && style.match(fillOpacityZero)) node.remove()
     })
 
-    // Fix black background in rasterized images
+    // Fix fill in colorbars
+    fragment.querySelectorAll('rect.cbfill').forEach(function (node) {
+      var style = node.getAttribute('style')
+      if (style && style.match(fillUrl)) {
+        var gradientId = style.match(fillUrl)[2]
+
+        var el = fragment.getElementById(gradientId)
+        // Inkscape doesn't deal well with gradientUnits="objectBoundingBox"
+        el.setAttribute('gradientUnits', 'userSpaceOnUse')
+        var height = node.getAttribute('height')
+        el.setAttribute('y1', height)
+      }
+    })
+
+    // Fix path with rgba color for fill
+    fragment.querySelectorAll('path').forEach(function (node) {
+      var style = node.getAttribute('style')
+      if (!style) return
+      var m = style.match(fillRgbaColor)
+      if (m) {
+        var sep = m[1]
+        var rgba = m[2].split(',')
+        if (rgba[3] === 0) {
+          node.remove()
+        } else {
+          var rgbFill = sep + 'fill: rgb(' + rgba.slice(0, 3) + ')'
+          style = style.replace(m[0], rgbFill)
+          node.setAttribute('style', style)
+        }
+      }
+    })
+
+    svg = fragment.firstChild.outerHTML
+
+    // Fix black background in rasterized images (WebGL)
     svg = svg.replace(imgRegexp, function (match, base64png) {
       var pngBuffer = Buffer.from(base64png, 'base64')
       var image = PNG.sync.read(pngBuffer)
@@ -111,23 +164,6 @@ class Inkscape {
       }
       var pngOpaqueBuffer = PNG.sync.write(image)
       return match.replace(xlinkHrefDataImageRegexp, `xlink:href="data:image/png;base64,${pngOpaqueBuffer.toString('base64')}"`)
-    })
-
-    // Inkscape doesn't convert well gradientUnits="objectBoundingBox" into EMF
-    svg.replace(colorbarFillRegexp, function (match) {
-      // var width = match.match(/width="(\d+)"/)[1]
-      var height = match.match(/height="(\d+)"/)[1]
-      var gradientId = match.match(/url\('#([^']*)'\)/)
-
-      if (gradientId) {
-        gradientId = gradientId[1]
-        var gradientIdRegexp = new RegExp(`<linearGradient[^>]*id="${gradientId}"[^>]*>`)
-        svg = svg.replace(gradientIdRegexp, function (m) {
-          return `<linearGradient gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="${height}" y2="0" id="${gradientId}">`
-        })
-      }
-
-      return false
     })
 
     return svg
