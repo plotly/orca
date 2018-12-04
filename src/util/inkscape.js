@@ -9,15 +9,12 @@ const PNG = require('pngjs').PNG
 const semver = require('semver')
 const jsdom = require('jsdom')
 const { JSDOM } = jsdom
-const tinycolor = require("tinycolor2");
+const tinycolor = require('tinycolor2')
 
 const PATH_TO_BUILD = path.join(os.tmpdir(), 'orca-build')
 try {
   fs.mkdirSync(PATH_TO_BUILD)
 } catch (e) {}
-
-const imgRegexp = /<image\s+xmlns="http:\/\/www.w3.org\/2000\/svg"\s+xlink:href="data:image\/png;base64,([^"]*)"[^>]*>/
-const xlinkHrefDataImageRegexp = /xlink:href="data:image\/png;base64,([^"]*)"/
 
 const fillUrl = /(^|; )fill: url\('#([^']*)'\);/
 const fillRgbaColor = /(^|; )fill: rgba\(([^)]*)\);/
@@ -61,7 +58,7 @@ class Inkscape {
     ], cb)
 
     var bgColor
-    if(opts.figure.layout.paper_bgcolor) {
+    if (opts.figure.layout.paper_bgcolor) {
       var color = tinycolor(opts.figure.layout.paper_bgcolor)
       color = color.toRgb()
       bgColor = [color.r, color.g, color.b]
@@ -153,7 +150,7 @@ class Inkscape {
       var dataType = 'data:image/png;base64'
       var href = node.getAttribute('xlink:href')
       var parts = href.split(',')
-      if(parts[0] === dataType) {
+      if (parts[0] === dataType) {
         var pngBuffer = Buffer.from(parts[1], 'base64')
         var image = PNG.sync.read(pngBuffer)
 
