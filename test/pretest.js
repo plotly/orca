@@ -1,5 +1,6 @@
 const { execSync } = require('child_process')
 const { paths } = require('./common')
+const fs = require('fs')
 
 const mock = JSON.stringify({
   data: [{
@@ -10,6 +11,7 @@ const mock = JSON.stringify({
   }
 })
 
+fs.writeFileSync(`${paths.build}/test-mock.json`, mock)
 // https://stackoverflow.com/a/31104898/392162 – "Use child_process.execSync but keep output in console"
 const execSyncArgs = { stdio: [0, 1, 2] }
 

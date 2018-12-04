@@ -57,6 +57,7 @@ class Inkscape {
       (cb) => fs.unlink(outPath, cb)
     ], cb)
 
+    // Get background color from figure's definition
     var bgColor
     if (opts.figure.layout.paper_bgcolor) {
       var color = tinycolor(opts.figure.layout.paper_bgcolor)
