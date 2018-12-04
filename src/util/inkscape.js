@@ -9,6 +9,7 @@ const PNG = require('pngjs').PNG
 const semver = require('semver')
 const jsdom = require('jsdom')
 const { JSDOM } = jsdom
+const tinycolor = require("tinycolor2");
 
 const PATH_TO_BUILD = path.join(os.tmpdir(), 'orca-build')
 try {
@@ -59,7 +60,15 @@ class Inkscape {
       (cb) => fs.unlink(outPath, cb)
     ], cb)
 
-    svg = this.cleanSvg(svg)
+    var bgColor
+    if(opts.figure.layout.paper_bgcolor) {
+      var color = tinycolor(opts.figure.layout.paper_bgcolor)
+      color = color.toRgb()
+      bgColor = [color.r, color.g, color.b]
+    } else {
+      bgColor = [255, 255, 255]
+    }
+    svg = this.cleanSvg(svg, bgColor)
 
     series([
       (cb) => fs.writeFile(inPath, svg, 'utf-8', cb),
@@ -72,8 +81,7 @@ class Inkscape {
     })
   }
 
-  cleanSvg (svg) {
-    var bgColor = [255, 255, 255]
+  cleanSvg (svg, bgColor) {
     const fragment = JSDOM.fragment(svg)
 
     // Remove path and rectangles that are compleletely transparent

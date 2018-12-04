@@ -10,6 +10,7 @@ const cst = require('./constants')
  *  - imgData {string} (from render)
  * @param {object} opts : component options
  *  - pdftops {string or instance of Pdftops)
+ *  - inkscape {string or instance of Inkscape)
  * @param {function} reply
  *  - errorCode {number or null}
  *  - result {object}
@@ -69,7 +70,7 @@ function convert (info, opts, reply) {
       return done()
     }
 
-    inkscape.svg2emf(svg, {id: info.id}, (err, emf) => {
+    inkscape.svg2emf(svg, {id: info.id, figure: info.figure}, (err, emf) => {
       if (err) {
         errorCode = 530
         result.error = err
