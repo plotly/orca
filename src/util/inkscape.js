@@ -140,31 +140,35 @@ class Inkscape {
       }
     })
 
-    svg = fragment.firstChild.outerHTML
-
     // Fix black background in rasterized images (WebGL)
-    svg = svg.replace(imgRegexp, function (match, base64png) {
-      var pngBuffer = Buffer.from(base64png, 'base64')
-      var image = PNG.sync.read(pngBuffer)
+    fragment.querySelectorAll('image').forEach(function (node) {
+      var dataType = 'data:image/png;base64'
+      var href = node.getAttribute('xlink:href')
+      var parts = href.split(',')
+      if(parts[0] === dataType) {
+        var pngBuffer = Buffer.from(parts[1], 'base64')
+        var image = PNG.sync.read(pngBuffer)
 
-      for (var y = 0; y < image.height; y++) {
-        for (var x = 0; x < image.width; x++) {
-          var idx = (image.width * y + x) << 2
+        for (var y = 0; y < image.height; y++) {
+          for (var x = 0; x < image.width; x++) {
+            var idx = (image.width * y + x) << 2
 
-          var alpha = image.data[idx + 3]
-          if (alpha < 255) {
-            // Manually do alpha composition (https://en.wikipedia.org/wiki/Alpha_compositing)
-            image.data[idx] = image.data[idx] * alpha / 255 + bgColor[0] * (1 - alpha / 255)
-            image.data[idx + 1] = image.data[idx + 1] * alpha / 255 + bgColor[1] * (1 - alpha / 255)
-            image.data[idx + 2] = image.data[idx + 2] * alpha / 255 + bgColor[2] * (1 - alpha / 255)
+            var alpha = image.data[idx + 3]
+            if (alpha < 255) {
+              // Manually do alpha composition (https://en.wikipedia.org/wiki/Alpha_compositing)
+              image.data[idx] = image.data[idx] * alpha / 255 + bgColor[0] * (1 - alpha / 255)
+              image.data[idx + 1] = image.data[idx + 1] * alpha / 255 + bgColor[1] * (1 - alpha / 255)
+              image.data[idx + 2] = image.data[idx + 2] * alpha / 255 + bgColor[2] * (1 - alpha / 255)
 
-            image.data[idx + 3] = 255
+              image.data[idx + 3] = 255
+            }
           }
         }
+        var pngOpaqueBuffer = PNG.sync.write(image)
+        node.setAttribute('xlink:href', dataType + ',' + pngOpaqueBuffer.toString('base64'))
       }
-      var pngOpaqueBuffer = PNG.sync.write(image)
-      return match.replace(xlinkHrefDataImageRegexp, `xlink:href="data:image/png;base64,${pngOpaqueBuffer.toString('base64')}"`)
     })
+    svg = fragment.firstChild.outerHTML
 
     return svg
   }
