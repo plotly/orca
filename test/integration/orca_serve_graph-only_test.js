@@ -3,7 +3,7 @@ const Application = require('spectron').Application
 const request = require('request')
 
 const { paths } = require('../common')
-const PORT = 9109
+const PORT = 9110
 const SERVER_URL = `http://localhost:${PORT}`
 
 const app = new Application({
