@@ -212,8 +212,8 @@ class Inkscape {
       throw new Error('Inkscape is not installed')
     }
 
-    if (!this.Version() || !semver.gte(this.Version(), '0.92.3')) {
-      throw new Error('Inkscape version should be greater than or equal to 0.92.3')
+    if (!this.Version() || !semver.gte(this.Version(), '0.92.0')) {
+      throw new Error('Inkscape version should be greater than or equal to 0.92.0')
     }
   }
 }
