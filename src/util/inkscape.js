@@ -98,7 +98,8 @@ class Inkscape {
       var m = style.match(fillOpacityZero)
 
       if (m) {
-        var rgbFill = m[1] + `fill: rgb(${bgColor[0]},${bgColor[1]},${bgColor[2]});`
+        var sep = m[1]
+        var rgbFill = `${sep}fill: rgb(${bgColor[0]},${bgColor[1]},${bgColor[2]});`
         style = style.replace(m[0], rgbFill)
         node.setAttribute('style', style)
       }
@@ -139,7 +140,7 @@ class Inkscape {
         if (rgba[3] === 0) {
           node.remove()
         } else {
-          var rgbFill = sep + 'fill: rgb(' + rgba.slice(0, 3) + ')'
+          var rgbFill = `${sep}fill: rgb(${rgba.slice(0, 3).join(',')})`
           style = style.replace(m[0], rgbFill)
           node.setAttribute('style', style)
         }
