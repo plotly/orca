@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 
 ####################
 # Install node and dependencies
@@ -90,7 +90,7 @@ RUN apt-get update -y && apt-get install -y subversion && \
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
     sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' && \
     apt-get update -y && \
-    apt-get install -y google-chrome-stable xvfb poppler-utils git && \
+    apt-get install -y google-chrome-stable xvfb poppler-utils inkscape git && \
     rm -rf /var/lib/apt/lists/* && apt-get clean
 
 COPY package.json /var/www/image-exporter/
