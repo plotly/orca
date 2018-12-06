@@ -57,12 +57,6 @@ tap.test('should work for *plotly-graph* component', t => {
   })
 })
 
-tap.test('should teardown', t => {
-  app.stop()
-    .catch(t.fail)
-    .then(t.end)
-})
-
 tap.test('should not work for *plotly-thumbnail* component', t => {
   request({
     method: 'POST',
@@ -75,8 +69,15 @@ tap.test('should not work for *plotly-thumbnail* component', t => {
       }
     })
   }, (err, res) => {
-    t.equal(err.code, 'ECONNREFUSED')
-    t.equal(res, undefined, 'should be undefined')
+    if (err) t.fail(err)
+
+    t.equal(res.statusCode, 404, 'should return a HTTP 404 response')
     t.end()
   })
+})
+
+tap.test('should teardown', t => {
+  app.stop()
+    .catch(t.fail)
+    .then(t.end)
 })
