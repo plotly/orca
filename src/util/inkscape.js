@@ -59,7 +59,7 @@ class Inkscape {
 
     // Get background color from figure's definition
     var bgColor
-    if (opts.figure.layout.paper_bgcolor) {
+    if ((opts.figure.layout || {}).paper_bgcolor) {
       var color = tinycolor(opts.figure.layout.paper_bgcolor)
       color = color.toRgb()
       bgColor = [color.r, color.g, color.b]
