@@ -112,7 +112,8 @@ RUN cd /opt && \
 ####################
 # Install latest stable Inkscape
 RUN apt-get update && apt-get install -y software-properties-common python-software-properties \
-    && add-apt-repository -y ppa:inkscape.dev/stable && apt-get install -y inkscape \
+    && add-apt-repository -y ppa:inkscape.dev/stable \
+    && apt-get update && apt-get install -y inkscape \
     && rm -rf /var/lib/apt/lists/* && apt-get clean
 
 ####################
