@@ -18,6 +18,7 @@ urls.dummy = 'http://dummy.url'
 urls.plotlyGraphMock = 'https://raw.githubusercontent.com/plotly/plotly.js/master/test/image/mocks/20.json'
 
 try {
+  mocks.figure = JSON.parse(fs.readFileSync(path.join(paths.build, 'test-mock.json'), 'utf-8'))
   mocks.svg = fs.readFileSync(path.join(paths.build, 'test-mock.svg'), 'utf-8')
   mocks.pdf = fs.readFileSync(path.join(paths.build, 'test-mock.pdf'))
 } catch (e) {}

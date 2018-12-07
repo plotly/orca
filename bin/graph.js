@@ -145,7 +145,8 @@ function main (args) {
           scale: opts.scale,
           width: opts.width,
           height: opts.height,
-          safeMode: opts.safeMode
+          safeMode: opts.safeMode,
+          inkscape: opts.inkscape
         }
       }
     })

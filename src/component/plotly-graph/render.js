@@ -41,6 +41,7 @@ function render (info, opts, sendToMain) {
   }
 
   const PRINT_TO_PDF = (format === 'pdf' || format === 'eps')
+  const PRINT_TO_EMF = (format === 'emf')
 
   // stash `paper_bgcolor` here in order to set the pdf window bg color
   let bgColor
@@ -50,15 +51,15 @@ function render (info, opts, sendToMain) {
   }
 
   const imgOpts = {
-    format: PRINT_TO_PDF ? 'svg' : format,
+    format: (PRINT_TO_PDF || PRINT_TO_EMF) ? 'svg' : format,
     width: info.width,
     height: info.height,
     // only works as of plotly.js v1.31.0
     scale: info.scale,
     // return image data w/o the leading 'data:image' spec
-    imageDataOnly: !PRINT_TO_PDF && !encoded,
-    // blend jpeg background color as jpeg does not support transparency
-    setBackground: format === 'jpeg' ? 'opaque'
+    imageDataOnly: PRINT_TO_EMF || (!PRINT_TO_PDF && !encoded),
+    // blend (emf|jpeg) background color as (emf|jpeg) does not support transparency
+    setBackground: (format === 'jpeg' || format === 'emf') ? 'opaque'
       : PRINT_TO_PDF ? pdfBackground
         : ''
   }

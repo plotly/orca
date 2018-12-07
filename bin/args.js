@@ -29,6 +29,12 @@ exports.PLOTLYJS_OPTS_META = [{
   dflt: '',
   description: `Sets path to MathJax files. Required to export LaTeX characters.`
 }, {
+  name: 'inkscape',
+  type: 'string',
+  alias: ['Inkscape'],
+  dflt: '',
+  description: `Sets path to Inkscape executable. Required to export WMF and EMF formats.`
+}, {
   name: 'safe-mode',
   type: 'boolean',
   alias: ['safeMode', 'safe'],
