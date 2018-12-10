@@ -161,11 +161,16 @@ Name this shell script `orca` and place it somewhere or your system `PATH`.
 ## Quick start
 
 From the command line:
+Unix/MacOS:
 
 ```
 $ orca graph '{ "data": [{"y": [1,2,1]}] }' -o fig.png
 ```
+Windows:
 
+```
+orca graph "{ \"data\": [{\"y\": [1,2,1]}] }" -o fig.png
+```
 generates a PNG from the inputted plotly.js JSON attributes. Or,
 
 ```
@@ -173,6 +178,8 @@ $ orca graph https://plot.ly/~empet/14324.json --format svg
 ```
 
 generates an SVG from a plotly.js JSON hosted on [plot.ly](https://plot.ly/).
+
+When running 
 
 To print info about the supported arguments, run:
 
