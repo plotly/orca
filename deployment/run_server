@@ -2,6 +2,15 @@
 
 fc-cache -v /usr/share/fonts/user
 
+# Install certificates present in data directory
+if [[ -d /data/ssl/ ]]; then
+  echo "Adding custom certificates..."
+  for CERT in `ls /data/ssl/*.crt`; do
+    echo "Adding:" $i
+    certutil -d sql:$HOME/.pki/nssdb -A -t "P,," -n $CERT -i $CERT
+  done
+fi
+
 BUILD_DIR=/var/www/image-exporter/build
 if [[ -n "${PLOTLY_JS_SRC}" ]]; then
   # Fetch plotly js bundle and save it locally:
