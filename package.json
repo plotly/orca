@@ -83,7 +83,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "cross-env": "^5.1.4",
+    "cross-env": "^5.2.0",
     "devtron": "^1.4.0",
     "electron": "^1.8.4",
     "electron-builder": "^20.9.2",
