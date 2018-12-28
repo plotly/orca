@@ -37,7 +37,7 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
     }
 
     const simpleReply = (code, msg) => {
-      res.writeHead(code, {'Content-Type': 'text/plain'})
+      res.writeHead(code, { 'Content-Type': 'text/plain' })
       return res.end(msg || STATUS_MSG[code])
     }
 
@@ -45,7 +45,7 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
       fullInfo.msg = fullInfo.msg || STATUS_MSG[code] || ''
 
       app.emit('export-error', Object.assign(
-        {code: code},
+        { code: code },
         fullInfo
       ))
 
@@ -143,7 +143,7 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
     })
 
     // parse -> send to renderer GO!
-    textBody(req, {limit: BUFFER_OVERFLOW_LIMIT}, (err, _body) => {
+    textBody(req, { limit: BUFFER_OVERFLOW_LIMIT }, (err, _body) => {
       let body
 
       if (err) {

@@ -47,7 +47,7 @@ function convert (info, opts, reply) {
       ? opts.pdftops
       : new Pdftops(opts.pdftops)
 
-    pdftops.pdf2eps(pdf, {id: info.id}, (err, eps) => {
+    pdftops.pdf2eps(pdf, { id: info.id }, (err, eps) => {
       if (err) {
         errorCode = 530
         result.error = err
@@ -70,7 +70,7 @@ function convert (info, opts, reply) {
       return done()
     }
 
-    inkscape.svg2emf(svg, {id: info.id, figure: info.figure}, (err, emf) => {
+    inkscape.svg2emf(svg, { id: info.id, figure: info.figure }, (err, emf) => {
       if (err) {
         errorCode = 530
         result.error = err

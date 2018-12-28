@@ -68,7 +68,7 @@ function render (info, opts, sendToMain) {
 
   if (semver.gte(Plotly.version, '1.30.0')) {
     promise = Plotly
-      .toImage({data: figure.data, layout: figure.layout, config: config}, imgOpts)
+      .toImage({ data: figure.data, layout: figure.layout, config: config }, imgOpts)
       .then((imgData) => {
         if (PRINT_TO_PDF) {
           return toPDF(imgData, imgOpts, bgColor)

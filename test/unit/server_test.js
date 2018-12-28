@@ -10,12 +10,12 @@ tap.test('coerceOpts:', t => {
   t.test('should throw', t => {
     t.test('when no valid component are registered', t => {
       t.throws(() => coerceOpts(), /invalid port number/)
-      t.throws(() => coerceOpts({port: 'not gonna work'}), /invalid port number/)
+      t.throws(() => coerceOpts({ port: 'not gonna work' }), /invalid port number/)
       t.end()
     })
 
     t.test('when no valid component are registered', t => {
-      t.throws(() => coerceOpts({port: 20}), /no valid component registered/)
+      t.throws(() => coerceOpts({ port: 20 }), /no valid component registered/)
       t.end()
     })
 
@@ -70,7 +70,7 @@ tap.test('createServer:', t => {
 
   const mockWebContents = (opts, errorCode, result) => {
     errorCode = errorCode || null
-    result = result || {imgData: 'image data yo!'}
+    result = result || { imgData: 'image data yo!' }
 
     opts.component.forEach((comp) => {
       comp._win = {
@@ -87,7 +87,7 @@ tap.test('createServer:', t => {
   }
 
   const BrowserWindow0 = () => ({
-    getAllWindows: () => ({length: 0})
+    getAllWindows: () => ({ length: 0 })
   })
 
   const opts0 = () => coerceOpts({
@@ -244,7 +244,7 @@ tap.test('createServer:', t => {
 
     t.test('when more windows are open than max', t => {
       const BrowserWindow = BrowserWindow0()
-      BrowserWindow.getAllWindows = () => ({length: Infinity})
+      BrowserWindow.getAllWindows = () => ({ length: Infinity })
 
       _boot([false, BrowserWindow], (args) => {
         wrapApp(t, args, [5, 402, 'too many windows are opened'])
@@ -287,7 +287,7 @@ tap.test('createServer:', t => {
     })
 
     t.test('on module render errors', t => {
-      const opts = mockWebContents(opts0(), 467, {msg: 'error msg'})
+      const opts = mockWebContents(opts0(), 467, { msg: 'error msg' })
 
       _boot([false, false, false, opts], (args) => {
         wrapApp(t, args, [12, 467, 'error msg'])

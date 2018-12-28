@@ -12,7 +12,7 @@ tap.test('inkscape.svg2emf', t => {
     const inkscape = new Inkscape()
     const outPath = path.join(paths.build, 'inkscape-test.emf')
 
-    inkscape.svg2emf(mocks.svg, {figure: mocks.figure}, (err, result) => {
+    inkscape.svg2emf(mocks.svg, { figure: mocks.figure }, (err, result) => {
       if (err) t.fail(err)
       t.type(result, Buffer)
 
@@ -31,7 +31,7 @@ tap.test('inkscape.svg2emf', t => {
     const tmpOutPath = path.join(paths.build, 'tmp-emf')
     const tmpSvgPath = path.join(paths.build, 'tmp-svg')
 
-    inkscape.svg2emf(mocks.svg, {id: 'tmp', figure: mocks.figure}, (err, result) => {
+    inkscape.svg2emf(mocks.svg, { id: 'tmp', figure: mocks.figure }, (err, result) => {
       if (err) t.fail(err)
 
       t.type(result, Buffer)
@@ -47,7 +47,7 @@ tap.test('inkscape.svg2emf', t => {
     const tmpOutPath = path.join(paths.build, 'tmp-emf')
     const tmpSvgPath = path.join(paths.build, 'tmp-svg')
 
-    inkscape.svg2emf(mocks.svg, {id: 'tmp', figure: mocks.figure}, (err) => {
+    inkscape.svg2emf(mocks.svg, { id: 'tmp', figure: mocks.figure }, (err) => {
       t.throws(() => { throw err }, /Command failed/)
       t.notOk(fs.existsSync(tmpOutPath), 'clears tmp emf file')
       t.notOk(fs.existsSync(tmpSvgPath), 'clears tmp svg file')

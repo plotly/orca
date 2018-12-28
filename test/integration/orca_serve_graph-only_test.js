@@ -44,7 +44,7 @@ tap.test('should work for *plotly-graph* component', t => {
     body: JSON.stringify({
       figure: {
         layout: {
-          data: [{y: [1, 2, 1]}]
+          data: [{ y: [1, 2, 1] }]
         }
       }
     })
@@ -64,7 +64,7 @@ tap.test('should not work for *plotly-thumbnail* component', t => {
     body: JSON.stringify({
       figure: {
         layout: {
-          data: [{y: [1, 2, 1]}]
+          data: [{ y: [1, 2, 1] }]
         }
       }
     })

@@ -13,9 +13,9 @@ tap.test('parse:', t => {
 
     shouldFail.forEach(d => {
       t.test(`(case ${JSON.stringify(d)})`, t => {
-        fn({url: d}, {}, (errorCode, result) => {
+        fn({ url: d }, {}, (errorCode, result) => {
           t.equal(errorCode, 400)
-          t.same(result, {'msg': 'invalid url'})
+          t.same(result, { 'msg': 'invalid url' })
           t.end()
         })
       })
@@ -24,7 +24,7 @@ tap.test('parse:', t => {
     t.end()
   })
   t.test('should error when neither loading_selector or timeout is given', t => {
-    fn({url: 'https://dash-app.com'}, {}, (errorCode, result) => {
+    fn({ url: 'https://dash-app.com' }, {}, (errorCode, result) => {
       t.equal(errorCode, 400)
       t.equal(result.msg, 'either selector or timeout must be specified')
       t.end()
@@ -45,7 +45,7 @@ tap.test('parse:', t => {
     fn({
       url: 'https://dash-app.com',
       selector: 'dummy',
-      pageSize: {height: 1000, width: 1000}
+      pageSize: { height: 1000, width: 1000 }
     }, {}, (errorCode, result) => {
       t.equal(errorCode, null)
 
@@ -61,12 +61,12 @@ tap.test('parse:', t => {
     fn({
       url: 'https://dash-app.com',
       selector: 'dummy',
-      pdf_options: {pageSize: 'Letter', marginsType: 1}
+      pdf_options: { pageSize: 'Letter', marginsType: 1 }
     }, {}, (errorCode, result) => {
       t.equal(errorCode, null)
       // height/width are converted to pixels from page-type:
-      t.same(result.browserSize, {height: 1056, width: 816})
-      t.same(result.pdfOptions, {pageSize: 'Letter', marginsType: 1})
+      t.same(result.browserSize, { height: 1056, width: 816 })
+      t.same(result.pdfOptions, { pageSize: 'Letter', marginsType: 1 })
       t.end()
     })
   })
@@ -127,7 +127,7 @@ tap.test('render:', t => {
       t.ok(win.webContents.printToPDF.notCalled)
       t.ok(win.close.calledOnce)
       t.equal(errorCode, 526, 'code')
-      t.same(result, {'msg': 'dash preview generation timed out'}, 'result')
+      t.same(result, { 'msg': 'dash preview generation timed out' }, 'result')
       t.end()
     })
   })

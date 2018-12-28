@@ -1,5 +1,5 @@
-const {app, BrowserWindow} = require('electron')
-const {ipcMain} = require('electron')
+const { app, BrowserWindow } = require('electron')
+const { ipcMain } = require('electron')
 
 const initApp = require('../../util/init-app')
 const createIndex = require('../../util/create-index')

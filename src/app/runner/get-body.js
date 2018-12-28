@@ -27,7 +27,7 @@ function getBody (item, cb) {
         return cb(e)
       }
 
-      const body = Object.assign({}, item, {figure: figure})
+      const body = Object.assign({}, item, { figure: figure })
       cb(err, body)
     }
   } else {

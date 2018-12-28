@@ -1,5 +1,5 @@
-const {app, BrowserWindow} = require('electron')
-const {ipcMain} = require('electron')
+const { app, BrowserWindow } = require('electron')
+const { ipcMain } = require('electron')
 // require('electron-debug')({showDevTools: true})
 
 const initApp = require('../../util/init-app')

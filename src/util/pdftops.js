@@ -62,7 +62,7 @@ class Pdftops {
    */
   static isPdftopsInstalled () {
     try {
-      childProcess.execSync(`${this.cmdBase} -v`, {stdio: 'ignore'})
+      childProcess.execSync(`${this.cmdBase} -v`, { stdio: 'ignore' })
     } catch (e) {
       return false
     }

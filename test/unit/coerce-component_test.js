@@ -9,7 +9,7 @@ const coerceComponent = require('../../src/util/coerce-component')
 
 const testMockComponentModule = (t, compModuleContent, cb) => {
   const compPath = path.join(paths.build, uuid() + '.js')
-  const comp = {path: compPath}
+  const comp = { path: compPath }
 
   fs.writeFile(compPath, compModuleContent, (err) => {
     if (err) fs.unlink(compPath, t.fail)
@@ -22,9 +22,9 @@ const testMockComponentModule = (t, compModuleContent, cb) => {
 tap.test('should fill defaults and reference to module', t => {
   const areEquivalent = [
     () => coerceComponent('plotly-graph'),
-    () => coerceComponent({name: 'plotly-graph'}),
-    () => coerceComponent({name: 'plotly-graph', options: {plotlyJS: 'v1.20.0'}}),
-    () => coerceComponent({path: path.join(__dirname, '..', '..', 'src', 'component', 'plotly-graph')})
+    () => coerceComponent({ name: 'plotly-graph' }),
+    () => coerceComponent({ name: 'plotly-graph', options: { plotlyJS: 'v1.20.0' } }),
+    () => coerceComponent({ path: path.join(__dirname, '..', '..', 'src', 'component', 'plotly-graph') })
   ]
 
   areEquivalent.forEach((fn, i) => {
@@ -59,7 +59,7 @@ tap.test('should return null on non-string and non-object input', t => {
 
 tap.test('should return null when path to component is not found', t => {
   t.test('when component has no *path* or *name* key', t => {
-    const shouldFail = [{}, {nopath: 'p', noname: 'n'}]
+    const shouldFail = [{}, { nopath: 'p', noname: 'n' }]
 
     shouldFail.forEach(d => {
       t.test(`(input ${JSON.stringify(d)})`, t => {
@@ -72,7 +72,7 @@ tap.test('should return null when path to component is not found', t => {
   })
 
   t.test('when *path* does not resolve', t => {
-    t.equal(coerceComponent({path: 'not/gonna/work'}), null)
+    t.equal(coerceComponent({ path: 'not/gonna/work' }), null)
     t.end()
   })
 
@@ -116,9 +116,9 @@ tap.test('should return null if module is invalid', t => {
 
 tap.test('should normalize *route*', t => {
   const areEquivalent = [
-    () => coerceComponent({name: 'plotly-graph'}),
-    () => coerceComponent({name: 'plotly-graph', route: '/plotly-graph'}),
-    () => coerceComponent({name: 'plotly-graph', route: 'plotly-graph'})
+    () => coerceComponent({ name: 'plotly-graph' }),
+    () => coerceComponent({ name: 'plotly-graph', route: '/plotly-graph' }),
+    () => coerceComponent({ name: 'plotly-graph', route: 'plotly-graph' })
   ]
 
   areEquivalent.forEach((fn, i) => {
@@ -160,21 +160,21 @@ tap.test('should log info on debug', t => {
   })
 
   t.test('should log when non-string/non-object component are passed', t => {
-    coerceComponent(null, {debug: true})
+    coerceComponent(null, { debug: true })
     t.ok(console.warn.calledOnce)
     t.match(console.warn.args[0], /^non-string, non-object component passed/)
     t.end()
   })
 
   t.test('should log when path to component is not set', t => {
-    coerceComponent({nopath: 'p'}, {debug: true})
+    coerceComponent({ nopath: 'p' }, { debug: true })
     t.ok(console.warn.calledOnce)
     t.match(console.warn.args[0], /^path to component not found/)
     t.end()
   })
 
   t.test('should log MODULE_NOT_FOUND error when *require(comp.path)* fails', t => {
-    coerceComponent({path: 'not/gonna/work'}, {debug: true})
+    coerceComponent({ path: 'not/gonna/work' }, { debug: true })
     t.ok(console.warn.calledOnce)
     t.match(console.warn.args[0][0].code, /MODULE_NOT_FOUND/)
     t.end()
@@ -188,7 +188,7 @@ tap.test('should log info on debug', t => {
     }`
 
     testMockComponentModule(t, content, (comp) => {
-      coerceComponent(comp, {debug: true})
+      coerceComponent(comp, { debug: true })
       t.ok(console.warn.calledOnce)
       t.match(console.warn.args[0], /^invalid component module/)
     })

@@ -33,7 +33,7 @@ if (process.platform === 'darwin' && process.argv.length === 1) {
   const execSync = require('child_process').execSync
   const fs = require('fs')
   const path = require('path')
-  const {app, dialog} = require('electron')
+  const { app, dialog } = require('electron')
 
   const options = {
     type: 'info',
