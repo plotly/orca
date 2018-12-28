@@ -89,7 +89,7 @@
     "electron-builder": "^20.9.2",
     "electron-debug": "^1.4.0",
     "image-size": "^0.6.3",
-    "sinon": "^6.1.5",
+    "sinon": "^7.2.2",
     "snazzy": "^8.0.0",
     "spectron": "^3.8.0",
     "standard": "^12.0.1",
