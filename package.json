@@ -15,7 +15,8 @@
     "test": "npm run test:lint && npm run test:unit && npm run test:integration",
     "coverage": "npm run test:unit -- --cov",
     "lint": "standard --fix",
-    "pack": "cross-env NODE_ENV=production electron-builder --publish=never"
+    "pack": "cross-env NODE_ENV=production electron-builder --publish=never",
+    "postshrinkwrap": "replace --silent '\"resolved\": \"http://' '\"resolved\": \"https://' package-lock.json"
   },
   "build": {
     "appId": "com.plotly.orca",
@@ -89,6 +90,7 @@
     "electron-builder": "^20.9.2",
     "electron-debug": "^1.4.0",
     "image-size": "^0.6.3",
+    "replace": "^1.0.1",
     "sinon": "^7.2.2",
     "snazzy": "^8.0.0",
     "spectron": "^3.8.0",
