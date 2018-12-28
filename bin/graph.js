@@ -101,8 +101,12 @@ function main (args) {
     process.exit(0)
   }
 
-  if (!fs.existsSync(opts.outputDir)) {
-    fs.mkdirSync(opts.outputDir)
+  const fullOutputDir = opts.output
+    ? path.join(opts.outputDir, path.dirname(opts.output))
+    : opts.outputDir
+
+  if (!fs.existsSync(fullOutputDir)) {
+    fs.mkdirSync(fullOutputDir)
   }
 
   getStdin().then((txt) => {
@@ -114,7 +118,7 @@ function main (args) {
 
     const write = (info, _, done) => {
       const itemName = getItemName(info)
-      const outPath = path.resolve(opts.outputDir, `${itemName}.${info.format}`)
+      const outPath = path.resolve(fullOutputDir, `${itemName}.${info.format}`)
 
       if (pipeToStdOut) {
         str(info.body)

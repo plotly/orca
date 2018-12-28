@@ -70,6 +70,18 @@ tap.test('should respect --output when set (just filename case)', t => {
   })
 })
 
+tap.test('should respect --output when set (path/to/filename case)', t => {
+  const subprocess = _spawn(t, [DUMMY_DATA, '--output=build/tmp/graph.png'])
+  const p = path.join(process.cwd(), 'build', 'tmp', 'graph.png')
+
+  subprocess.on('close', code => {
+    t.same(code, 0)
+    t.ok(fs.existsSync(p))
+    fs.unlinkSync(p)
+    t.end()
+  })
+})
+
 tap.test('should respect --output-dir when set', t => {
   const subprocess = _spawn(t, [DUMMY_DATA, '--output-dir=build'])
   const p = path.join(process.cwd(), 'build', 'fig.png')
@@ -85,6 +97,18 @@ tap.test('should respect --output-dir when set', t => {
 tap.test('should respect --output (filename) and --output-dir when set', t => {
   const subprocess = _spawn(t, [DUMMY_DATA, '--output-dir=build', '--output=graph.png'])
   const p = path.join(process.cwd(), 'build', 'graph.png')
+
+  subprocess.on('close', code => {
+    t.same(code, 0)
+    t.ok(fs.existsSync(p))
+    fs.unlinkSync(p)
+    t.end()
+  })
+})
+
+tap.test('should respect --output (path/to/filename) and --output-dir when set', t => {
+  const subprocess = _spawn(t, [DUMMY_DATA, '--output-dir=build', '--output=tmp/graph.png'])
+  const p = path.join(process.cwd(), 'build', 'tmp', 'graph.png')
 
   subprocess.on('close', code => {
     t.same(code, 0)
