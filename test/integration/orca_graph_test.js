@@ -1,12 +1,11 @@
 const tap = require('tap')
+const fs = require('fs')
+const path = require('path')
 const { spawn } = require('child_process')
 const { paths } = require('../common')
 
-const BASE_ARGS = [
-  'graph',
-  '--output-dir', paths.build,
-  '--verbose'
-]
+const BASE_ARGS = ['graph', '--verbose']
+const DUMMY_DATA = '{ "data": [{"y": [1,2,1]}] }'
 
 const _spawn = (t, args) => {
   const allArgs = args ? BASE_ARGS.concat(args) : BASE_ARGS
@@ -43,6 +42,54 @@ tap.test('should log message when no input is given', t => {
 
   subprocess.stdout.on('data', d => {
     t.match(d.toString(), /No input given/)
+    t.end()
+  })
+})
+
+tap.test('should output to fig.png when --output is not set', t => {
+  const subprocess = _spawn(t, DUMMY_DATA)
+  const p = path.join(process.cwd(), 'fig.png')
+
+  subprocess.on('close', code => {
+    t.same(code, 0)
+    t.ok(fs.existsSync(p))
+    fs.unlinkSync(p)
+    t.end()
+  })
+})
+
+tap.test('should respect --output when set (just filename case)', t => {
+  const subprocess = _spawn(t, [DUMMY_DATA, '--output=graph.png'])
+  const p = path.join(process.cwd(), 'graph.png')
+
+  subprocess.on('close', code => {
+    t.same(code, 0)
+    t.ok(fs.existsSync(p))
+    fs.unlinkSync(p)
+    t.end()
+  })
+})
+
+tap.test('should respect --output-dir when set', t => {
+  const subprocess = _spawn(t, [DUMMY_DATA, '--output-dir=build'])
+  const p = path.join(process.cwd(), 'build', 'fig.png')
+
+  subprocess.on('close', code => {
+    t.same(code, 0)
+    t.ok(fs.existsSync(p))
+    fs.unlinkSync(p)
+    t.end()
+  })
+})
+
+tap.test('should respect --output (filename) and --output-dir when set', t => {
+  const subprocess = _spawn(t, [DUMMY_DATA, '--output-dir=build', '--output=graph.png'])
+  const p = path.join(process.cwd(), 'build', 'graph.png')
+
+  subprocess.on('close', code => {
+    t.same(code, 0)
+    t.ok(fs.existsSync(p))
+    fs.unlinkSync(p)
     t.end()
   })
 })
