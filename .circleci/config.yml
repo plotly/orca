@@ -96,7 +96,7 @@ jobs:
       - image: circleci/node:8.11-stretch-browsers
     steps:
       - setup_remote_docker:
-          reusable: true
+          docker_layer_caching: true
       - restore_cache:
           key: v1-source-{{ .Branch }}-{{ .Revision }}
           keys:
