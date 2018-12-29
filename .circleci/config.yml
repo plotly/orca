@@ -18,13 +18,13 @@ workflows:
             - test-node-v6
             - test-node-v8
           filters:
-              branches:
-                  # Do not run on branches based off forks as
-                  # this job requires plotly's quay.io credentials.
-                  # Note that branches based off forks are labels pull/???/ on CI.
-                  # Solution taken from:
-                  # https://discuss.circleci.com/t/create-separate-steps-jobs-for-pr-forks-versus-branches/13419/4
-                  only: /^(?!pull\/).*$/
+            branches:
+              # Do not run on branches based off forks as
+              # this job requires plotly's quay.io credentials.
+              # Note that branches based off forks are labels pull/???/ on CI.
+              # Solution taken from:
+              # https://discuss.circleci.com/t/create-separate-steps-jobs-for-pr-forks-versus-branches/13419/4
+              only: /^(?!pull\/).*$/
       - electron-pack-and-release:
           requires:
             - test-node-v6
@@ -97,7 +97,6 @@ jobs:
     steps:
       - setup_remote_docker:
           reusable: true
-
       - restore_cache:
           key: v1-source-{{ .Branch }}-{{ .Revision }}
           keys:
@@ -125,8 +124,10 @@ jobs:
           name: Push Docker image to Quay
           command: |
             docker login -u $DOCKER_USER -p $DOCKER_PASS quay.io
-            docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_BRANCH
             docker push quay.io/plotly/image-exporter:$CIRCLE_SHA1
+
+            # tag and push as branch name
+            docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_BRANCH
             docker push quay.io/plotly/image-exporter:$CIRCLE_BRANCH
             if [[ ! -z "${CIRCLE_TAG}" ]]; then
               docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_TAG
