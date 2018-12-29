@@ -33,18 +33,21 @@ npm install
 ### Install poppler
 
 We haven't found a Node.js library that converts PDF files to EPS,
-so we use [poppler](https://poppler.freedesktop.org/):
+so we use [poppler](https://poppler.freedesktop.org/). Orca also support EMF
+exports when [`inkscape`](https://inkscape.org/) is found in the environment. So
+to run the tests, you'll need to:
+
 
 On Debian-flavored Linux:
 
 ```
-apt-get poppler-utils
+apt-get poppler-utils inkscape
 ```
 
 On OS X:
 
 ```
-brew install poppler
+brew install poppler inkscape
 ```
 
 On Windows:
