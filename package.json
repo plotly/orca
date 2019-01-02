@@ -16,7 +16,7 @@
     "coverage": "npm run test:unit -- --cov",
     "lint": "standard --fix",
     "pack": "cross-env NODE_ENV=production electron-builder --publish=never",
-    "postshrinkwrap": "replace --silent '\"resolved\": \"http://' '\"resolved\": \"https://' package-lock.json"
+    "postshrinkwrap": "chttps ."
   },
   "build": {
     "appId": "com.plotly.orca",
@@ -84,13 +84,13 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "chttps": "^1.0.6",
     "cross-env": "^5.2.0",
     "devtron": "^1.4.0",
     "electron": "^1.8.4",
     "electron-builder": "^20.9.2",
     "electron-debug": "^1.4.0",
     "image-size": "^0.6.3",
-    "replace": "^1.0.1",
     "sinon": "^7.2.2",
     "snazzy": "^8.0.0",
     "spectron": "^3.8.0",
