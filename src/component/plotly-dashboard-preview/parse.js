@@ -60,7 +60,7 @@ function parse (body, opts, sendToRenderer) {
           contents: {
             data: [],
             layout: {},
-            annotations: [{text: cont.text ? cont.text.substr(50) : ''}]
+            annotations: [{ text: cont.text ? cont.text.substr(50) : '' }]
           }
         }
 

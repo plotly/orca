@@ -18,7 +18,7 @@ tap.test('parse:', t => {
           marker: {}
         }],
         layout: {
-          margin: {l: 100, r: 100, t: 100, b: 100},
+          margin: { l: 100, r: 100, t: 100, b: 100 },
           yaxis: {
             title: 'some title',
             otherAttr: 'dummy'
@@ -65,25 +65,25 @@ tap.test('parse:', t => {
           }, {
             type: 'pie',
             showscale: false,
-            marker: {showscale: false},
+            marker: { showscale: false },
             textposition: 'none'
           }],
           layout: {
             title: '',
             showlegend: false,
-            margin: {b: 0, l: 0, r: 0, t: 0},
+            margin: { b: 0, l: 0, r: 0, t: 0 },
             yaxis: {
               title: '',
               otherAttr: 'dummy'
             },
-            yaxis2: {title: ''},
-            yaxis3: {title: ''},
+            yaxis2: { title: '' },
+            yaxis3: { title: '' },
             xaxis: {
               color: 'blue',
               title: ''
             },
-            xaxis2: {title: ''},
-            xaxis14: {title: ''},
+            xaxis2: { title: '' },
+            xaxis14: { title: '' },
             scene: {
               xaxis: {
                 title: '',

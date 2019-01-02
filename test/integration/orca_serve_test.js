@@ -48,7 +48,7 @@ tap.test('should work for *plotly-graph* component', t => {
     body: JSON.stringify({
       figure: {
         layout: {
-          data: [{y: [1, 2, 1]}]
+          data: [{ y: [1, 2, 1] }]
         }
       }
     })
@@ -70,7 +70,7 @@ tap.test('should work for *plotly-thumbnail* component', t => {
     body: JSON.stringify({
       figure: {
         layout: {
-          data: [{y: [1, 2, 1]}]
+          data: [{ y: [1, 2, 1] }]
         }
       }
     })
@@ -83,7 +83,7 @@ tap.test('should work for *plotly-thumbnail* component', t => {
   })
 })
 
-tap.test('should work for *plotly-dashboard* component', {timeout: 1e5}, t => {
+tap.test('should work for *plotly-dashboard* component', { timeout: 1e5 }, t => {
   t.test('responding with correct status code and body type', t => {
     request({
       method: 'POST',

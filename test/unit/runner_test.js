@@ -11,13 +11,13 @@ const { paths, urls } = require('../common')
 tap.test('coerceOpts:', t => {
   t.test('should throw', t => {
     t.test('on blank input', t => {
-      t.throws(() => coerceOpts({component: 'plotly-graph'}), /no valid input given/)
+      t.throws(() => coerceOpts({ component: 'plotly-graph' }), /no valid input given/)
       t.end()
     })
 
     t.test('when no valid component are registered', t => {
       t.throws(() => coerceOpts(), /no valid component registered/)
-      t.throws(() => coerceOpts({input: paths.pkg}), /no valid component registered/)
+      t.throws(() => coerceOpts({ input: paths.pkg }), /no valid component registered/)
       t.end()
     })
 
@@ -134,7 +134,7 @@ tap.test('run:', t => {
   const win = {
     webContents: {
       send: (compName, id, fullInfo, compOpts) => {
-        ipc.emit(id, {}, null, {imgData: 'image data yo!'})
+        ipc.emit(id, {}, null, { imgData: 'image data yo!' })
       }
     },
     close: () => {}
@@ -173,7 +173,7 @@ tap.test('run:', t => {
   })
 
   t.test('should fire *after-export* and *after-export-all* on success', t => {
-    const cases = ['{"data":[{"y":[1,2,1]}]}', {data: [{ y: [1, 2, -1] }]}]
+    const cases = ['{"data":[{"y":[1,2,1]}]}', { data: [{ y: [1, 2, -1] }] }]
 
     cases.forEach(c => {
       t.test(`(case ${c}`, t => {
@@ -239,7 +239,7 @@ tap.test('run:', t => {
       const win = {
         webContents: {
           send: (compName, id, fullInfo, compOpts) => {
-            ipc.emit(id, {}, 555, {msg: 'error msg'})
+            ipc.emit(id, {}, 555, { msg: 'error msg' })
           }
         },
         close: () => {}

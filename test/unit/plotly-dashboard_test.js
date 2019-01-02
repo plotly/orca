@@ -14,7 +14,7 @@ tap.test('parse:', t => {
 
     shouldFail.forEach(d => {
       t.test(`(case ${JSON.stringify(d)})`, t => {
-        fn({url: d}, {}, (errorCode, result) => {
+        fn({ url: d }, {}, (errorCode, result) => {
           t.equal(errorCode, 400, 'code')
           t.end()
         })

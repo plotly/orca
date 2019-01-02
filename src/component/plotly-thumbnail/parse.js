@@ -27,7 +27,7 @@ function overrideFigure (figure) {
 
   // remove title, margins and legend
   layout.title = ''
-  layout.margin = {t: 0, b: 0, l: 0, r: 0}
+  layout.margin = { t: 0, b: 0, l: 0, r: 0 }
   layout.showlegend = false
 
   // remove all annotations

@@ -61,7 +61,7 @@ tap.test('should log path to created index in debug mode', t => {
   })
 
   t.test('(debug mode)', t => {
-    fn({debug: true}, (index) => {
+    fn({ debug: true }, (index) => {
       t.ok(console.log.calledOnce)
       t.match(console.log.args[0], /^created index/)
       t.end()

@@ -1,4 +1,4 @@
-const {ipcRenderer} = require('electron')
+const { ipcRenderer } = require('electron')
 
 /** Small wrapper that registers ipc listeners for all components
  *  on channels based on the component name.

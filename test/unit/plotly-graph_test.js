@@ -17,7 +17,7 @@ tap.test('inject:', t => {
   })
 
   t.test('should add mathjax script if given with config options', t => {
-    const out = fn({mathjax: 'http://dummy.url'})
+    const out = fn({ mathjax: 'http://dummy.url' })
 
     t.same(out, [
       '<script src="http://dummy.url?config=TeX-AMS-MML_SVG"></script>',
@@ -27,7 +27,7 @@ tap.test('inject:', t => {
   })
 
   t.test('should add topojson script if given', t => {
-    const out = fn({topojson: 'http://dummy.url'})
+    const out = fn({ topojson: 'http://dummy.url' })
 
     t.same(out, [
       '<script src="http://dummy.url"></script>',
@@ -38,7 +38,7 @@ tap.test('inject:', t => {
 
   t.test('should accept plotly.js version to be specify via semver', t => {
     const _fn = (arg, src) => {
-      t.same(fn({plotlyJS: arg}), [`<script src="https://cdn.plot.ly/plotly-${src}.min.js"></script>`])
+      t.same(fn({ plotlyJS: arg }), [`<script src="https://cdn.plot.ly/plotly-${src}.min.js"></script>`])
     }
 
     _fn('v1.20.0', '1.20.0')
@@ -48,31 +48,31 @@ tap.test('inject:', t => {
   })
 
   t.test('should accept plotly.js version to be specify via url', t => {
-    const out = fn({plotlyJS: 'http://dummy.url'})
+    const out = fn({ plotlyJS: 'http://dummy.url' })
 
     t.same(out, ['<script src="http://dummy.url"></script>'])
     t.end()
   })
 
   t.test('should accept path to plotly.js bundle', t => {
-    const out = fn({plotlyJS: paths.readme})
+    const out = fn({ plotlyJS: paths.readme })
 
     t.match(out[0], /README.md/)
     t.end()
   })
 
   t.test('should throw when given plotly.js argument is invalid', t => {
-    t.throws(() => fn({plotlyJS: 'not gonna work'}))
+    t.throws(() => fn({ plotlyJS: 'not gonna work' }))
     t.end()
   })
 
   t.test('should throw when given mathjax argument is invalid', t => {
-    t.throws(() => fn({mathjax: 'not gonna work'}))
+    t.throws(() => fn({ mathjax: 'not gonna work' }))
     t.end()
   })
 
   t.test('should throw when given topojson argument is invalid', t => {
-    t.throws(() => fn({topojson: 'not gonna work'}))
+    t.throws(() => fn({ topojson: 'not gonna work' }))
     t.end()
   })
 
@@ -85,7 +85,7 @@ tap.test('parse:', t => {
   t.test('should fill in defaults', t => {
     const body = {
       figure: {
-        data: [{y: [1, 2, 1]}]
+        data: [{ y: [1, 2, 1] }]
       }
     }
 
@@ -93,7 +93,7 @@ tap.test('parse:', t => {
       t.equal(errorCode, null, 'code')
       t.same(result, {
         figure: {
-          data: [{y: [1, 2, 1]}],
+          data: [{ y: [1, 2, 1] }],
           layout: {}
         },
         format: 'png',
@@ -116,7 +116,7 @@ tap.test('parse:', t => {
     const _fn = (d, cb) => {
       const body = {
         format: d,
-        figure: {data: [{y: [1, 2, 1]}]}
+        figure: { data: [{ y: [1, 2, 1] }] }
       }
       fn(body, {}, cb)
     }
@@ -156,12 +156,12 @@ tap.test('parse:', t => {
 
   t.test('parsing *figure*', t => {
     const shouldFail = [
-      {}, [], 123, '', {nodata: [], nolayout: {}}
+      {}, [], 123, '', { nodata: [], nolayout: {} }
     ]
 
     shouldFail.forEach(d => {
       t.test(`should error for ${JSON.stringify(d)}`, t => {
-        fn({figure: d}, {}, (errorCode, result) => {
+        fn({ figure: d }, {}, (errorCode, result) => {
           t.equal(errorCode, 400)
           t.end()
         })
@@ -174,7 +174,7 @@ tap.test('parse:', t => {
   t.test('parsing *data*', t => {
     t.test('should default to empty array if not set', t => {
       const body = {
-        figure: {layout: {}}
+        figure: { layout: {} }
       }
       fn(body, {}, (errorCode, result) => {
         t.equal(errorCode, null, 'code')
@@ -188,7 +188,7 @@ tap.test('parse:', t => {
     shouldFail.forEach(d => {
       t.test(`should error for ${JSON.stringify(d)}`, t => {
         const body = {
-          figure: {data: d, layout: {}}
+          figure: { data: d, layout: {} }
         }
         fn(body, {}, (errorCode, result) => {
           t.equal(errorCode, 400, 'code')
@@ -204,7 +204,7 @@ tap.test('parse:', t => {
   t.test('parsing *layout*', t => {
     t.test('should default to empty object if not set', t => {
       const body = {
-        figure: {data: []}
+        figure: { data: [] }
       }
       fn(body, {}, (errorCode, result) => {
         t.equal(errorCode, null, 'code')
@@ -218,7 +218,7 @@ tap.test('parse:', t => {
     shouldFail.forEach(d => {
       t.test(`should error for ${JSON.stringify(d)}`, t => {
         const body = {
-          figure: {data: [], layout: d}
+          figure: { data: [], layout: d }
         }
         fn(body, {}, (errorCode, result) => {
           t.equal(errorCode, 400, 'code')
@@ -237,11 +237,11 @@ tap.test('parse:', t => {
     const shouldFail = [undefined, '', -12, null, false]
 
     keys.forEach(k => {
-      const dflt = {width: 700, height: 500}[k]
+      const dflt = { width: 700, height: 500 }[k]
 
       shouldPass.forEach(d => {
         t.test(`should accept ${d}`, t => {
-          const body = {figure: {data: []}}
+          const body = { figure: { data: [] } }
           body[k] = d
 
           fn(body, {}, (errorCode, result) => {
@@ -254,7 +254,7 @@ tap.test('parse:', t => {
 
       shouldPass.forEach(d => {
         t.test(`should fallback to dflt for ${d} with autosize turned on`, t => {
-          const body = {figure: {data: [], layout: { autosize: true }}}
+          const body = { figure: { data: [], layout: { autosize: true } } }
           body.figure.layout[k] = d
 
           fn(body, {}, (errorCode, result) => {
@@ -267,7 +267,7 @@ tap.test('parse:', t => {
 
       shouldFail.forEach(d => {
         t.test(`should fallback to layout ${k} for ${d}`, t => {
-          const body = {figure: {data: [], layout: {}}}
+          const body = { figure: { data: [], layout: {} } }
           body[k] = d
           body.figure.layout[k] = 1000
 
@@ -279,7 +279,7 @@ tap.test('parse:', t => {
         })
 
         t.test(`should fallback to dflt for ${d} with invalid layout ${k}`, t => {
-          const body = {figure: {data: [], layout: {}}}
+          const body = { figure: { data: [], layout: {} } }
           body[k] = d
           body.figure.layout[k] = d
 
@@ -297,8 +297,8 @@ tap.test('parse:', t => {
 
   t.test('should work with component options too', t => {
     const body = {
-      data: [{y: [1, 2, 1]}],
-      layout: {height: 200}
+      data: [{ y: [1, 2, 1] }],
+      layout: { height: 200 }
     }
 
     const opts = {
@@ -312,8 +312,8 @@ tap.test('parse:', t => {
       t.equal(errorCode, null, 'code')
       t.same(result, {
         figure: {
-          data: [{y: [1, 2, 1]}],
-          layout: {height: 200}
+          data: [{ y: [1, 2, 1] }],
+          layout: { height: 200 }
         },
         format: 'svg',
         scale: 2,
@@ -335,7 +335,7 @@ tap.test('parse:', t => {
           type: 'scatter',
           x: x
         }]
-      }, {safeMode: true}, (errorCode, result) => {
+      }, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -350,7 +350,7 @@ tap.test('parse:', t => {
           type: 'scattergl',
           x: x
         }]
-      }, {safeMode: true}, (errorCode, result) => {
+      }, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, null, 'code')
         t.type(result.figure, 'object', 'figure type')
         t.end()
@@ -369,7 +369,7 @@ tap.test('parse:', t => {
             values: x
           }]
         }]
-      }, {safeMode: true}, (errorCode, result) => {
+      }, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -388,7 +388,7 @@ tap.test('parse:', t => {
           type: 'heatmap',
           z: z
         }]
-      }, {safeMode: true}, (errorCode, result) => {
+      }, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -407,7 +407,7 @@ tap.test('parse:', t => {
             ]
           }
         }]
-      }, {safeMode: true}, (errorCode, result) => {
+      }, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -419,7 +419,7 @@ tap.test('parse:', t => {
 
       fn({
         data: data
-      }, {safeMode: true}, (errorCode, result) => {
+      }, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -433,7 +433,7 @@ tap.test('parse:', t => {
           x: new Array(1e5),
           boxpoints: 'all'
         }]
-      }, {safeMode: true}, (errorCode, result) => {
+      }, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -447,7 +447,7 @@ tap.test('parse:', t => {
           x: new Array(1e5),
           points: 'all'
         }]
-      }, {safeMode: true}, (errorCode, result) => {
+      }, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -463,7 +463,7 @@ tap.test('parse:', t => {
           x: data,
           alphahull: 1
         }]
-      }, {safeMode: true}, (errorCode, result) => {
+      }, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -475,7 +475,7 @@ tap.test('parse:', t => {
 
       fn({
         data: data
-      }, {safeMode: true}, (errorCode, result) => {
+      }, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -494,7 +494,7 @@ tap.test('parse:', t => {
             new Array(4e5)
           ]
         }]
-      }, {safeMode: true}, (errorCode, result) => {
+      }, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -512,7 +512,7 @@ tap.test('parse:', t => {
           boxpoints: 'all',
           x: new Array(4e4) // below 5e4 threshold
         }]
-      }, {safeMode: true}, (errorCode, result) => {
+      }, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -525,7 +525,7 @@ tap.test('parse:', t => {
           type: 'scatter',
           x: new Array(1e6)
         }]
-      }, {safeMode: true}, (errorCode, result) => {
+      }, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -546,7 +546,7 @@ tap.test('convert:', t => {
 
     formats.forEach(f => {
       t.test(`for format ${f}`, t => {
-        fn({imgData: 'asdfDFDASFsafadsf', format: f}, {}, (errorCode, result) => {
+        fn({ imgData: 'asdfDFDASFsafadsf', format: f }, {}, (errorCode, result) => {
           t.equal(errorCode, null)
           t.match(result.head['Content-Type'], f)
           t.type(result.body, Buffer)
@@ -564,7 +564,7 @@ tap.test('convert:', t => {
 
     formats.forEach(f => {
       t.test(`for format ${f}`, t => {
-        fn({imgData: 'asdfDFDASFsafadsf', format: f, encoded: true}, {}, (errorCode, result) => {
+        fn({ imgData: 'asdfDFDASFsafadsf', format: f, encoded: true }, {}, (errorCode, result) => {
           t.equal(errorCode, null)
           t.match(result.head['Content-Type'], f)
           t.type(result.body, 'asdfDFDASFsafadsf')
@@ -575,7 +575,7 @@ tap.test('convert:', t => {
     })
 
     t.test('for format pdf', t => {
-      fn({imgData: 'asdfDFDASFsafadsf', format: 'pdf', encoded: true}, {}, (errorCode, result) => {
+      fn({ imgData: 'asdfDFDASFsafadsf', format: 'pdf', encoded: true }, {}, (errorCode, result) => {
         t.equal(errorCode, null)
         t.match(result.head['Content-Type'], 'pdf')
         t.type(result.body, 'data:application/pdf;base64,asdfDFDASFsafadsf')
@@ -588,7 +588,7 @@ tap.test('convert:', t => {
   })
 
   t.test('should pass svg image data', t => {
-    fn({imgData: '<svg></svg>', format: 'svg'}, {}, (errorCode, result) => {
+    fn({ imgData: '<svg></svg>', format: 'svg' }, {}, (errorCode, result) => {
       t.equal(errorCode, null)
       t.equal(result.head['Content-Type'], 'image/svg+xml')
       t.equal(result.body, '<svg></svg>')
@@ -598,7 +598,7 @@ tap.test('convert:', t => {
   })
 
   t.test('should convert pdf data to eps', t => {
-    const info = {imgData: mocks.pdf, format: 'eps'}
+    const info = { imgData: mocks.pdf, format: 'eps' }
 
     t.test('(encoded false)', t => {
       fn(info, {}, (errorCode, result) => {
@@ -610,7 +610,7 @@ tap.test('convert:', t => {
     })
 
     t.test('(encoded true)', t => {
-      fn(Object.assign({}, info, {encoded: true}), {}, (errorCode, result) => {
+      fn(Object.assign({}, info, { encoded: true }), {}, (errorCode, result) => {
         t.equal(errorCode, null)
         t.equal(result.head['Content-Type'], 'application/postscript')
         t.match(result.body, /^data:application\/postscript;base64,/)
@@ -622,8 +622,8 @@ tap.test('convert:', t => {
   })
 
   t.test('should convert pdf data to eps (while passing instance of Pdftops)', t => {
-    const info = {imgData: mocks.pdf, format: 'eps'}
-    const opts = {pdftops: new Pdftops()}
+    const info = { imgData: mocks.pdf, format: 'eps' }
+    const opts = { pdftops: new Pdftops() }
 
     fn(info, opts, (errorCode, result) => {
       t.equal(errorCode, null)
@@ -634,8 +634,8 @@ tap.test('convert:', t => {
   })
 
   t.test('should pass pdftops errors', t => {
-    const info = {imgData: mocks.pdf, format: 'eps'}
-    const opts = {pdftops: 'not gonna work'}
+    const info = { imgData: mocks.pdf, format: 'eps' }
+    const opts = { pdftops: 'not gonna work' }
 
     fn(info, opts, (errorCode, result) => {
       t.equal(errorCode, 530)
@@ -722,11 +722,11 @@ tap.test('render:', t => {
     t.test('(format pdf)', t => {
       mock130()
       mockBrowser()
-      const {win, restore} = mockWindow()
+      const { win, restore } = mockWindow()
       win.webContents.executeJavaScript.returns(new Promise(resolve => resolve()))
       win.webContents.printToPDF.yields(null, 'pdf data')
 
-      fn({format: 'pdf'}, {}, (errorCode, result) => {
+      fn({ format: 'pdf' }, {}, (errorCode, result) => {
         t.equal(errorCode, null)
         t.equal(result.imgData, 'pdf data')
         t.equal(window.encodeURIComponent.callCount, 1, 'encodeURIComponent calls')
@@ -761,7 +761,7 @@ tap.test('render:', t => {
       mock110()
       mockBrowser()
 
-      fn({encoded: true}, {}, (errorCode, result) => {
+      fn({ encoded: true }, {}, (errorCode, result) => {
         t.equal(result.imgData, 'data:image/yo;base64,image data')
         t.ok(document.createElement.calledOnce)
         t.ok(Plotly.newPlot.calledOnce)
@@ -775,7 +775,7 @@ tap.test('render:', t => {
       mock110()
       mockBrowser()
 
-      fn({format: 'svg'}, {}, (errorCode, result) => {
+      fn({ format: 'svg' }, {}, (errorCode, result) => {
         t.equal(result.imgData, 'decoded image data')
         t.ok(document.createElement.calledOnce)
         t.ok(window.decodeURIComponent.calledOnce)
@@ -790,7 +790,7 @@ tap.test('render:', t => {
       mock110()
       mockBrowser()
 
-      fn({format: 'svg', encoded: true}, {}, (errorCode, result) => {
+      fn({ format: 'svg', encoded: true }, {}, (errorCode, result) => {
         t.equal(result.imgData, 'data:image/yo;base64,image data')
         t.ok(document.createElement.calledOnce)
         t.ok(window.decodeURIComponent.notCalled)
@@ -804,11 +804,11 @@ tap.test('render:', t => {
     t.test('(format pdf)', t => {
       mock110()
       mockBrowser()
-      const {win, restore} = mockWindow()
+      const { win, restore } = mockWindow()
       win.webContents.executeJavaScript.returns(new Promise(resolve => resolve()))
       win.webContents.printToPDF.yields(null, 'pdf data')
 
-      fn({format: 'pdf'}, {}, (errorCode, result) => {
+      fn({ format: 'pdf' }, {}, (errorCode, result) => {
         t.equal(errorCode, null)
         t.equal(result.imgData, 'pdf data')
         t.equal(document.createElement.callCount, 1, 'createElement calls')
@@ -817,7 +817,7 @@ tap.test('render:', t => {
         t.equal(win.webContents.printToPDF.callCount, 1, 'printToPDF calls')
         t.doesNotThrow(() => {
           const gd = {
-            _fullLayout: {paper_bgcolor: 'some color'}
+            _fullLayout: { paper_bgcolor: 'some color' }
           }
           Plotly.toImage.args[0][1].setBackground(gd, 'some other color')
         }, 'custom setBackground function')
@@ -854,12 +854,12 @@ tap.test('render:', t => {
   t.test('should return error code on executeJavaScript errors', t => {
     mock130()
     mockBrowser()
-    const {win, restore} = mockWindow()
+    const { win, restore } = mockWindow()
     win.webContents.executeJavaScript.returns(new Promise((resolve, reject) => {
       reject(new Error('oh no!'))
     }))
 
-    fn({format: 'pdf'}, {}, (errorCode, result) => {
+    fn({ format: 'pdf' }, {}, (errorCode, result) => {
       t.equal(errorCode, 525)
       t.match(result.error, /oh no/, 'error')
       t.ok(win.close.calledOnce)
@@ -872,11 +872,11 @@ tap.test('render:', t => {
   t.test('should return error code on printToPDF errors', t => {
     mock130()
     mockBrowser()
-    const {win, restore} = mockWindow()
+    const { win, restore } = mockWindow()
     win.webContents.executeJavaScript.returns(new Promise(resolve => resolve()))
     win.webContents.printToPDF.yields(new Error('oops'))
 
-    fn({format: 'pdf'}, {}, (errorCode, result) => {
+    fn({ format: 'pdf' }, {}, (errorCode, result) => {
       t.equal(errorCode, 525)
       t.match(result.error, /oops/, 'error')
       t.ok(win.close.calledOnce)
@@ -892,7 +892,7 @@ tap.test('render:', t => {
     formats.forEach(f => {
       t.test(`(format ${f})`, t => {
         mock130()
-        fn({format: f}, {}, () => {
+        fn({ format: f }, {}, () => {
           t.ok(Plotly.toImage.calledOnce)
           t.equal(Plotly.toImage.args[0][1].format, 'svg')
           t.end()
@@ -906,7 +906,7 @@ tap.test('render:', t => {
   t.test('should set setBackground to opaque for jpeg format', t => {
     mock130()
 
-    fn({format: 'jpeg'}, {}, () => {
+    fn({ format: 'jpeg' }, {}, () => {
       t.ok(Plotly.toImage.calledOnce)
       t.equal(Plotly.toImage.args[0][1].setBackground, 'opaque')
       t.end()

@@ -35,7 +35,7 @@ tap.test('pdftops.pdf2eps', t => {
     const tmpOutPath = path.join(paths.build, 'tmp-eps')
     const tmpSvgPath = path.join(paths.build, 'tmp-pdf')
 
-    pdftops.pdf2eps(mocks.pdf, {id: 'tmp'}, (err, result) => {
+    pdftops.pdf2eps(mocks.pdf, { id: 'tmp' }, (err, result) => {
       if (err) t.fail(err)
 
       t.type(result, Buffer)
@@ -51,7 +51,7 @@ tap.test('pdftops.pdf2eps', t => {
     const tmpOutPath = path.join(paths.build, 'tmp-eps')
     const tmpSvgPath = path.join(paths.build, 'tmp-pdf')
 
-    pdftops.pdf2eps(mocks.pdf, {id: 'tmp'}, (err) => {
+    pdftops.pdf2eps(mocks.pdf, { id: 'tmp' }, (err) => {
       t.throws(() => { throw err }, /Command failed/)
       t.notOk(fs.existsSync(tmpOutPath), 'clears tmp eps file')
       t.notOk(fs.existsSync(tmpSvgPath), 'clears tmp pdf file')
