@@ -126,18 +126,27 @@ jobs:
             docker login -u $DOCKER_USER -p $DOCKER_PASS quay.io
             docker push quay.io/plotly/image-exporter:$CIRCLE_SHA1
 
-            # tag and push as branch name
-            docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_BRANCH
-            docker push quay.io/plotly/image-exporter:$CIRCLE_BRANCH
-
-            # tag and push as version number
+            # Is this a "version" commit? e.g. from `npm version`
             # inspired by: https://discuss.circleci.com/t/git-tag-deploys-in-2-0/9493/4
             if git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+$"; then
+              # if so, tag and push as version number
+              echo "Version commit: tag & push image as vX.Y.Z"
               version=v$(git log -1 --pretty=%B)
               docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$version
               docker push quay.io/plotly/image-exporter:$version
+            fi
+
+            # Is this branch named after a version?
+            if echo $CIRCLE_BRANCH | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+$"; then
+              # if so, do NOT push image as branch name to not conflict
+              # with images named after version numbers
+              echo "WARNING: branch name matches version number regex"
+              echo "...  quay.io/plotly/image-exporter:$CIRCLE_BRANCH will NOT be pushed to quay.io"
             else
-              echo "Not a release, don't push version-tagged image to quay.io"
+              # otherwise, tag and push as branch name
+              echo "Tag and push image as branch name"
+              docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_BRANCH
+              docker push quay.io/plotly/image-exporter:$CIRCLE_BRANCH
             fi
       - save_cache:
           paths:
