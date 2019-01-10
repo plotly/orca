@@ -132,8 +132,8 @@ jobs:
 
             # tag and push as version number
             # inspired by: https://discuss.circleci.com/t/git-tag-deploys-in-2-0/9493/4
-            if git log -1 --pretty=%B | grep "v^[0-9]\+\.[0-9]\+\.[0-9]\+$"; then
-              version=$(git log -1 --pretty=%B)
+            if git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+$"; then
+              version=v$(git log -1 --pretty=%B)
               docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$version
               docker push quay.io/plotly/image-exporter:$version
             else
