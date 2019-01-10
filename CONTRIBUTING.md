@@ -99,6 +99,7 @@ automate this process somehow.
 ### Checklist
 
 - Make sure tests are passing off `master` on [CircleCI](https://circleci.com/gh/plotly/workflows/orca/tree/master)
+- Run `git checkout master && git pull`
 - Update and commit the [CHANGELOG.md](https://github.com/plotly/plotly.js/blob/master/CHANGELOG.md)
   according to the [keepachangelog](http://keepachangelog.com/) specs. **Pro tip**:
   use the GitHub compare URLs `https://github.com/plotly/orca/compare/v<X.Y.Z>...master` replacing
