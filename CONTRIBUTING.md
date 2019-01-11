@@ -106,7 +106,7 @@ automate this process somehow.
   `<X.Y.Z>` with the most recent orca version.
 - Run [`npm version {patch | minor | major}`](https://docs.npmjs.com/cli/version), which automatically
   + bumps the version in the orca package.json
-  + `git commit`, with message `'vX.Y.Z'`
+  + `git commit`, with message `'X.Y.Z'`
   + [`git tag -a`](https://git-scm.com/book/en/v2/Git-Basics-Tagging), adding a tag `'vX.Y.Z'`
 - Review version commit by e.g. `git show HEAD`
 - Run `git push && git push --tags`
