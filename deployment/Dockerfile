@@ -117,9 +117,14 @@ RUN apt-get update && apt-get install -y software-properties-common python-softw
     && rm -rf /var/lib/apt/lists/* && apt-get clean
 
 ####################
+# Download geo-assets (same version as plotly.js extras/)
+
+RUN wget https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-geo-assets.js -O /plotly-geo-assets.js
+
+####################
 # Add entrypoint script
 COPY deployment/run_server /
 
 EXPOSE 9091
 ENTRYPOINT ["/run_server"]
-CMD ["--mathjax", "/mathjax/MathJax.js"]
+CMD ["--mathjax", "/mathjax/MathJax.js", "--topojson", "/plotly-geo-assets.js"]
