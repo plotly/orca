@@ -106,7 +106,8 @@ function main (args) {
         options: plotlyJsOpts
       }, {
         name: 'plotly-dash-preview',
-        route: '/dash-preview'
+        route: '/dash-preview',
+        options: plotlyJsOpts
       })
     }
 
