@@ -6,13 +6,7 @@ if [[ $PLOTLY_CUSTOM_FONTS_ENABLED = true ]]; then
   fc-cache -v /usr/share/fonts/customer
 fi
 
-BUILD_DIR=/var/www/image-exporter/build
-if [[ -n "${PLOTLY_JS_SRC}" ]]; then
-  # Fetch plotly js bundle and save it locally:
-  mkdir -p $BUILD_DIR
-  wget --retry-connrefused --no-check-certificate -O $BUILD_DIR/plotly-bundle.js $PLOTLY_JS_SRC
-  PLOTLYJS_ARG="--plotlyJS $BUILD_DIR/plotly-bundle.js"
-fi
+PLOTLYJS_ARG="--plotlyJS /plotly-latest.min.js"
 
 # Dynamically create the wrapper used to launch xvfb and the server so that
 # we can fill in $@ from the Docker "command" argument.

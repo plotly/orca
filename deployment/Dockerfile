@@ -117,9 +117,14 @@ RUN apt-get update && apt-get install -y software-properties-common python-softw
     && rm -rf /var/lib/apt/lists/* && apt-get clean
 
 ####################
-# Download geo-assets (same version as plotly.js extras/)
+# Download geo-assets (same version as plotly.js extras/) for offline use
 
 RUN wget https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-geo-assets.js -O /plotly-geo-assets.js
+
+####################
+# Download plotly.js for offline use
+
+RUN wget https://cdn.plot.ly/plotly-latest.min.js -O /plotly-latest.min.js
 
 ####################
 # Add entrypoint script
