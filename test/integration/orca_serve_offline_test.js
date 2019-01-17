@@ -18,6 +18,12 @@ const app = new Application({
   args: ['serve', '--port', PORT, '--plotlyjs', pathToPlotlyJS]
 })
 
+tap.tearDown(() => {
+  if (app && app.isRunning()) {
+    app.stop()
+  }
+})
+
 tap.test('should launch', t => {
   var plotlyJS = fs.createWriteStream(pathToPlotlyJS);
   axios.request({
