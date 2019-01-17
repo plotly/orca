@@ -3,12 +3,12 @@ const Application = require('spectron').Application
 
 const { paths } = require('../common')
 
-const PORT = 9109 + 2
+const PORT = 9111
 
 const numberOfComponents = 6
 const axios = require('axios')
 const fs = require('fs')
-const pathToPlotlyJS = '/tmp/plotly-latest.min.js'
+const pathToPlotlyJS = path.join(paths.build, 'plotly-latest.min.js')
 
 const app = new Application({
   path: paths.bin,
