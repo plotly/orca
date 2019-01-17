@@ -67,7 +67,7 @@ tap.test('should not link to resources on the network', t => {
     values.forEach(result => {
       var urls = result.value
       urls.forEach(url => {
-        t.notOk(url.match('http'), `A script tag refers to an HTTP resource ${url}`)
+        t.notOk(url.match('http'), `A script tag refers to an HTTP(S) resource ${url}`)
       })
     })
     t.end()
