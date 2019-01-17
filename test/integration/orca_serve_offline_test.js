@@ -1,17 +1,14 @@
 const tap = require('tap')
 const Application = require('spectron').Application
-const { webContents } = require('electron')
 
-const request = require('request')
 const { paths } = require('../common')
 
 const PORT = 9109 + 2
-const SERVER_URL = `http://localhost:${PORT}`
 
-const numberOfComponents = 6;
-const axios = require('axios');
-const fs = require('fs');
-const pathToPlotlyJS = "/tmp/plotly-latest.min.js"
+const numberOfComponents = 6
+const axios = require('axios')
+const fs = require('fs')
+const pathToPlotlyJS = '/tmp/plotly-latest.min.js'
 
 const app = new Application({
   path: paths.bin,
@@ -25,34 +22,34 @@ tap.tearDown(() => {
 })
 
 tap.test('should launch', t => {
-  var plotlyJS = fs.createWriteStream(pathToPlotlyJS);
   axios.request({
     url: 'https://cdn.plot.ly/plotly-latest.min.js',
-    method: 'get',
-  }).then((result) => {
-    fs.writeFileSync(pathToPlotlyJS, result.data);
+    method: 'get'
   })
-  .then(() => {
-    return app.start()
-  })
-  .then(() => {
-    app.client.getWindowCount().then(cnt => {
-      t.equal(cnt, numberOfComponents)
+    .then((result) => {
+      fs.writeFileSync(pathToPlotlyJS, result.data)
+    })
+    .then(() => {
+      return app.start()
+    })
+    .then(() => {
+      app.client.getWindowCount().then(cnt => {
+        t.equal(cnt, numberOfComponents)
+        t.end()
+      })
+    })
+    .catch(err => {
+      t.fail(err)
       t.end()
     })
-  })
-  .catch(err => {
-    t.fail()
-    t.end()
-  })
 })
 
-function getScriptTagsSrc(index) {
+function getScriptTagsSrc (index) {
   // executeJavaScript in Spectron is broken https://github.com/electron/spectron/issues/163
   return app.client.windowByIndex(index).then(() => {
     return app.client.execute(() => {
       var htmlCollection = document.getElementsByTagName('script')
-      var arr = [].slice.call(htmlCollection);
+      var arr = [].slice.call(htmlCollection)
       return arr.map(script => {
         return script.src
       })
@@ -62,7 +59,7 @@ function getScriptTagsSrc(index) {
 
 tap.test('should not link to resources on the network', t => {
   var promises = []
-  for(var i = 0; i < numberOfComponents; i++) {
+  for (var i = 0; i < numberOfComponents; i++) {
     promises.push(getScriptTagsSrc(0))
   }
   Promise.all(promises).then(values => {
@@ -74,12 +71,11 @@ tap.test('should not link to resources on the network', t => {
     })
     t.end()
   })
-  .catch(err => {
-    t.fail()
-    t.end()
-  })
+    .catch(err => {
+      t.fail(err)
+      t.end()
+    })
 })
-
 
 tap.test('should teardown', t => {
   app.stop()
