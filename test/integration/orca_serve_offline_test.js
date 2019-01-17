@@ -2,6 +2,7 @@ const tap = require('tap')
 const Application = require('spectron').Application
 
 const { paths } = require('../common')
+const path = require('path')
 
 const PORT = 9111
 
