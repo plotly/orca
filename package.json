@@ -84,6 +84,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "axios": "^0.18.0",
     "chttps": "^1.0.6",
     "cross-env": "^5.2.0",
     "devtron": "^1.4.0",
