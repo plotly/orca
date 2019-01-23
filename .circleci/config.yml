@@ -136,8 +136,8 @@ jobs:
               docker push quay.io/plotly/image-exporter:$version
             fi
 
-            # Is this branch named after a version?
-            if echo $CIRCLE_BRANCH | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+$"; then
+            # Is this branch named after a version "x.x.x" or a build release "x.x.xbx" where x are digits
+            if echo $CIRCLE_BRANCH | grep -E "^[0-9]+\.[0-9]+\.[0-9]+(b[0-9]+)?$"; then
               # if so, do NOT push image as branch name to not conflict
               # with images named after version numbers
               echo "WARNING: branch name matches version number regex"
