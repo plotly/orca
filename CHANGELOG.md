@@ -9,6 +9,24 @@ https://github.com/plotly/orca/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent Orca release.
 
+## [1.2.0] 2019-01-24
+
+### Added
+
+- Add `--cors` CLI option for `orca serve` to enable Cross-Origin Resource Sharing (CORS) [#135]
+
+- Add support for EMF exports for `plotly-graph` [#152]
+
+### Changed
+
+- Update dependencies `fast-isnumeric`, `file-type`, `glob`, `read-chunk` and `semver`[#177]
+
+### Fixed
+
+- Fix --output `orca graph` CLI option for path/to/filename [#176]
+
+- Pass command line options to `plotly-dash-preview` [#191]
+
 
 ## [1.1.1] 2018-08-30
 
