@@ -913,5 +913,27 @@ tap.test('render:', t => {
     })
   })
 
+  t.test('should pass mapboxAccessToken as config option (string case)', t => {
+    mock130()
+
+    const token = '312dsadsa1321'
+
+    fn({}, { mapboxAccessToken: token }, () => {
+      t.ok(Plotly.toImage.calledOnce)
+      t.equal(Plotly.toImage.args[0][0].config.mapboxAccessToken, token)
+      t.end()
+    })
+  })
+
+  t.test('should pass mapboxAccessToken as config option (empty case)', t => {
+    mock130()
+
+    fn({}, { mapboxAccessToken: '' }, () => {
+      t.ok(Plotly.toImage.calledOnce)
+      t.equal(Plotly.toImage.args[0][0].config.mapboxAccessToken, null)
+      t.end()
+    })
+  })
+
   t.end()
 })
