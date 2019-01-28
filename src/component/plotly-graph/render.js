@@ -26,7 +26,7 @@ function render (info, opts, sendToMain) {
   const encoded = info.encoded
 
   const config = Object.assign({
-    mapboxAccessToken: opts.mapboxAccessToken || '',
+    mapboxAccessToken: opts.mapboxAccessToken || null,
     plotGlPixelRatio: opts.plotGlPixelRatio || cst.plotGlPixelRatio
   }, figure.config)
 
