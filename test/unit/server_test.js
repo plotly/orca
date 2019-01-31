@@ -46,6 +46,7 @@ tap.test('coerceOpts:', t => {
     t.equal(out.debug, false, 'debug')
     t.equal(out.cors, false, 'cors')
     t.equal(out.maxNumberOfWindows, 50, 'maxNumberOfWindows')
+    t.equal(out.requestTimeout, 50000, 'requestTimeout')
     t.end()
   })
 
