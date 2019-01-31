@@ -54,12 +54,13 @@ tap.test('coerceOpts:', t => {
     const out = coerceOpts({
       port: '1000',
       maxNumberOfWindows: '2',
-      component: 'plotly-graph'
+      component: 'plotly-graph',
+      requestTimeout: '50'
     })
 
     t.equal(out.port, 1000, 'port')
     t.equal(out.maxNumberOfWindows, 2, 'maxNumberOfWindows')
-
+    t.equal(out.requestTimeout, 50000, 'requestTimeout')
     t.end()
   })
 
