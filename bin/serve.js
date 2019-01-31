@@ -123,7 +123,8 @@ function main (args) {
       maxNumberOfWindows: opts.maxNumberOfWindows,
       debug: opts.debug,
       component: component,
-      cors: opts.cors
+      cors: opts.cors,
+      requestTimeout: opts.requestTimeout
     })
 
     app.on('after-connect', (info) => {
