@@ -9,6 +9,15 @@ https://github.com/plotly/orca/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent Orca release.
 
+
+## [1.2.1] 2019-02-04
+
+### Fixed
+
+- Fix `scattermapbox` image generation when mapbox access token is set
+  in the `layout.mapbox` container in plotly-graph component [#195]
+
+
 ## [1.2.0] 2019-01-24
 
 ### Added
