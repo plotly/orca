@@ -17,6 +17,7 @@ const STATUS_MSG = cst.statusMsg
  *  - port
  *  - _componentLookup
  *    - _win
+ *  - requestTimeout
  */
 function createServer (app, BrowserWindow, ipcMain, opts) {
   let pending = 0
