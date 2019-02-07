@@ -46,6 +46,7 @@ tap.test('coerceOpts:', t => {
     t.equal(out.debug, false, 'debug')
     t.equal(out.cors, false, 'cors')
     t.equal(out.maxNumberOfWindows, 50, 'maxNumberOfWindows')
+    t.equal(out.requestTimeout, 50000, 'requestTimeout')
     t.end()
   })
 
@@ -53,12 +54,13 @@ tap.test('coerceOpts:', t => {
     const out = coerceOpts({
       port: '1000',
       maxNumberOfWindows: '2',
-      component: 'plotly-graph'
+      component: 'plotly-graph',
+      requestTimeout: '50'
     })
 
     t.equal(out.port, 1000, 'port')
     t.equal(out.maxNumberOfWindows, 2, 'maxNumberOfWindows')
-
+    t.equal(out.requestTimeout, 50000, 'requestTimeout')
     t.end()
   })
 
@@ -95,7 +97,8 @@ tap.test('createServer:', t => {
     component: {
       name: 'plotly-graph',
       route: '/'
-    }
+    },
+    requestTimeout: '1'
   })
 
   const optsCors = () => coerceOpts({
@@ -198,6 +201,24 @@ tap.test('createServer:', t => {
 
       _post('', body0(), (err, res, body) => {
         if (err) t.fail(err)
+        t.end()
+      })
+    })
+  })
+
+  t.test('should reply with HTTP status code 522 on request timeout', t => {
+    const opts = mockWebContents(opts0())
+    const _module = opts.component[0]._module
+    sinon.stub(_module, 'parse').callsFake(function () {
+      // force a timeout
+      return new Promise((resolve) => setTimeout(resolve, 2000))
+    })
+
+    _boot([false, false, false, opts], (args) => {
+      _post('', body0(), (err, res, body) => {
+        if (err) t.fail(err)
+        t.equal(res.statusCode, 522, 'status code')
+        _module.parse.restore()
         t.end()
       })
     })

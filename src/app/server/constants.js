@@ -1,6 +1,5 @@
 module.exports = {
   bufferOverflowLimit: 1e9,
-  requestTimeout: 50000,
   statusMsg: {
     200: 'pong',
     401: 'error during request',
@@ -12,6 +11,7 @@ module.exports = {
     522: 'client socket timeout'
   },
   dflt: {
-    maxNumberOfWindows: 50
+    maxNumberOfWindows: 50,
+    requestTimeout: 50
   }
 }

@@ -1,5 +1,6 @@
 const orca = require('../src')
 const { PLOTLYJS_OPTS_META, extractOpts, formatOptsMeta } = require('./args')
+const cst = require('../src/app/server/constants')
 
 const OPTS_META = [].concat([{
   name: 'help',
@@ -44,6 +45,12 @@ const OPTS_META = [].concat([{
   name: 'cors',
   type: 'boolean',
   description: 'Enables Cross-Origin Resource Sharing (CORS)'
+}, {
+  name: 'request-timeout',
+  type: 'string',
+  alias: ['requestTimeout'],
+  dflt: process.env.ORCA_TIMEOUT || cst.dflt.requestTimeout,
+  description: 'Sets the server\'s request timeout (in seconds).'
 }])
 
 const HELP_MSG = `orca serve
@@ -116,7 +123,8 @@ function main (args) {
       maxNumberOfWindows: opts.maxNumberOfWindows,
       debug: opts.debug,
       component: component,
-      cors: opts.cors
+      cors: opts.cors,
+      requestTimeout: opts.requestTimeout
     })
 
     app.on('after-connect', (info) => {

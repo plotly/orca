@@ -7,7 +7,6 @@ const cst = require('./constants')
 const Ping = require('./ping')
 
 const BUFFER_OVERFLOW_LIMIT = cst.bufferOverflowLimit
-const REQUEST_TIMEOUT = cst.requestTimeout
 const STATUS_MSG = cst.statusMsg
 
 /** Create server!
@@ -18,6 +17,7 @@ const STATUS_MSG = cst.statusMsg
  *  - port
  *  - _componentLookup
  *    - _win
+ *  - requestTimeout
  */
 function createServer (app, BrowserWindow, ipcMain, opts) {
   let pending = 0
@@ -67,7 +67,7 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
 
     req.socket.removeAllListeners('timeout')
     req.socket.on('timeout', () => simpleReply(522))
-    req.socket.setTimeout(REQUEST_TIMEOUT)
+    req.socket.setTimeout(opts.requestTimeout)
 
     if (route === '/ping') {
       Ping(ipcMain, opts.component)

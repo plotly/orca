@@ -49,6 +49,10 @@ function coerceOpts (_opts = {}) {
 
   opts._componentLookup = componentLookup
 
+  opts.requestTimeout = isPositiveNumeric(_opts.requestTimeout)
+    ? Number(_opts.requestTimeout) * 1000
+    : cst.dflt.requestTimeout * 1000
+
   return opts
 }
 
