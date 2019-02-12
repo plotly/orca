@@ -27,8 +27,9 @@ if [ -e \$PIDFILE ] ; then
   sleep 1
 fi
 
-pkill Xvfb
-pkill node
+pkill -9 Xvfb
+pkill -9 node
+pkill -9 electron
 
 xvfb-run --auto-servernum --server-args '-screen 0 640x480x24' ./bin/orca.js serve $REQUEST_LIMIT --safe-mode $PLOTLYJS_ARG $@ 1>/proc/1/fd/1 2>/proc/1/fd/2 &
 echo \$! > \$PIDFILE
