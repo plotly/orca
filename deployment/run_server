@@ -37,7 +37,7 @@ pkill -9 Xvfb
 pkill -9 node
 pkill -9 electron
 
-xvfb-run --auto-servernum --server-args '-screen 0 640x480x24' ./bin/orca.js serve $REQUEST_LIMIT --safe-mode $PLOTLYJS_ARG $ORCA_IGNORECERTERRORS_ARG $@ &
+xvfb-run --auto-servernum --server-args '-screen 0 640x480x24' ./bin/orca.js serve $REQUEST_LIMIT --safe-mode --verbose $PLOTLYJS_ARG $ORCA_IGNORECERTERRORS_ARG $@ &
 echo \$! > \$PIDFILE
 
 EOF
