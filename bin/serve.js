@@ -85,7 +85,7 @@ function main (args) {
   }
 
   function launch () {
-    if (DEBUG) {
+    if (DEBUG || SHOW_LOGS) {
       console.log(`Spinning up server with pid: ${process.pid}`)
     }
 
@@ -128,7 +128,7 @@ function main (args) {
     })
 
     app.on('after-connect', (info) => {
-      if (DEBUG) {
+      if (DEBUG || SHOW_LOGS) {
         console.log(`Listening on port ${info.port} after a ${info.startupTime} ms bootup`)
         console.log(`Open routes: ${info.openRoutes.join(' ')}`)
       }
