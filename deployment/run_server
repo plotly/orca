@@ -44,6 +44,6 @@ EOF
 
 chmod 755 /usr/local/bin/xvfb_wrapper
 
-/usr/local/bin/xvfb_wrapper start
+/usr/local/bin/xvfb_wrapper
 
 /opt/monit/bin/monit -c /etc/monitrc

@@ -36,7 +36,26 @@ $ npm install -g electron@1.8.4 orca
 
 which makes the `orca` executable available in your path.
 
-### Method 3: Standalone binaries
+### Method 3: Docker
+
+```
+$ docker pull quay.io/plotly/orca
+```
+
+#### Usage
+
+If no arguments are specified, it starts an Orca server on port 9091.
+You can publish the port to the outside world the usual way:
+```
+$ docker run -d -p 9091:9091 quay.io/plotly/orca
+```
+If the first argument is `graph`,
+it executes the command line application `orca graph`:
+```
+$ docker run -i quay.io/plotly/orca graph --help
+```
+
+### Method 4: Standalone binaries
 
 Alternatively, you can download the standalone Orca binaries corresponding to
 your operating system from the
@@ -179,7 +198,7 @@ $ orca graph https://plot.ly/~empet/14324.json --format svg
 
 generates an SVG from a plotly.js JSON hosted on [plot.ly](https://plot.ly/).
 
-When running 
+When running
 
 To print info about the supported arguments, run:
 
@@ -323,9 +342,9 @@ See
 You can also [contact us](https://plot.ly/products/consulting-and-oem/) if you
 would like a specific feature added.
 
-| Tests and Linux builds | Mac OS build | Windows build |
-| ---------------------- | ------------ | ------------- |
-| [![CircleCI](https://circleci.com/gh/plotly/orca.svg?style=svg)](https://circleci.com/gh/plotly/orca) | [![Build Status](https://travis-ci.org/plotly/orca.svg?branch=master)](https://travis-ci.org/plotly/orca) | [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/plotly/orca?svg=true)](https://ci.appveyor.com/project/AppVeyorDashAdmin/image-exporter) |
+| Tests and Linux builds | Mac OS build | Windows build | Docker build |
+| --- | --- | --- | --- |
+| [![CircleCI](https://circleci.com/gh/plotly/orca.svg?style=svg)](https://circleci.com/gh/plotly/orca) | [![Build Status](https://travis-ci.org/plotly/orca.svg?branch=master)](https://travis-ci.org/plotly/orca) | [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/plotly/orca?svg=true)](https://ci.appveyor.com/project/AppVeyorDashAdmin/image-exporter) | [![Docker Repository on Quay](https://quay.io/repository/plotly/orca/status "Docker Repository on Quay")](https://quay.io/repository/plotly/orca) |
 
 
 ## License

@@ -123,8 +123,10 @@ RUN wget https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-g
 
 ####################
 # Add entrypoint script
+COPY deployment/entrypoint.sh /
+# Add server script
 COPY deployment/run_server /
 
 EXPOSE 9091
-ENTRYPOINT ["/run_server"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["--mathjax", "/mathjax/MathJax.js", "--topojson", "/plotly-geo-assets.js"]
