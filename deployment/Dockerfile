@@ -113,8 +113,11 @@ RUN cd /opt && \
 # Install latest stable Inkscape
 RUN apt-get update && apt-get install -y software-properties-common python-software-properties \
     && add-apt-repository -y ppa:inkscape.dev/stable \
-    && apt-get update && apt-get install -y inkscape \
+    && apt-get update && apt-get install -y inkscape=0.92.4+68~ubuntu16.04.1 \
     && rm -rf /var/lib/apt/lists/* && apt-get clean
+
+# Copy Inkscape defaults
+COPY deployment/preferences.xml /root/.config/inkscape/
 
 ####################
 # Download geo-assets (same version as plotly.js extras/)
