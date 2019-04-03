@@ -14,7 +14,10 @@ BUILD_DIR=/var/www/image-exporter/build
 if [[ -n "${PLOTLY_JS_SRC}" ]]; then
   # Fetch plotly js bundle and save it locally:
   mkdir -p $BUILD_DIR
-  wget --retry-connrefused --no-check-certificate -O $BUILD_DIR/plotly-bundle.js $PLOTLY_JS_SRC
+  while true; do
+    wget --tries=1 --no-check-certificate -O $BUILD_DIR/plotly-bundle.js $PLOTLY_JS_SRC && break
+    sleep 1
+  done
   PLOTLYJS_ARG="--plotlyJS $BUILD_DIR/plotly-bundle.js"
 fi
 
