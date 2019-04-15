@@ -63,6 +63,70 @@ tap.test('should work for *plotly-graph* component', t => {
   // more tests using: https://github.com/image-size/image-size
 })
 
+tap.test('it should do HTTP content-negotation for *plotly-graph* component', t => {
+  const mock = {
+    layout: {
+      data: [{ y: [1, 2, 1] }]
+    }
+  }
+  const payload = JSON.stringify(mock)
+
+  t.test('it should refuse unknown mime type', t => {
+    request({
+      method: 'POST',
+      url: SERVER_URL + '/',
+      headers: {
+        'Accept': 'invalid_format'
+      },
+      body: payload
+    }, (err, res, body) => {
+      if (err) t.fail(err)
+
+      t.equal(res.statusCode, 406, 'code')
+      t.end()
+    })
+  })
+
+  t.test('it should return figure in requested format', t => {
+    request({
+      method: 'POST',
+      url: SERVER_URL + '/',
+      headers: {
+        'Accept': 'image/svg+xml'
+      },
+      body: payload
+    }, (err, res, body) => {
+      if (err) t.fail(err)
+
+      t.equal(res.statusCode, 200, 'code')
+      t.equal(res.headers['content-type'], 'image/svg+xml')
+      t.end()
+    })
+  })
+
+  t.test('it should override format provided in payload', t => {
+    request({
+      method: 'POST',
+      url: SERVER_URL + '/',
+      headers: {
+        'Accept': 'image/svg+xml'
+      },
+      body: JSON.stringify({
+        format: 'png',
+        figure: mock
+      })
+    }, (err, res, body) => {
+      if (err) t.fail(err)
+
+      t.equal(res.statusCode, 200, 'code')
+      t.equal(res.headers['content-type'], 'image/svg+xml')
+      t.end()
+    })
+  })
+
+  t.done()
+})
+
 tap.test('should work for *plotly-thumbnail* component', t => {
   request({
     method: 'POST',

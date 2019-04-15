@@ -3,6 +3,12 @@ const isPlainObj = require('is-plain-obj')
 const isPositiveNumeric = require('../../util/is-positive-numeric')
 const isNonEmptyString = require('../../util/is-non-empty-string')
 
+const contentFormat = cst.contentFormat
+const ACCEPT_HEADER = Object.keys(contentFormat).reduce(function (obj, key) {
+  obj[ contentFormat[key] ] = key
+  return obj
+}, {})
+
 /** plotly-graph parse
  *
  * @param {object} body : JSON-parsed request body
@@ -26,11 +32,12 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
  *  - errorCode
  *  - result
  */
-function parse (body, _opts, sendToRenderer) {
+function parse (body, _opts, sendToRenderer, req) {
   const result = {}
 
   const errorOut = (code, extra) => {
-    result.msg = `${cst.statusMsg[code]} (${extra})`
+    result.msg = `${cst.statusMsg[code]}`
+    if (extra) result.msg = `${result.msg} (${extra})`
     sendToRenderer(code, result)
   }
 
@@ -45,6 +52,15 @@ function parse (body, _opts, sendToRenderer) {
   } else {
     figure = body
     opts = _opts
+  }
+
+  // HTTP content-negotiation
+  if (req && req.headers.accept) {
+    if (ACCEPT_HEADER.hasOwnProperty(req.headers.accept)) {
+      opts.format = ACCEPT_HEADER[req.headers.accept]
+    } else {
+      return errorOut(406)
+    }
   }
 
   result.scale = isPositiveNumeric(opts.scale) ? Number(opts.scale) : cst.dflt.scale

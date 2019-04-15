@@ -157,7 +157,7 @@ function createServer (app, BrowserWindow, ipcMain, opts) {
       }
 
       pending++
-      comp._module.parse(body, compOpts, sendToRenderer)
+      comp._module.parse(body, compOpts, sendToRenderer, req)
     })
   })
 
