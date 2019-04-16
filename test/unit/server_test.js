@@ -184,6 +184,76 @@ tap.test('createServer:', t => {
     })
   })
 
+  t.test('it should do HTTP content-negotation for *plotly-graph* component', t => {
+    const mock = {
+      layout: {
+        data: [{ y: [1, 2, 1] }]
+      }
+    }
+    const payload = JSON.stringify(mock)
+    const SERVER_URL = 'http://localhost:8001'
+
+    t.test('it should refuse unknown mime type', t => {
+      _boot([], () => {
+        return request({
+          method: 'POST',
+          url: SERVER_URL + '/',
+          headers: {
+            'Accept': 'invalid_format'
+          },
+          body: payload
+        }, (err, res, body) => {
+          if (err) t.fail(err)
+          t.equal(res.statusCode, 200, 'code')
+          t.end()
+        })
+      })
+    })
+
+    t.test('it should return figure in requested format', t => {
+      _boot([], () => {
+        return request({
+          method: 'POST',
+          url: SERVER_URL + '/',
+          headers: {
+            'Accept': 'image/svg+xml'
+          },
+          body: payload
+        }, (err, res, body) => {
+          if (err) t.fail(err)
+
+          t.equal(res.statusCode, 200, 'code')
+          t.equal(res.headers['content-type'], 'image/svg+xml')
+          t.end()
+        })
+      })
+    })
+
+    t.test('it should be overriden by format provided in payload', t => {
+      _boot([], () => {
+        request({
+          method: 'POST',
+          url: SERVER_URL + '/',
+          headers: {
+            'Accept': 'image/svg+xml'
+          },
+          body: JSON.stringify({
+            format: 'png',
+            figure: mock
+          })
+        }, (err, res, body) => {
+          if (err) t.fail(err)
+
+          t.equal(res.statusCode, 200, 'code')
+          t.equal(res.headers['content-type'], 'image/png')
+          t.end()
+        })
+      })
+    })
+
+    t.done()
+  })
+
   t.test('should emit *after-export* on successful requests', t => {
     _boot([], (args) => {
       const app = args[0]

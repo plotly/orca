@@ -54,15 +54,6 @@ function parse (body, _opts, sendToRenderer, req) {
     opts = _opts
   }
 
-  // HTTP content-negotiation
-  if (req && req.headers.accept) {
-    if (ACCEPT_HEADER.hasOwnProperty(req.headers.accept)) {
-      opts.format = ACCEPT_HEADER[req.headers.accept]
-    } else {
-      return errorOut(406)
-    }
-  }
-
   result.scale = isPositiveNumeric(opts.scale) ? Number(opts.scale) : cst.dflt.scale
   result.fid = isNonEmptyString(opts.fid) ? opts.fid : null
   result.encoded = !!opts.encoded
@@ -74,7 +65,12 @@ function parse (body, _opts, sendToRenderer, req) {
       return errorOut(400, 'wrong format')
     }
   } else {
-    result.format = cst.dflt.format
+    // HTTP content-negotiation
+    if (req && req.headers.accept && ACCEPT_HEADER.hasOwnProperty(req.headers.accept)) {
+      result.format = ACCEPT_HEADER[req.headers.accept]
+    } else {
+      result.format = cst.dflt.format
+    }
   }
 
   if (!isPlainObj(figure)) {
