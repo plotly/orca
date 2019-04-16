@@ -26,15 +26,15 @@ do
       cp "$1/$filename" "diff/$filename.baseline.png"
       cp "$2/$filename" "diff/$filename.png"
       ;;
-    emf)
-      # Use Inkscape here because ImageMagick does not support EMF
-      inkscape "$fullfile" --export-png "diff/$filename.baseline.pn"g 2> inkscape.stderr
-      inkscape "build/$filename" --export-png "diff/$filename.png" 2> inkscape.stderr
+    pdf)
+      # Use ImageMagick to convert PDF to PNG because Inkscape reverse gradients
+      convert -density 300 "$fullfile" "diff/$filename.baseline.png"
+      convert -density 300 "build/$filename" "diff/$filename.png"
       ;;
     *)
-      # Use ImageMagick to convert to png for image test
-      convert -density 300 "$fullfile" "diff/$filename.baseline.png"
-      convert -density 300 "build/$filename" "diff/$filename.pn"g
+      # Use Inkscape to convert to PNG
+      inkscape "$fullfile" --export-dpi 300 --export-png "diff/$filename.baseline.png" 2> inkscape.stderr
+      inkscape "build/$filename" --export-dpi 300 --export-png "diff/$filename.png" 2> inkscape.stderr
       ;;
   esac
 
