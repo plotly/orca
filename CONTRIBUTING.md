@@ -176,7 +176,7 @@ which in turn is callback heavy. To help us stay out of _callback hell_, we use
 the following terms to designates callbacks:
 
 - At the end of the data-parse callback, we call the component module `parse`
-  method as `parse(body, request componentOpts, sendToRenderer)` where `sendToRenderer`
+  method as `parse(body, request, componentOpts, sendToRenderer)` where `sendToRenderer`
   is a callback.
 - `sendToRenderer` transfers info from the main to the
   renderer process as `sendToRenderer(errorCode, parseInfo)`.

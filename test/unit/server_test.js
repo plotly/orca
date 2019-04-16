@@ -191,13 +191,12 @@ tap.test('createServer:', t => {
       }
     }
     const payload = JSON.stringify(mock)
-    const SERVER_URL = 'http://localhost:8001'
 
-    t.test('it should refuse unknown mime type', t => {
+    t.test('it should use the default format when mime type is unknown', t => {
       _boot([], () => {
         return request({
           method: 'POST',
-          url: SERVER_URL + '/',
+          url: `http://localhost:8001/`,
           headers: {
             'Accept': 'invalid_format'
           },
@@ -205,47 +204,6 @@ tap.test('createServer:', t => {
         }, (err, res, body) => {
           if (err) t.fail(err)
           t.equal(res.statusCode, 200, 'code')
-          t.end()
-        })
-      })
-    })
-
-    t.test('it should return figure in requested format', t => {
-      _boot([], () => {
-        return request({
-          method: 'POST',
-          url: SERVER_URL + '/',
-          headers: {
-            'Accept': 'image/svg+xml'
-          },
-          body: payload
-        }, (err, res, body) => {
-          if (err) t.fail(err)
-
-          t.equal(res.statusCode, 200, 'code')
-          t.equal(res.headers['content-type'], 'image/svg+xml')
-          t.end()
-        })
-      })
-    })
-
-    t.test('it should be overriden by format provided in payload', t => {
-      _boot([], () => {
-        request({
-          method: 'POST',
-          url: SERVER_URL + '/',
-          headers: {
-            'Accept': 'image/svg+xml'
-          },
-          body: JSON.stringify({
-            format: 'png',
-            figure: mock
-          })
-        }, (err, res, body) => {
-          if (err) t.fail(err)
-
-          t.equal(res.statusCode, 200, 'code')
-          t.equal(res.headers['content-type'], 'image/png')
           t.end()
         })
       })
