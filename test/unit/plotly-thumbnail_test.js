@@ -50,7 +50,7 @@ tap.test('parse:', t => {
       }
     }
 
-    fn(body, {}, (errorCode, result) => {
+    fn(body, {}, {}, (errorCode, result) => {
       t.equal(errorCode, null, 'code')
       t.same(result, {
         figure: {

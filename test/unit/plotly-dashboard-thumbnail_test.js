@@ -61,7 +61,7 @@ tap.test('parse:', t => {
       }
     }
 
-    fn(body, {}, (errorCode, result) => {
+    fn(body, {}, {}, (errorCode, result) => {
       t.equal(errorCode, null, 'code')
 
       t.equal(result.backgroundColor, '#d3d3d3', 'backgroundColor')

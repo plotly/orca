@@ -13,7 +13,7 @@ tap.test('parse:', t => {
 
     shouldFail.forEach(d => {
       t.test(`(case ${JSON.stringify(d)})`, t => {
-        fn({ url: d }, {}, (errorCode, result) => {
+        fn({ url: d }, {}, {}, (errorCode, result) => {
           t.equal(errorCode, 400)
           t.same(result, { 'msg': 'invalid url' })
           t.end()
@@ -24,7 +24,7 @@ tap.test('parse:', t => {
     t.end()
   })
   t.test('should error when neither loading_selector or timeout is given', t => {
-    fn({ url: 'https://dash-app.com' }, {}, (errorCode, result) => {
+    fn({ url: 'https://dash-app.com' }, {}, {}, (errorCode, result) => {
       t.equal(errorCode, 400)
       t.equal(result.msg, 'either selector or timeout must be specified')
       t.end()
@@ -34,7 +34,7 @@ tap.test('parse:', t => {
     fn({
       url: 'https://dash-app.com',
       selector: 'dummy'
-    }, {}, (errorCode, result) => {
+    }, {}, {}, (errorCode, result) => {
       t.equal(errorCode, 400)
       t.same(result.msg, 'pageSize must either be A3, A4, A5, Legal, Letter, ' +
                          'Tabloid or an Object containing height and width in microns.')
@@ -46,7 +46,7 @@ tap.test('parse:', t => {
       url: 'https://dash-app.com',
       selector: 'dummy',
       pageSize: { height: 1000, width: 1000 }
-    }, {}, (errorCode, result) => {
+    }, {}, {}, (errorCode, result) => {
       t.equal(errorCode, null)
 
       // height/width are converted from microns to pixels:
@@ -62,7 +62,7 @@ tap.test('parse:', t => {
       url: 'https://dash-app.com',
       selector: 'dummy',
       pdf_options: { pageSize: 'Letter', marginsType: 1 }
-    }, {}, (errorCode, result) => {
+    }, {}, {}, (errorCode, result) => {
       t.equal(errorCode, null)
       // height/width are converted to pixels from page-type:
       t.same(result.browserSize, { height: 1056, width: 816 })

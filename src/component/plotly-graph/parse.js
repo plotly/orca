@@ -22,6 +22,7 @@ const ACCEPT_HEADER = Object.keys(contentFormat).reduce(function (obj, key) {
  * 0r:
  *  - data
  *  - layout
+ * @param {object} req: HTTP request
  * @param {object} _opts : component options
  *  - format
  *  - scale (only for plotly.js v.1.31.0 and up)
@@ -32,7 +33,7 @@ const ACCEPT_HEADER = Object.keys(contentFormat).reduce(function (obj, key) {
  *  - errorCode
  *  - result
  */
-function parse (body, _opts, sendToRenderer, req) {
+function parse (body, req, _opts, sendToRenderer) {
   const result = {}
 
   const errorOut = (code, extra) => {
@@ -66,7 +67,7 @@ function parse (body, _opts, sendToRenderer, req) {
     }
   } else {
     // HTTP content-negotiation
-    if (req && req.headers.accept && ACCEPT_HEADER.hasOwnProperty(req.headers.accept)) {
+    if (req && req.headers && req.headers.accept && ACCEPT_HEADER.hasOwnProperty(req.headers.accept)) {
       result.format = ACCEPT_HEADER[req.headers.accept]
     } else {
       result.format = cst.dflt.format
