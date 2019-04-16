@@ -26,7 +26,7 @@ do
   ORCA_OPTS=(--topojson /plotly-geo-assets.js --mathjax /mathjax/MathJax.js)
 
   # pin Plotly.js' version
-  ORCA_OPTS=(--plotlyJS "https://cdn.plot.ly/plotly-1.47.2.min.js")
+  ORCA_OPTS+=(--plotlyJS "https://cdn.plot.ly/plotly-1.47.2.min.js")
 
   # Set Orca options
   ORCA_OPTS+=(--verbose --format "$format" --output-dir "$1")
