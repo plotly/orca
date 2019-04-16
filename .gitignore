@@ -10,3 +10,6 @@ coverage
 deployment/*.retry
 
 /yarn-error.log
+
+test/image/build
+test/image/diff

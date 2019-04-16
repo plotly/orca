@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+if [ -z "$1" ]
+then
+  echo "error: First argument is a directory containing baselines"
+  exit 1
+fi
+
+if [ -z "$2" ]
+then
+  echo "error: Second argument is a directory containing test images"
+  exit 1
+fi
+
+rm -rf diff
+mkdir diff
+
+for fullfile in "$1"/*
+do
+  filename="${fullfile##*/}"
+  format="${filename##*.}"
+
+  case "$format" in
+    png)
+      # Copy as is
+      cp "$1/$filename" "diff/$filename.baseline.png"
+      cp "$2/$filename" "diff/$filename.png"
+      ;;
+    emf)
+      # Use Inkscape here because ImageMagick does not support EMF
+      inkscape "$fullfile" --export-png "diff/$filename.baseline.pn"g 2> inkscape.stderr
+      inkscape "build/$filename" --export-png "diff/$filename.png" 2> inkscape.stderr
+      ;;
+    *)
+      # Use ImageMagick to convert to png for image test
+      convert -density 300 "$fullfile" "diff/$filename.baseline.png"
+      convert -density 300 "build/$filename" "diff/$filename.pn"g
+      ;;
+  esac
+
+  # Do exact pixel comparison using ImageMagick
+  compare -verbose -metric AE "diff/$filename.baseline.png" "diff/$filename.png" "diff/$filename.diff.png" 2> "diff/$filename.txt" ||
+    { cat "diff/$filename.txt"; exit 1; }
+  cat "diff/$filename.txt"
+done
+
+CODE=$(grep -R "all: [^0]" diff/*.txt | wc -l)
+
+echo "$CODE different images"
+exit "$CODE"

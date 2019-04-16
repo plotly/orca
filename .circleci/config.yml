@@ -29,6 +29,9 @@ workflows:
           requires:
             - test-node-v6
             - test-node-v8
+      - test-image:
+          requires:
+            - docker-build-and-push
 
 version: 2
 jobs:
@@ -90,6 +93,21 @@ jobs:
     <<: *base
     docker:
       - image: circleci/node:8.11-stretch-browsers
+
+  test-image:
+    docker:
+      - image: quay.io/plotly/image-exporter:$CIRCLE_SHA1
+    steps:
+      - checkout
+      - run:
+          name: Run image test
+          command: |
+            set -e
+            cd test/image
+            ./render_mocks_cli build
+            ./compare_images baselines build
+      - store_artifacts:
+          path: test/image
 
   docker-build-and-push:
     docker:
