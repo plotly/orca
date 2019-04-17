@@ -11,6 +11,7 @@ module.exports = {
 
   statusMsg: {
     400: 'invalid or malformed request syntax',
+    406: 'requested format is not acceptable',
     525: 'plotly.js error',
     526: 'plotly.js version 1.11.0 or up required',
     530: 'image conversion error'
