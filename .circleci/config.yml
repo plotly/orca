@@ -101,10 +101,7 @@ jobs:
       - checkout
       - run:
           name: Run image test
-          command: |
-            set -e
-            ./test/image/render_mocks_cli build/test_images
-            ./test/image/compare_images test/image/baselines build/test_images build/test_images_diff
+          command: ./.circleci/test-image.sh
       - store_artifacts:
           path: build/
 
