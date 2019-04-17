@@ -34,11 +34,11 @@ do
   if [ -z "$2" ]; #
   then
     echo "Executing locally"
-    orca graph "${ORCA_OPTS[@]}" mocks/*.json
+    orca graph "${ORCA_OPTS[@]}" test/image/mocks/*.json
   else
     echo "Executing into Docker image \"$2\""
     docker run -v "$(pwd)":"$(pwd)" -w "$(pwd)" -it \
       -e LIBGL_ALWAYS_SOFTWARE -e GALLIUM_DRIVER \
-      "$2" graph "${ORCA_OPTS[@]}" mocks/*.json
+      "$2" graph "${ORCA_OPTS[@]}" test/image/mocks/*.json
   fi
 done

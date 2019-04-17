@@ -103,11 +103,10 @@ jobs:
           name: Run image test
           command: |
             set -e
-            cd test/image
-            ./render_mocks_cli build
-            ./compare_images baselines build
+            ./test/image/render_mocks_cli build/test_images
+            ./test/image/compare_images test/image/baselines build/test_images build/test_images_diff
       - store_artifacts:
-          path: test/image
+          path: build/
 
   docker-build-and-push:
     docker:
