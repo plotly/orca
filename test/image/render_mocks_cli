@@ -5,8 +5,8 @@ programname=$0
 
 function usage {
     echo "usage: $programname output_folder [docker:image]"
-    echo "  it renders all the JSON files found in ./mocks into the output_folder."
-    echo "  if docker-image is provided, rendering is done in the given Docker image."
+    echo "  it renders all the JSON files found in ./test/image/mocks into the output_folder."
+    echo "  if docker:image is provided, rendering is done in the given Docker image."
     exit 1
 }
 
