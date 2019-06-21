@@ -8,13 +8,14 @@ const sceneRegex = new RegExp('^scene' + counter)
 
 /**
  * @param {object} body : JSON-parsed request body
+ * @param {object} req: HTTP request
  * @param {object} opts : component options
  * @param {function} sendToRenderer
  * - errorCode
  * - result
  */
-function parse (body, opts, sendToRenderer) {
-  plotlyGraphParse(body, opts, (errorCode, result) => {
+function parse (body, req, opts, sendToRenderer) {
+  plotlyGraphParse(body, req, opts, (errorCode, result) => {
     result.format = 'png'
     overrideFigure(result.figure)
     sendToRenderer(errorCode, result)

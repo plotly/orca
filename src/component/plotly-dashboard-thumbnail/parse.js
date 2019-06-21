@@ -12,12 +12,13 @@ const overrideFigure = require('../plotly-thumbnail/parse').overrideFigure
  *      - figure
  *  - settings:
  *    - backgroundColor
+ * @param {object} req: HTTP request
  * @param {object} opts : component options
  * @param {function} sendToRenderer
  * - errorCode
  * - result
  */
-function parse (body, opts, sendToRenderer) {
+function parse (body, req, opts, sendToRenderer) {
   const result = {}
 
   const errorOut = (code) => {
