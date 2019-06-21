@@ -29,6 +29,9 @@ workflows:
           requires:
             - test-node-v6
             - test-node-v8
+      - test-image:
+          requires:
+            - docker-build-and-push
 
 version: 2
 jobs:
@@ -91,6 +94,17 @@ jobs:
     docker:
       - image: circleci/node:8.11-stretch-browsers
 
+  test-image:
+    docker:
+      - image: quay.io/plotly/image-exporter:$CIRCLE_SHA1
+    steps:
+      - checkout
+      - run:
+          name: Run image test
+          command: ./.circleci/test-image.sh
+      - store_artifacts:
+          path: build/
+
   docker-build-and-push:
     docker:
       - image: circleci/node:8.11-stretch-browsers
@@ -125,6 +139,9 @@ jobs:
           command: |
             docker login -u $DOCKER_USER -p $DOCKER_PASS quay.io
             docker push quay.io/plotly/image-exporter:$CIRCLE_SHA1
+
+            docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/orca:$CIRCLE_SHA1
+            docker push quay.io/plotly/orca:$CIRCLE_SHA1
 
             # Is this a "version" commit? e.g. from `npm version`
             # inspired by: https://discuss.circleci.com/t/git-tag-deploys-in-2-0/9493/4

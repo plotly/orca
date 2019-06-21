@@ -78,6 +78,33 @@ To check test coverage:
 npm run coverage
 ```
 
+### Running image tests
+
+#### Build Docker image
+To produce images reproducibly,
+we need to make sure Orca is running in exactly the same environment.
+To achieve this, we package Orca in a Docker image which can be built with:
+```
+export DOCKER_ORCA_IMAGE=orca_dev
+docker build -t "$DOCKER_ORCA_IMAGE" -f deployment/Dockerfile .
+```
+
+#### Build images and compare
+
+To run the image tests, run the following:
+```
+./test/image/render_mocks_cli build/test_images "$DOCKER_ORCA_IMAGE" && \
+./test/image/compare_images test/image/baselines build/test_images build/
+```
+
+#### Generate new baselines
+Simply build images as above but save then at `test/image/baselines` instead:
+```
+./test/image/render_mocks_cli test/image/baselines "$DOCKER_ORCA_IMAGE"
+```
+** Note that one can change the version of plotly.js used to build images
+by editing `test/image/render_mocks_cli`. **
+
 ## Packaging
 
 We use [`electron-builder`](https://github.com/electron-userland/electron-builder) to pack up

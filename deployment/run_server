@@ -15,7 +15,7 @@ if [[ -n "${PLOTLY_JS_SRC}" ]]; then
   # Fetch plotly js bundle and save it locally:
   mkdir -p $BUILD_DIR
   while true; do
-    wget --tries=1 --no-check-certificate -O $BUILD_DIR/plotly-bundle.js $PLOTLY_JS_SRC && break
+    wget --tries=1 --no-check-certificate -O $BUILD_DIR/plotly-bundle.js "$PLOTLY_JS_SRC" && break
     sleep 1
   done
   PLOTLYJS_ARG="--plotlyJS $BUILD_DIR/plotly-bundle.js"
@@ -40,13 +40,13 @@ pkill -9 Xvfb
 pkill -9 node
 pkill -9 electron
 
-xvfb-run --auto-servernum --server-args '-screen 0 640x480x24' ./bin/orca.js serve $REQUEST_LIMIT --safe-mode --verbose $PLOTLYJS_ARG $ORCA_IGNORECERTERRORS_ARG $@ &
+xvfb-run --auto-servernum --server-args '-screen 0 640x480x24' /var/www/image-exporter/bin/orca.js serve $REQUEST_LIMIT --safe-mode --verbose $PLOTLYJS_ARG $ORCA_IGNORECERTERRORS_ARG $@ &
 echo \$! > \$PIDFILE
 
 EOF
 
 chmod 755 /usr/local/bin/xvfb_wrapper
 
-/usr/local/bin/xvfb_wrapper start
+/usr/local/bin/xvfb_wrapper
 
 /opt/monit/bin/monit -c /etc/monitrc
