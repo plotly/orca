@@ -88,7 +88,7 @@
     "chttps": "^1.0.6",
     "cross-env": "^5.2.0",
     "devtron": "^1.4.0",
-    "electron": "^1.8.4",
+    "electron": "^4.2.6",
     "electron-builder": "^20.9.2",
     "electron-debug": "^1.4.0",
     "image-size": "^0.6.3",

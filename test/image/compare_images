@@ -39,12 +39,11 @@ do
   esac
 
   # Do exact pixel comparison using ImageMagick
-  compare -verbose -metric AE "$3/$filename.baseline.png" "$3/$filename.png" "$3/$filename.diff.png" 2> "$3/$filename.txt" ||
-    { cat "$3/$filename.txt"; exit 1; }
+  compare -verbose -metric AE "$3/$filename.baseline.png" "$3/$filename.png" "$3/$filename.diff.png" 2> "$3/$filename.txt"
   cat "$3/$filename.txt"
 done
 
-CODE=$(grep -R "all: [^0]" "$3/*.txt" | wc -l)
+CODE=$(grep -R "all: [^0]" "$3"/*.txt | wc -l)
 
 echo "$CODE different images"
 exit "$CODE"
