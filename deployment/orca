@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+DOCKER_IMAGE=quay.io/plotly/orca
+
+if [[ $1 == "--help" || $1 == "--version" || $1 == "graph" || $1 == "serve" ]]; then
+    docker run --net=host -it \
+      -v "$(pwd)":"$(pwd)" -w "$(pwd)" \
+       "$DOCKER_IMAGE" "$@"
+else
+    echo "Unrecognized orca command. Run \`$0 --help\` for more info"
+fi

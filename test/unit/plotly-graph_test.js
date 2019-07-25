@@ -89,7 +89,7 @@ tap.test('parse:', t => {
       }
     }
 
-    fn(body, {}, (errorCode, result) => {
+    fn(body, {}, {}, (errorCode, result) => {
       t.equal(errorCode, null, 'code')
       t.same(result, {
         figure: {
@@ -118,7 +118,7 @@ tap.test('parse:', t => {
         format: d,
         figure: { data: [{ y: [1, 2, 1] }] }
       }
-      fn(body, {}, cb)
+      fn(body, {}, {}, cb)
     }
 
     shouldPass.forEach(d => {
@@ -161,7 +161,7 @@ tap.test('parse:', t => {
 
     shouldFail.forEach(d => {
       t.test(`should error for ${JSON.stringify(d)}`, t => {
-        fn({ figure: d }, {}, (errorCode, result) => {
+        fn({ figure: d }, {}, {}, (errorCode, result) => {
           t.equal(errorCode, 400)
           t.end()
         })
@@ -176,7 +176,7 @@ tap.test('parse:', t => {
       const body = {
         figure: { layout: {} }
       }
-      fn(body, {}, (errorCode, result) => {
+      fn(body, {}, {}, (errorCode, result) => {
         t.equal(errorCode, null, 'code')
         t.same(result.figure.data, [], 'result')
         t.end()
@@ -190,7 +190,7 @@ tap.test('parse:', t => {
         const body = {
           figure: { data: d, layout: {} }
         }
-        fn(body, {}, (errorCode, result) => {
+        fn(body, {}, {}, (errorCode, result) => {
           t.equal(errorCode, 400, 'code')
           t.equal(result.msg, 'invalid or malformed request syntax (non-array figure data)', 'msg')
           t.end()
@@ -206,7 +206,7 @@ tap.test('parse:', t => {
       const body = {
         figure: { data: [] }
       }
-      fn(body, {}, (errorCode, result) => {
+      fn(body, {}, {}, (errorCode, result) => {
         t.equal(errorCode, null, 'code')
         t.same(result.figure.layout, {}, 'result')
         t.end()
@@ -220,7 +220,7 @@ tap.test('parse:', t => {
         const body = {
           figure: { data: [], layout: d }
         }
-        fn(body, {}, (errorCode, result) => {
+        fn(body, {}, {}, (errorCode, result) => {
           t.equal(errorCode, 400, 'code')
           t.equal(result.msg, 'invalid or malformed request syntax (non-object figure layout)', 'msg')
           t.end()
@@ -244,7 +244,7 @@ tap.test('parse:', t => {
           const body = { figure: { data: [] } }
           body[k] = d
 
-          fn(body, {}, (errorCode, result) => {
+          fn(body, {}, {}, (errorCode, result) => {
             t.equal(errorCode, null, 'code')
             t.equal(result[k], Number(d), 'result')
             t.end()
@@ -257,7 +257,7 @@ tap.test('parse:', t => {
           const body = { figure: { data: [], layout: { autosize: true } } }
           body.figure.layout[k] = d
 
-          fn(body, {}, (errorCode, result) => {
+          fn(body, {}, {}, (errorCode, result) => {
             t.equal(errorCode, null, 'code')
             t.equal(result[k], dflt, 'result')
             t.end()
@@ -271,7 +271,7 @@ tap.test('parse:', t => {
           body[k] = d
           body.figure.layout[k] = 1000
 
-          fn(body, {}, (errorCode, result) => {
+          fn(body, {}, {}, (errorCode, result) => {
             t.equal(errorCode, null, 'code')
             t.equal(result[k], 1000, 'result')
             t.end()
@@ -283,7 +283,7 @@ tap.test('parse:', t => {
           body[k] = d
           body.figure.layout[k] = d
 
-          fn(body, {}, (errorCode, result) => {
+          fn(body, {}, {}, (errorCode, result) => {
             t.equal(errorCode, null, 'code')
             t.equal(result[k], dflt, 'result')
             t.end()
@@ -308,7 +308,7 @@ tap.test('parse:', t => {
       width: 1000
     }
 
-    fn(body, opts, (errorCode, result) => {
+    fn(body, {}, opts, (errorCode, result) => {
       t.equal(errorCode, null, 'code')
       t.same(result, {
         figure: {
@@ -335,7 +335,7 @@ tap.test('parse:', t => {
           type: 'scatter',
           x: x
         }]
-      }, { safeMode: true }, (errorCode, result) => {
+      }, {}, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -350,7 +350,7 @@ tap.test('parse:', t => {
           type: 'scattergl',
           x: x
         }]
-      }, { safeMode: true }, (errorCode, result) => {
+      }, {}, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, null, 'code')
         t.type(result.figure, 'object', 'figure type')
         t.end()
@@ -369,7 +369,7 @@ tap.test('parse:', t => {
             values: x
           }]
         }]
-      }, { safeMode: true }, (errorCode, result) => {
+      }, {}, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -388,7 +388,7 @@ tap.test('parse:', t => {
           type: 'heatmap',
           z: z
         }]
-      }, { safeMode: true }, (errorCode, result) => {
+      }, {}, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -407,7 +407,7 @@ tap.test('parse:', t => {
             ]
           }
         }]
-      }, { safeMode: true }, (errorCode, result) => {
+      }, {}, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -419,7 +419,7 @@ tap.test('parse:', t => {
 
       fn({
         data: data
-      }, { safeMode: true }, (errorCode, result) => {
+      }, {}, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -433,7 +433,7 @@ tap.test('parse:', t => {
           x: new Array(1e5),
           boxpoints: 'all'
         }]
-      }, { safeMode: true }, (errorCode, result) => {
+      }, {}, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -447,7 +447,7 @@ tap.test('parse:', t => {
           x: new Array(1e5),
           points: 'all'
         }]
-      }, { safeMode: true }, (errorCode, result) => {
+      }, {}, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -463,7 +463,7 @@ tap.test('parse:', t => {
           x: data,
           alphahull: 1
         }]
-      }, { safeMode: true }, (errorCode, result) => {
+      }, {}, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -475,7 +475,7 @@ tap.test('parse:', t => {
 
       fn({
         data: data
-      }, { safeMode: true }, (errorCode, result) => {
+      }, {}, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -494,7 +494,7 @@ tap.test('parse:', t => {
             new Array(4e5)
           ]
         }]
-      }, { safeMode: true }, (errorCode, result) => {
+      }, {}, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -512,7 +512,7 @@ tap.test('parse:', t => {
           boxpoints: 'all',
           x: new Array(4e4) // below 5e4 threshold
         }]
-      }, { safeMode: true }, (errorCode, result) => {
+      }, {}, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()
@@ -525,7 +525,7 @@ tap.test('parse:', t => {
           type: 'scatter',
           x: new Array(1e6)
         }]
-      }, { safeMode: true }, (errorCode, result) => {
+      }, {}, { safeMode: true }, (errorCode, result) => {
         t.equal(errorCode, 400, 'code')
         t.type(result.msg, 'string', 'msg type')
         t.end()

@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -e
+programname=$0
+
+PLOTLYJS_URL="https://cdn.plot.ly/plotly-1.47.2.min.js"
+
+function usage {
+    echo "usage: $programname output_folder [docker:image]"
+    echo "  it renders all the JSON files found in ./test/image/mocks into the output_folder."
+    echo "  if docker:image is provided, rendering is done in the given Docker image."
+    exit 1
+}
+
+# if less than two arguments supplied, display usage
+if [  $# -le 0 ]
+then
+	usage
+fi
+
+for format in png pdf svg eps emf
+do
+  # To obtain reproducible results, we need to use software rendering
+  export LIBGL_ALWAYS_SOFTWARE=true
+  export GALLIUM_DRIVER=softpipe
+
+  # Supply defaults assets to Orca
+  ORCA_OPTS=(--topojson /plotly-geo-assets.js --mathjax /mathjax/MathJax.js)
+
+  # pin Plotly.js' version
+  ORCA_OPTS+=(--plotlyJS "$PLOTLYJS_URL")
+
+  # Set Orca options
+  ORCA_OPTS+=(--verbose --format "$format" --output-dir "$1")
+
+  if [ -z "$2" ]; #
+  then
+    echo "Executing locally"
+    echo "Generating figures in \"$format\" format"
+    orca graph "${ORCA_OPTS[@]}" test/image/mocks/*.json
+  else
+    echo "Executing into Docker image \"$2\""
+    echo "Generating figures in \"$format\" format"
+    docker run -v "$(pwd)":"$(pwd)" -w "$(pwd)" -it \
+      -e LIBGL_ALWAYS_SOFTWARE -e GALLIUM_DRIVER \
+      "$2" graph "${ORCA_OPTS[@]}" test/image/mocks/*.json
+  fi
+done

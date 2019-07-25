@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<inkscape
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1">
+  <group
+     id="extensions"
+     org.inkscape.output.emf.FixPPTGrad2Polys="1"
+     org.inkscape.print.emf.FixPPTCharPos="1"
+     org.inkscape.print.emf.FixPPTDashLine="1"
+     org.inkscape.print.emf.FixPPTGrad2Polys="1"
+     org.inkscape.print.emf.FixPPTLinGrad="1"
+     org.inkscape.print.emf.FixPPTPatternAsHatch="1"
+     org.inkscape.print.emf.FixImageRot="1"
+     org.inkscape.print.emf.textToPath="1"
+     org.inkscape.output.emf.FixPPTPatternAsHatch="1"
+     org.inkscape.output.emf.FixPPTLinGrad="1" />
+</inkscape>

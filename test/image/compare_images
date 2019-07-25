@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+programname=$0
+
+function usage {
+    echo "usage: $programname baselines_folder test_images_folder destination_folder"
+    exit 1
+}
+
+# if less than two arguments supplied, display usage
+if [  $# -le 2 ]
+then
+	usage
+fi
+
+mkdir -p "$3"
+
+for fullfile in "$1"/*
+do
+  filename="${fullfile##*/}"
+  format="${filename##*.}"
+
+  case "$format" in
+    png)
+      # Copy as is
+      cp "$1/$filename" "$3/$filename.baseline.png"
+      cp "$2/$filename" "$3/$filename.png"
+      ;;
+    pdf)
+      # Use ImageMagick to convert PDF to PNG because Inkscape reverse gradients
+      convert -density 300 "$fullfile" "$3/$filename.baseline.png"
+      convert -density 300 "$2/$filename" "$3/$filename.png"
+      ;;
+    *)
+      # Use Inkscape to convert to PNG
+      inkscape "$fullfile" --export-dpi 300 --export-png "$3/$filename.baseline.png" 2> inkscape.stderr
+      inkscape "$2/$filename" --export-dpi 300 --export-png "$3/$filename.png" 2> inkscape.stderr
+      ;;
+  esac
+
+  # Do exact pixel comparison using ImageMagick
+  compare -verbose -metric AE "$3/$filename.baseline.png" "$3/$filename.png" "$3/$filename.diff.png" 2> "$3/$filename.txt" ||
+    { cat "$3/$filename.txt"; exit 1; }
+  cat "$3/$filename.txt"
+done
+
+CODE=$(grep -R "all: [^0]" "$3/*.txt" | wc -l)
+
+echo "$CODE different images"
+exit "$CODE"

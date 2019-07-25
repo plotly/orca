@@ -79,10 +79,8 @@ RUN apt-get update -y && \
 ####################
 # Download mathjax (same version as plotly.js extras/)
 
-RUN apt-get update -y && apt-get install -y subversion && \
-    rm -rf /var/lib/apt/lists/* && apt-get clean && \
-    svn checkout https://github.com/plotly/plotly.js.git/trunk/dist/extras/mathjax && \
-    apt-get --auto-remove -y remove subversion
+RUN curl -L https://github.com/plotly/plotly.js/archive/master.tar.gz \
+    | tar -xvzf - --strip-components=3 plotly.js-master/dist/extras/mathjax
 
 ####################
 # Copy and set up Orca
@@ -113,8 +111,11 @@ RUN cd /opt && \
 # Install latest stable Inkscape
 RUN apt-get update && apt-get install -y software-properties-common python-software-properties \
     && add-apt-repository -y ppa:inkscape.dev/stable \
-    && apt-get update && apt-get install -y inkscape \
+    && apt-get update && apt-get install -y inkscape=0.92.4+68~ubuntu16.04.1 \
     && rm -rf /var/lib/apt/lists/* && apt-get clean
+
+# Copy Inkscape defaults
+COPY deployment/preferences.xml /root/.config/inkscape/
 
 ####################
 # Download geo-assets (same version as plotly.js extras/)
@@ -122,9 +123,18 @@ RUN apt-get update && apt-get install -y software-properties-common python-softw
 RUN wget https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-geo-assets.js -O /plotly-geo-assets.js
 
 ####################
+# Configure ImageMagick policy
+
+COPY deployment/ImageMagickPolicy.xml /etc/ImageMagick-6/policy.xml
+
+####################
 # Add entrypoint script
+COPY deployment/entrypoint.sh /
+# Add server script
 COPY deployment/run_server /
+# Symlink to entrypoint
+RUN ln -s /entrypoint.sh /usr/bin/orca
 
 EXPOSE 9091
-ENTRYPOINT ["/run_server"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["--mathjax", "/mathjax/MathJax.js", "--topojson", "/plotly-geo-assets.js"]

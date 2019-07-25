@@ -121,7 +121,7 @@ function run (app, win, ipcMain, opts) {
         body = _body
       }
 
-      comp._module.parse(body, compOpts, sendToRenderer)
+      comp._module.parse(body, {}, compOpts, sendToRenderer)
     })
   })
 

@@ -3,6 +3,12 @@ const isPlainObj = require('is-plain-obj')
 const isPositiveNumeric = require('../../util/is-positive-numeric')
 const isNonEmptyString = require('../../util/is-non-empty-string')
 
+const contentFormat = cst.contentFormat
+const ACCEPT_HEADER = Object.keys(contentFormat).reduce(function (obj, key) {
+  obj[ contentFormat[key] ] = key
+  return obj
+}, {})
+
 /** plotly-graph parse
  *
  * @param {object} body : JSON-parsed request body
@@ -16,6 +22,7 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
  * 0r:
  *  - data
  *  - layout
+ * @param {object} req: HTTP request
  * @param {object} _opts : component options
  *  - format
  *  - scale (only for plotly.js v.1.31.0 and up)
@@ -26,11 +33,12 @@ const isNonEmptyString = require('../../util/is-non-empty-string')
  *  - errorCode
  *  - result
  */
-function parse (body, _opts, sendToRenderer) {
+function parse (body, req, _opts, sendToRenderer) {
   const result = {}
 
   const errorOut = (code, extra) => {
-    result.msg = `${cst.statusMsg[code]} (${extra})`
+    result.msg = `${cst.statusMsg[code]}`
+    if (extra) result.msg = `${result.msg} (${extra})`
     sendToRenderer(code, result)
   }
 
@@ -58,7 +66,12 @@ function parse (body, _opts, sendToRenderer) {
       return errorOut(400, 'wrong format')
     }
   } else {
-    result.format = cst.dflt.format
+    // HTTP content-negotiation
+    if (req && req.headers && req.headers.accept && ACCEPT_HEADER.hasOwnProperty(req.headers.accept)) {
+      result.format = ACCEPT_HEADER[req.headers.accept]
+    } else {
+      result.format = cst.dflt.format
+    }
   }
 
   if (!isPlainObj(figure)) {
