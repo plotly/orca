@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-
+export LD_LIBRARY_PATH=/usr/local/lib
+export LD_DEBUG=files
+env
 if [[ $1 == "--help" || $1 == "--version" || $1 == "graph" ]]; then
     xvfb-run --server-args "-screen 0 640x480x24" -a /var/www/image-exporter/bin/orca.js "$@"
 elif [[ $1 == "serve" ]]; then

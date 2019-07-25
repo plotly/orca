@@ -1,51 +1,20 @@
-FROM ubuntu:xenial
-
-####################
-# Install node and dependencies
-# From: https://github.com/nodejs/docker-node/blob/master/6.11/Dockerfile
+FROM ubuntu:bionic
+ENV DISTRO bionic
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        gnupg curl ca-certificates xz-utils wget libgtk2.0-0 libgconf-2-4 \
+        xvfb poppler-utils chromium-browser gnupg curl ca-certificates xz-utils wget libgtk2.0-0 libgconf-2-4 \
     && rm -rf /var/lib/apt/lists/* && apt-get clean
 
-RUN groupadd --gid 1000 node \
-&& useradd --uid 1000 --gid node --shell /bin/bash --create-home node
+####################
+# Install node
+ENV NODE_VERSION node_8.x
 
-# gpg keys listed at https://github.com/nodejs/node#release-team
-RUN set -ex \
-  && for key in \
-    9554F04D7259F04124DE6B476D5A82AC7E37093B \
-    94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
-    FD3A5288F042B6850C66B31F09FE44734EB7990E \
-    71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
-    DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
-    B9AE9905FFD7803F25714661B63B535A4C206CA9 \
-    C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
-    56730D5401028683275BD23C23EFEFE93C4CFFFE \
-  ; do \
-    gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" || \
-    gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
-    gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ; \
-  done
-
-ENV NPM_CONFIG_LOGLEVEL info
-ENV NODE_VERSION 6.11.3
-
-RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
-  && case "${dpkgArch##*-}" in \
-    amd64) ARCH='x64';; \
-    ppc64el) ARCH='ppc64le';; \
-    s390x) ARCH='s390x';; \
-    arm64) ARCH='arm64';; \
-    *) echo "unsupported architecture"; exit 1 ;; \
-  esac \
-  && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH.tar.xz" \
-  && curl -SLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
-  && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc \
-  && grep " node-v$NODE_VERSION-linux-$ARCH.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
-  && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local --strip-components=1 \
-  && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
-  && ln -s /usr/local/bin/node /usr/local/bin/nodejs
+RUN (curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key > /tmp/nodesource.gpg.key) \
+    && apt-key add /tmp/nodesource.gpg.key \
+    && (echo "deb https://deb.nodesource.com/$NODE_VERSION $DISTRO main" | tee /etc/apt/sources.list.d/nodesource.list) \
+    && (echo "deb-src https://deb.nodesource.com/$NODE_VERSION $DISTRO main" | tee -a /etc/apt/sources.list.d/nodesource.list) \
+    && apt-get update && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/* && apt-get clean
 
 ####################
 # Download fonts
@@ -76,6 +45,10 @@ RUN apt-get update -y && \
     mkdir /usr/share/fonts/user && \
     fc-cache -fv && apt-get --auto-remove -y remove subversion
 
+# From https://bugs.launchpad.net/ubuntu/+source/freetype/+bug/1722508/comments/36
+# info about the interpreter-version: https://pandasauce.org/post/linux-fonts/
+# RUN echo 'FREETYPE_PROPERTIES="truetype:interpreter-version=35 cff:no-stem-darkening=1 autofitter:warping=1"' >> /etc/environment
+
 ####################
 # Download mathjax (same version as plotly.js extras/)
 
@@ -84,12 +57,6 @@ RUN curl -L https://github.com/plotly/plotly.js/archive/master.tar.gz \
 
 ####################
 # Copy and set up Orca
-
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' && \
-    apt-get update -y && \
-    apt-get install -y google-chrome-stable xvfb poppler-utils git && \
-    rm -rf /var/lib/apt/lists/* && apt-get clean
 
 COPY package.json /var/www/image-exporter/
 COPY bin /var/www/image-exporter/bin
@@ -109,9 +76,9 @@ RUN cd /opt && \
 
 ####################
 # Install latest stable Inkscape
-RUN apt-get update && apt-get install -y software-properties-common python-software-properties \
+RUN apt-get update && apt-get install -y software-properties-common \
     && add-apt-repository -y ppa:inkscape.dev/stable \
-    && apt-get update && apt-get install -y inkscape=0.92.4+68~ubuntu16.04.1 \
+    && apt-get update && apt-get install -y inkscape=0.92.4+68~ubuntu18.04.1 \
     && rm -rf /var/lib/apt/lists/* && apt-get clean
 
 # Copy Inkscape defaults
@@ -127,6 +94,16 @@ RUN wget https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-g
 
 COPY deployment/ImageMagickPolicy.xml /etc/ImageMagick-6/policy.xml
 
+####################
+# Compile freetype 2.6.1
+
+RUN apt-get update && apt-get install -y build-essential cmake git automake libtool autoconf \
+    && rm -rf /var/lib/apt/lists/* && apt-get clean
+RUN git clone https://git.savannah.nongnu.org/git/freetype/freetype2.git \
+    && cd freetype2 && git checkout VER-2-6-1
+COPY deployment/ftoption.h /var/www/image-exporter/freetype2/include/freetype/config/ftoption.h
+RUN cd freetype2 && sh autogen.sh && ./configure && make && make install
+RUN ln -s /etc/fonts/conf.avail/10-hinting.conf
 ####################
 # Add entrypoint script
 COPY deployment/entrypoint.sh /
