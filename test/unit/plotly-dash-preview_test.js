@@ -54,6 +54,10 @@ tap.test('parse:', t => {
         height: 3.779527559055118,
         width: 3.779527559055118
       })
+      t.same(result.pdfOptions.pageSize, {
+        height: 1000,
+        width: 1000
+      })
       t.end()
     })
   })
