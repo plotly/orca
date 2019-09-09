@@ -44,6 +44,10 @@ function parse (body, req, opts, sendToRenderer) {
       width: body.pageSize.width * cst.pixelsInMicron,
       height: body.pageSize.height * cst.pixelsInMicron
     }
+    result.pdfOptions.pageSize = {
+      width: Math.ceil(body.pageSize.width),
+      height: Math.ceil(body.pageSize.height)
+    }
   } else {
     return errorOut(
       400,
