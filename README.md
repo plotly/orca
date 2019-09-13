@@ -151,6 +151,13 @@ These additional dependencies can be satisfied by installing:
  - The `google-chrome-stable` package from the [Google Linux Software
  Repository](https://www.google.com/linuxrepositories/).
 
+##### Linux Troubleshooting: Server is started but plotly can't connect
+On some linux distributions there is a screen reader package orca. It may be the
+case that Plotly is calling the screen reader instead of this program. If this
+is the case for you, you can either uninstall the screen reader or refer to the
+[Plotly Documentation](https://plot.ly/python/orca-management/#configuring-the-executable)
+to fully qualify the proper path.
+
 ##### Linux Troubleshooting: Headless server configuration
 The Electron runtime requires the presence of an active X11 display server,
 but many server Linux distributions (e.g. Ubuntu Server) do not include X11
