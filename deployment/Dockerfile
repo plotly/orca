@@ -83,22 +83,6 @@ RUN curl -L https://github.com/plotly/plotly.js/archive/master.tar.gz \
     | tar -xvzf - --strip-components=3 plotly.js-master/dist/extras/mathjax
 
 ####################
-# Copy and set up Orca
-
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' && \
-    apt-get update -y && \
-    apt-get install -y google-chrome-stable xvfb poppler-utils git && \
-    rm -rf /var/lib/apt/lists/* && apt-get clean
-
-COPY package.json /var/www/image-exporter/
-COPY bin /var/www/image-exporter/bin
-COPY src /var/www/image-exporter/src
-
-WORKDIR /var/www/image-exporter
-RUN npm install && mkdir build
-
-####################
 # Install and configure monit
 COPY deployment/monitrc /etc
 RUN cd /opt && \
@@ -126,6 +110,22 @@ RUN wget https://raw.githubusercontent.com/plotly/plotly.js/master/dist/plotly-g
 # Configure ImageMagick policy
 
 COPY deployment/ImageMagickPolicy.xml /etc/ImageMagick-6/policy.xml
+
+####################
+# Copy and set up Orca
+
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' && \
+    apt-get update -y && \
+    apt-get install -y google-chrome-stable xvfb poppler-utils git && \
+    rm -rf /var/lib/apt/lists/* && apt-get clean
+
+COPY package.json /var/www/image-exporter/
+COPY package-lock.json /var/www/image-exporter/
+WORKDIR /var/www/image-exporter
+RUN npm install && mkdir build
+COPY bin /var/www/image-exporter/bin
+COPY src /var/www/image-exporter/src
 
 ####################
 # Add entrypoint script
