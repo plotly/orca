@@ -57,6 +57,10 @@ function parse (body, req, opts, sendToRenderer) {
     )
   }
 
+  // BrowserWindow only accepts integer values:
+  result.browserSize['width'] = Math.ceil(result.browserSize['width'])
+  result.browserSize['height'] = Math.ceil(result.browserSize['height'])
+
   sendToRenderer(null, result)
 }
 
