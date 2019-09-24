@@ -15,6 +15,8 @@ function render (info, opts, sendToMain) {
   const result = {}
 
   let createBrowserWindowOpts = info.browserSize ? info.browserSize : {}
+  createBrowserWindowOpts['enableLargerThanScreen'] = true
+  createBrowserWindowOpts['useContentSize'] = true
   createBrowserWindowOpts['show'] = opts.debug
 
   let win = remote.createBrowserWindow(createBrowserWindowOpts)
