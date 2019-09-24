@@ -51,8 +51,8 @@ tap.test('parse:', t => {
 
       // height/width are converted from microns to pixels:
       t.same(result.browserSize, {
-        height: 3.779527559055118,
-        width: 3.779527559055118
+        height: 4,
+        width: 4
       })
       t.same(result.pdfOptions.pageSize, {
         height: 1000,
