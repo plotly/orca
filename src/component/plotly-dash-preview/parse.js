@@ -36,17 +36,25 @@ function parse (body, req, opts, sendToRenderer) {
   result.timeOut = body.timeout
   result.tries = Number(result.timeOut * 1000 / cst.minInterval)
 
-  if (cst.sizeMapping[result.pdfOptions.pageSize]) {
-    result.browserSize = cst.sizeMapping[result.pdfOptions.pageSize]
-  } else if (body.pageSize && isPositiveNumeric(body.pageSize.width) &&
-             isPositiveNumeric(body.pageSize.height)) {
+  var pageSize
+  if (result.pdfOptions.pageSize) {
+    pageSize = result.pdfOptions.pageSize
+  } else if (body.pageSize) {
+    pageSize = body.pageSize
+  }
+
+  if (cst.sizeMapping[pageSize]) {
+    result.browserSize = cst.sizeMapping[pageSize]
+    result.pdfOptions.pageSize = pageSize
+  } else if (pageSize && isPositiveNumeric(pageSize.width) &&
+             isPositiveNumeric(pageSize.height)) {
     result.browserSize = {
-      width: body.pageSize.width * cst.pixelsInMicron,
-      height: body.pageSize.height * cst.pixelsInMicron
+      width: pageSize.width * cst.pixelsInMicron,
+      height: pageSize.height * cst.pixelsInMicron
     }
     result.pdfOptions.pageSize = {
-      width: Math.ceil(body.pageSize.width),
-      height: Math.ceil(body.pageSize.height)
+      width: Math.ceil(pageSize.width),
+      height: Math.ceil(pageSize.height)
     }
   } else {
     return errorOut(

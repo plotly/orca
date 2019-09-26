@@ -2,8 +2,13 @@ const tap = require('tap')
 const sinon = require('sinon')
 
 const _module = require('../../src/component/plotly-dash-preview')
+const constants = require('../../src/component/plotly-dash-preview/constants')
 const remote = require('../../src/util/remote')
 const { createMockWindow } = require('../common')
+
+function clone (obj) {
+  return JSON.parse(JSON.stringify(obj))
+}
 
 tap.test('parse:', t => {
   const fn = _module.parse
@@ -30,49 +35,82 @@ tap.test('parse:', t => {
       t.end()
     })
   })
-  t.test('should error when pageSize is not given', t => {
-    fn({
+  t.test('pageSize options:', t => {
+    const mock = {
       url: 'https://dash-app.com',
       selector: 'dummy'
-    }, {}, {}, (errorCode, result) => {
-      t.equal(errorCode, 400)
-      t.same(result.msg, 'pageSize must either be A3, A4, A5, Legal, Letter, ' +
-                         'Tabloid or an Object containing height and width in microns.')
-      t.end()
-    })
-  })
-  t.test('should parse properly when pageSize is given', t => {
-    fn({
-      url: 'https://dash-app.com',
-      selector: 'dummy',
-      pageSize: { height: 1000, width: 1000 }
-    }, {}, {}, (errorCode, result) => {
-      t.equal(errorCode, null)
+    }
 
-      // height/width are converted from microns to pixels:
-      t.same(result.browserSize, {
-        height: 4,
-        width: 4
+    t.test('should error when not given', t => {
+      fn({
+        url: 'https://dash-app.com',
+        selector: 'dummy'
+      }, {}, {}, (errorCode, result) => {
+        t.equal(errorCode, 400)
+        t.same(result.msg, 'pageSize must either be A3, A4, A5, Legal, Letter, ' +
+                           'Tabloid or an Object containing height and width in microns.')
+        t.end()
       })
-      t.same(result.pdfOptions.pageSize, {
-        height: 1000,
-        width: 1000
+    })
+
+    function assertEqualSize (browserSize, pageSize) {
+      // Browser size is always integer pixels
+      var bW = browserSize.width
+      var bH = browserSize.height
+      t.ok(Number.isInteger(bW), 'browserSize.width is not an integer')
+      t.ok(Number.isInteger(bH), 'browserSize.height is not an integer')
+      var pW, pH
+      if (constants.sizeMapping[pageSize]) {
+        var equivalentPixelSize = constants.sizeMapping[pageSize]
+        pW = equivalentPixelSize.width
+        pH = equivalentPixelSize.height
+      } else {
+        pW = pageSize.width * constants.pixelsInMicron
+        pH = pageSize.height * constants.pixelsInMicron
+      }
+      // Round
+      pW = Math.ceil(pW)
+      pH = Math.ceil(pH)
+      t.equal(bW, pW, 'browser and page should have the same width')
+      t.equal(bH, pH, 'browser and page should have the same height')
+    }
+
+    // Browser size and page size should be the same assuming a DPI of 96
+    // to make sure plotly.js figures are appropriately sized right away for print
+    [
+      [true, { height: 1000, width: 1000 }],
+      [true, 'Letter'],
+      [false, { height: 1000, width: 1000 }],
+      [false, 'Letter']
+    ].forEach(arg => {
+      var toplevel = arg[0]
+      var pageSize = arg[1]
+      t.test(`should size window and page properly when ${toplevel ? '' : 'pdf_options.'}pageSize is given`, t => {
+        var body = clone(mock)
+        if (toplevel) {
+          body.pageSize = pageSize
+        } else {
+          body.pdf_options = { pageSize: pageSize }
+        }
+        fn(body, {}, {}, (errorCode, result) => {
+          t.equal(errorCode, null)
+          t.same(result.pdfOptions.pageSize, pageSize)
+          assertEqualSize(result.browserSize, result.pdfOptions.pageSize)
+          t.end()
+        })
       })
-      t.end()
     })
-  })
-  t.test('should parse properly when pdf_options are given', t => {
-    fn({
-      url: 'https://dash-app.com',
-      selector: 'dummy',
-      pdf_options: { pageSize: 'Letter', marginsType: 1 }
-    }, {}, {}, (errorCode, result) => {
-      t.equal(errorCode, null)
-      // height/width are converted to pixels from page-type:
-      t.same(result.browserSize, { height: 1056, width: 816 })
-      t.same(result.pdfOptions, { pageSize: 'Letter', marginsType: 1 })
-      t.end()
+
+    t.test('should passthrough pdf_options', t => {
+      var body = clone(mock)
+      body.pdf_options = { pageSize: 'Letter', marginsType: 1, crazyOptions: true }
+      fn(body, {}, {}, (errorCode, result) => {
+        t.equal(errorCode, null)
+        t.same(result.pdfOptions, { pageSize: 'Letter', marginsType: 1, crazyOptions: true })
+        t.end()
+      })
     })
+    t.end()
   })
 
   t.end()
