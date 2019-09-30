@@ -6,10 +6,6 @@ const constants = require('../../src/component/plotly-dash-preview/constants')
 const remote = require('../../src/util/remote')
 const { createMockWindow } = require('../common')
 
-function clone (obj) {
-  return JSON.parse(JSON.stringify(obj))
-}
-
 tap.test('parse:', t => {
   const fn = _module.parse
 
@@ -36,16 +32,13 @@ tap.test('parse:', t => {
     })
   })
   t.test('pageSize options:', t => {
-    const mock = {
+    const mock = () => ({
       url: 'https://dash-app.com',
       selector: 'dummy'
-    }
+    })
 
     t.test('should error when not given', t => {
-      fn({
-        url: 'https://dash-app.com',
-        selector: 'dummy'
-      }, {}, {}, (errorCode, result) => {
+      fn(mock(), {}, {}, (errorCode, result) => {
         t.equal(errorCode, 400)
         t.same(result.msg, 'pageSize must either be A3, A4, A5, Legal, Letter, ' +
                            'Tabloid or an Object containing height and width in microns.')
@@ -86,7 +79,7 @@ tap.test('parse:', t => {
       var toplevel = arg[0]
       var pageSize = arg[1]
       t.test(`should size window and page properly when ${toplevel ? '' : 'pdf_options.'}pageSize is given`, t => {
-        var body = clone(mock)
+        var body = mock()
         if (toplevel) {
           body.pageSize = pageSize
         } else {
@@ -102,7 +95,7 @@ tap.test('parse:', t => {
     })
 
     t.test('should passthrough pdf_options', t => {
-      var body = clone(mock)
+      var body = mock()
       body.pdf_options = { pageSize: 'Letter', marginsType: 1, crazyOptions: true }
       fn(body, {}, {}, (errorCode, result) => {
         t.equal(errorCode, null)
