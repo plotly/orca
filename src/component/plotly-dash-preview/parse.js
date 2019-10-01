@@ -65,6 +65,11 @@ function parse (body, req, opts, sendToRenderer) {
     )
   }
 
+  // Change browser size orientation if landscape
+  if (result.pdfOptions.landscape) {
+    result.browserSize = { width: result.browserSize.height, height: result.browserSize.width }
+  }
+
   // BrowserWindow only accepts integer values:
   result.browserSize['width'] = Math.ceil(result.browserSize['width'])
   result.browserSize['height'] = Math.ceil(result.browserSize['height'])

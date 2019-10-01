@@ -46,7 +46,7 @@ tap.test('parse:', t => {
       })
     })
 
-    function assertEqualSize (browserSize, pageSize) {
+    function assertEqualSize (browserSize, pageSize, landscape) {
       // Browser size is always integer pixels
       var bW = browserSize.width
       var bH = browserSize.height
@@ -64,33 +64,52 @@ tap.test('parse:', t => {
       // Round
       pW = Math.ceil(pW)
       pH = Math.ceil(pH)
-      t.equal(bW, pW, 'browser and page should have the same width')
-      t.equal(bH, pH, 'browser and page should have the same height')
+      t.equal(bW, landscape ? pH : pW, 'browser and page should have the same width')
+      t.equal(bH, landscape ? pW : pH, 'browser and page should have the same height')
     }
 
     // Browser size and page size should be the same assuming a DPI of 96
     // to make sure plotly.js figures are appropriately sized right away for print
     [
+      // [pageSize defined at top-level?, pageSize, landscape?]
       [true, { height: 1000, width: 1000 }],
       [true, 'Letter'],
       [false, { height: 1000, width: 1000 }],
-      [false, 'Letter']
+      [false, 'Letter'],
+      [true, { height: 1000, width: 1000 }, true],
+      [true, 'Letter', true],
+      [false, { height: 1000, width: 1000 }, true],
+      [false, 'Letter', true]
     ].forEach(arg => {
       var toplevel = arg[0]
       var pageSize = arg[1]
+      var landscape = arg[2]
       t.test(`should size window and page properly when ${toplevel ? '' : 'pdf_options.'}pageSize is given`, t => {
         var body = mock()
         if (toplevel) {
           body.pageSize = pageSize
+          body.pdf_options = {}
         } else {
           body.pdf_options = { pageSize: pageSize }
         }
+        if (landscape) body.pdf_options.landscape = landscape
         fn(body, {}, {}, (errorCode, result) => {
           t.equal(errorCode, null)
           t.same(result.pdfOptions.pageSize, pageSize)
-          assertEqualSize(result.browserSize, result.pdfOptions.pageSize)
+          assertEqualSize(result.browserSize, result.pdfOptions.pageSize, landscape)
           t.end()
         })
+      })
+    })
+
+    t.test('pdf_options.pageSize overrides top-level pageSize', t => {
+      var body = mock()
+      body.pageSize = { height: 1000, width: 1000 }
+      body.pdf_options = { pageSize: { height: 2000, width: 2000 } }
+      fn(body, {}, {}, (errorCode, result) => {
+        t.equal(errorCode, null)
+        t.same(result.browserSize, { height: 8, width: 8 })
+        t.end()
       })
     })
 
