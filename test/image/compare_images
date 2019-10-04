@@ -44,7 +44,7 @@ do
   cat "$3/$filename.txt"
 done
 
-CODE=$(grep -R "all: [^0]" "$3/*.txt" | wc -l)
+CODE=$(grep -R "all: [^0]" "$3"/*.txt | wc -l)
 
 echo "$CODE different images"
 exit "$CODE"
