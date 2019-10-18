@@ -170,7 +170,7 @@ script that runs the orca AppImage executable using the `xvfb-run` command.
 xvfb-run -a /path/to/orca-X.Y.Z-x86_64.AppImage "$@"
 ```
 
-Name this shell script `orca` and place it somewhere or your system `PATH`.
+Name this shell script `orca` and place it somewhere on your system `PATH`.
 
 ##### Linux References
  - How to add directory to system path in Linux: https://www.computerhope.com/issues/ch001647.htm
