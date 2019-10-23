@@ -61,6 +61,8 @@ spec:
               secretKeyRef:
                 name: mapbox
                 key: default_access_token
+          - name: PLOTLY_IMAGESERVER_ENABLE_MONIT
+            value: false
         # This setting makes nodes pull the docker image every time before
         # starting the pod. This is useful when debugging, but should be turned
         # off in production.
