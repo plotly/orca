@@ -49,4 +49,8 @@ chmod 755 /usr/local/bin/xvfb_wrapper
 
 /usr/local/bin/xvfb_wrapper
 
-/opt/monit/bin/monit -c /etc/monitrc
+if [[ "$PLOTLY_IMAGESERVER_ENABLE_MONIT" = "true" ]]; then
+  /opt/monit/bin/monit -c /etc/monitrc
+else
+  sleep infinity
+fi
