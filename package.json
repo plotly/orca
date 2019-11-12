@@ -26,9 +26,6 @@
       "src"
     ],
     "asar": false,
-    "appImage": {
-      "systemIntegration": "doNotAsk"
-    },
     "linux": {
       "category": "Utility",
       "executableName": "orca",
@@ -87,14 +84,15 @@
     "axios": "^0.18.0",
     "chttps": "^1.0.6",
     "cross-env": "^5.2.0",
+    "delay": "^4.3.0",
     "devtron": "^1.4.0",
-    "electron": "^1.8.4",
-    "electron-builder": "^20.9.2",
-    "electron-debug": "^1.4.0",
+    "electron": "^6.1.4",
+    "electron-builder": "^21.2.0",
+    "electron-debug": "^3.0.0",
     "image-size": "^0.6.3",
     "sinon": "^7.2.2",
     "snazzy": "^8.0.0",
-    "spectron": "^3.8.0",
+    "spectron": "^8.0.0",
     "standard": "^12.0.1",
     "tap": "^12.1.1"
   },

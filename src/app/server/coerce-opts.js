@@ -24,7 +24,14 @@ function coerceOpts (_opts = {}) {
 
   opts.debug = !!_opts.debug
   opts.cors = !!_opts.cors
-  opts._browserWindowOpts = { show: !!opts.debug }
+  opts._browserWindowOpts = {
+    show: !!opts.debug,
+    // Starting with Electron 5 we need the following
+    // see: https://stackoverflow.com/questions/44391448/electron-require-is-not-defined
+    webPreferences: {
+      nodeIntegration: true
+    }
+  }
 
   const _components = Array.isArray(_opts.component) ? _opts.component : [_opts.component]
   const componentLookup = {}
