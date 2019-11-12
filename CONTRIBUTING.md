@@ -94,7 +94,7 @@ docker build -t "$DOCKER_ORCA_IMAGE" -f deployment/Dockerfile .
 To run the image tests, run the following:
 ```
 ./test/image/render_mocks_cli build/test_images "$DOCKER_ORCA_IMAGE" && \
-./test/image/compare_images test/image/baselines build/test_images build/
+./test/image/compare_images test/image/baselines build/test_images build/test_images_diff
 ```
 
 #### Generate new baselines
