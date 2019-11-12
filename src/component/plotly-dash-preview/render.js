@@ -20,6 +20,7 @@ function render (info, opts, sendToMain) {
   createBrowserWindowOpts['show'] = opts.debug
 
   let win = remote.createBrowserWindow(createBrowserWindowOpts)
+  win.setIgnoreMouseEvents(true)
   const contents = win.webContents
   const session = contents.session
 
