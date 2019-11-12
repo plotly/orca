@@ -165,6 +165,17 @@ jobs:
               docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_BRANCH
               docker push quay.io/plotly/image-exporter:$CIRCLE_BRANCH
             fi
+      - run:
+          name: Trigger the version upgrade and release build
+          command: |
+            cd ..
+            if git clone https://${GITHUB_TOKEN}@github.com/plotly/on-prem.git -b ${CIRCLE_BRANCH} > /dev/null; then
+              cd on-prem
+              ./onprem git:setup
+              ./onprem version:update ${CIRCLE_PROJECT_REPONAME} ../${CIRCLE_PROJECT_REPONAME} ${CIRCLE_BRANCH}
+            else
+              echo "Could not locate branch ${CIRCLE_BRANCH}"
+            fi
       - save_cache:
           paths:
             - node_modules
