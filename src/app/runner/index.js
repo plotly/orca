@@ -27,6 +27,7 @@ function createApp (_opts) {
 
   app.on('ready', () => {
     win = new BrowserWindow(opts._browserWindowOpts)
+    win.setIgnoreMouseEvents(true)
 
     if (opts.debug) {
       win.openDevTools()

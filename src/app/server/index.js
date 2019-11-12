@@ -33,6 +33,7 @@ function createApp (_opts) {
   app.on('ready', () => {
     components.forEach((comp) => {
       let win = new BrowserWindow(opts._browserWindowOpts)
+      win.setIgnoreMouseEvents(true)
       comp._win = win
 
       if (opts.debug) {
