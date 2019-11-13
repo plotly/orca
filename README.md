@@ -148,8 +148,8 @@ cannot open shared object file: No such file or directory
 These additional dependencies can be satisfied by installing:
  - The `libgtk2.0-0` and `libgconf-2-4` packages from your distribution's
  software repository.
- - The `google-chrome-stable` package from the [Google Linux Software
- Repository](https://www.google.com/linuxrepositories/).
+ - The `chromium-browser` package from your distribution's
+ software repository.
 
 ##### Linux Troubleshooting: Headless server configuration
 The Electron runtime requires the presence of an active X11 display server,
