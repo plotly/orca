@@ -2,7 +2,7 @@ FROM ubuntu:bionic
 ENV DISTRO bionic
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        xvfb poppler-utils chromium-browser gnupg curl ca-certificates xz-utils wget libgtk2.0-0 libgconf-2-4 \
+        xvfb poppler-utils chromium-browser fonts-liberation gnupg curl ca-certificates xz-utils wget libgtk2.0-0 libgconf-2-4 \
     && rm -rf /var/lib/apt/lists/* && apt-get clean
 
 ####################
