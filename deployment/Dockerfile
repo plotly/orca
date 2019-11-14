@@ -24,7 +24,7 @@ RUN apt-get update -y && \
         fontconfig \
         fonts-ipafont-gothic \
         fonts-ipafont-mincho \
-        fonts-droid \
+        fonts-noto \
         fonts-liberation \
         subversion \
         && \
