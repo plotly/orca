@@ -180,7 +180,7 @@
                 "ay":-27.0390625,
                 "ax":-10,
                 "font":{
-                    "family":"Droid Sans, sans-serif",
+                    "family":"Noto Sans, sans-serif",
                     "size":20
                 },
                 "arrowcolor":"",
@@ -207,7 +207,7 @@
                 "ay":-27.0390625,
                 "ax":-10,
                 "font":{
-                    "family":"Droid Serif, serif",
+                    "family":"Noto Serif, serif",
                     "size":20
                 },
                 "arrowcolor":"",
@@ -234,7 +234,7 @@
                 "ay":-27.9765625,
                 "ax":-10,
                 "font":{
-                    "family":"Droid Sans Mono, sans-serif",
+                    "family":"Noto Sans Mono, sans-serif",
                     "size":20
                 },
                 "arrowcolor":"",
