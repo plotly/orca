@@ -114,11 +114,8 @@ COPY deployment/ImageMagickPolicy.xml /etc/ImageMagick-6/policy.xml
 ####################
 # Copy and set up Orca
 
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' && \
-    apt-get update -y && \
-    apt-get install -y google-chrome-stable xvfb poppler-utils git && \
-    rm -rf /var/lib/apt/lists/* && apt-get clean
+RUN apt-get update && apt-get install -y chromium-browser fonts-liberation xvfb poppler-utils git \
+    && rm -rf /var/lib/apt/lists/* && apt-get clean
 
 COPY package.json /var/www/image-exporter/
 COPY package-lock.json /var/www/image-exporter/
