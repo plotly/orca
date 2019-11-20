@@ -169,6 +169,10 @@ jobs:
           name: Trigger the version upgrade and release build
           command: |
             cd ..
+            ls -lah
+            SANITIZED_BRANCH=$(echo "$CIRCLE_BRANCH" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9\.]+/-/g | sed -r s/^-+\|-+$//g | tr A-Z a-z)
+            docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:${SANITIZED_BRANCH}-sha-${CIRCLE_SHA1}
+            docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$SANITIZED_BRANCH
             if git clone https://${GITHUB_TOKEN}@github.com/plotly/on-prem.git -b ${CIRCLE_BRANCH} > /dev/null; then
               cd on-prem
               ./onprem git:setup
