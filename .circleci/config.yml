@@ -176,7 +176,7 @@ jobs:
             if git clone https://${GITHUB_TOKEN}@github.com/plotly/on-prem.git -b ${CIRCLE_BRANCH} > /dev/null; then
               cd on-prem
               ./onprem git:setup
-              ./onprem version:update ${CIRCLE_PROJECT_REPONAME} ../${CIRCLE_PROJECT_REPONAME} ${CIRCLE_BRANCH} image-exporter
+              ./onprem version:update ${CIRCLE_PROJECT_REPONAME} ../project ${CIRCLE_BRANCH} image-exporter
             else
               echo "Could not locate branch ${CIRCLE_BRANCH}"
             fi
