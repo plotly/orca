@@ -167,7 +167,7 @@ script that runs the orca AppImage executable using the `xvfb-run` command.
 
 ```
 #!/bin/bash
-xvfb-run -a /path/to/orca-X.Y.Z-x86_64.AppImage "$@"
+xvfb-run -d /path/to/orca-X.Y.Z-x86_64.AppImage "$@"
 ```
 
 Name this shell script `orca` and place it somewhere on your system `PATH`.
