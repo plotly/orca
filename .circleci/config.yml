@@ -86,6 +86,7 @@ jobs:
           command: npm run coverage
       - store_artifacts:
           path: build
+          destination: /
 
   test-node-v6:
     <<: *base
@@ -106,7 +107,8 @@ jobs:
           name: Run image test
           command: ./.circleci/test-image.sh
       - store_artifacts:
-          path: build/
+          path: build
+          destination: /
 
   test-dash-preview:
     docker:
@@ -121,7 +123,8 @@ jobs:
           name: Run dash-preview test
           command: ./.circleci/test-dash-preview.sh
       - store_artifacts:
-          path: build/
+          path: build
+          destination: /
 
   docker-build-and-push:
     docker:
@@ -251,3 +254,4 @@ jobs:
             zip -r artifacts/conda-linux-64.zip ./linux-64
       - store_artifacts:
           path: artifacts
+          destination: /
