@@ -73,6 +73,8 @@ function render (info, opts, sendToMain) {
   })
 
   loaded().then(() => {
+    // Move mouse outside the page to prevent hovering on figures
+    contents.sendInputEvent({ type: 'mouseMove', x: -1, y: -1 })
     contents.printToPDF(info.pdfOptions, (err, pdfData) => {
       if (err) {
         done(525)
