@@ -1,8 +1,9 @@
 {
-  "url": "https://dash-demo.plotly.host/report-demo/report/report-1569522464-56c6?print=true",
+  "url": "https://dash-nightly.plotly.host/ddk-manufacture-spc-dashboard/snapshot-1569944213-f1e08e4a?print=true",
   "timeout": "15",
   "pdf_options": {
-    "pageSize": "Letter",
-    "marginsType": 1
-  }
+    "marginsType": 1,
+    "landscape": true
+  },
+  "pageSize": "A4"
 }
