@@ -1,0 +1,8 @@
+{
+  "url": "https://dash-playground.plotly.host/dash-slide-ab/all?print=true",
+  "timeout": "15",
+  "pdf_options": {
+    "pageSize": {"width": 279400, "height": 184150},
+    "marginsType": 1
+  }
+}

@@ -6,6 +6,7 @@ const fs = require('fs')
 const request = require('request')
 const readChunk = require('read-chunk')
 const fileType = require('file-type')
+const delay = require('delay')
 
 const { paths } = require('../common')
 const PORT = 9109
@@ -23,12 +24,15 @@ tap.tearDown(() => {
 })
 
 tap.test('should launch', t => {
-  app.start().then(() => {
-    app.client.getWindowCount().then(cnt => {
-      t.equal(cnt, 6)
-      t.end()
+  app.start()
+    // Wait for HTTP API to boot up
+    .then(() => { return delay(2000) })
+    .then(() => {
+      app.client.getWindowCount().then(cnt => {
+        t.equal(cnt, 6)
+        t.end()
+      })
     })
-  })
 })
 
 tap.test('should reply pong to ping POST', t => {

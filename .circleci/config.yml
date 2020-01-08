@@ -32,6 +32,9 @@ workflows:
       - test-image:
           requires:
             - docker-build-and-push
+      - test-dash-preview:
+          requires:
+            - docker-build-and-push
 
 version: 2
 jobs:
@@ -83,6 +86,7 @@ jobs:
           command: npm run coverage
       - store_artifacts:
           path: build
+          destination: /
 
   test-node-v6:
     <<: *base
@@ -103,7 +107,24 @@ jobs:
           name: Run image test
           command: ./.circleci/test-image.sh
       - store_artifacts:
-          path: build/
+          path: build
+          destination: /
+
+  test-dash-preview:
+    docker:
+      - image: quay.io/plotly/image-exporter:$CIRCLE_SHA1
+      - image: quay.io/plotly/image-exporter:$CIRCLE_SHA1
+        environment:
+          LIBGL_ALWAYS_SOFTWARE: true
+          GALLIUM_DRIVER: softpipe
+    steps:
+      - checkout
+      - run:
+          name: Run dash-preview test
+          command: ./.circleci/test-dash-preview.sh
+      - store_artifacts:
+          path: build
+          destination: /
 
   docker-build-and-push:
     docker:
@@ -236,3 +257,4 @@ jobs:
             zip -r artifacts/conda-linux-64.zip ./linux-64
       - store_artifacts:
           path: artifacts
+          destination: /

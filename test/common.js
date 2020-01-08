@@ -29,6 +29,7 @@ function createMockWindow (opts = {}) {
 
   webContents.executeJavaScript = sinon.stub()
   webContents.printToPDF = sinon.stub()
+  webContents.sendInputEvent = sinon.stub()
   webContents.session = sinon.stub()
   webContents.session.clearStorageData = sinon.stub()
 

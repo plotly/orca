@@ -22,7 +22,7 @@ tap.test('pdftops.pdf2eps', t => {
         if (err) t.fail(err)
 
         const size = fs.statSync(outPath).size
-        t.ok(size > 9e4, 'min pdf file size')
+        t.ok(size > 5e4, 'min pdf file size')
         t.ok(size < 4e5, 'max pdf file size')
         t.ok(fileType(readChunk.sync(outPath, 0, 4100)).mime === 'application/postscript', 'postscript content')
         t.end()

@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -e
+programname=$0
+
+ENDPOINT="http://localhost:9091"
+
+function usage {
+    echo "usage: $programname output_folder"
+    echo "  it renders all the JSON files found in ./test/dash-preview/mocks into the output_folder."
+    exit 1
+}
+
+# if less than two arguments supplied, display usage
+if [  $# -le 0 ]
+then
+	usage
+fi
+
+# Check that server is running
+function fail {
+  echo $1 >&2
+  exit 1
+}
+
+function retry {
+  local n=1
+  local max=5
+  local delay=5
+  while true; do
+    "$@" && break || {
+      if [[ $n -lt $max ]]; then
+        ((n++))
+        echo "Command failed. Attempt $n/$max:"
+        sleep $delay;
+      else
+        fail "The command has failed after $n attempts."
+      fi
+    }
+  done
+}
+retry curl --silent "$ENDPOINT/ping"
+echo
+echo "Orca is up and running at $ENDPOINT"
+
+# TODO: use the following block instead when upgrading curl
+# output=$(curl --retry 5 --retry-delay 5 --retry-connrefuse --silent http://localhost:9091/ping)
+# if [[ $output == pong ]]; then
+#   echo "Orca is up and running"
+# else
+#   echo "Orca is not available at http://localhost:9091."
+#   echo "You have to manually start it to run this test."
+#   exit 1
+# fi
+
+mkdir -p "$1"
+
+for path in ./test/dash-preview/mocks/*.json; do
+  filename=${path##*/}
+  name=${filename%.json}
+  echo "Exporting mock $name.json"
+  curl -XPOST -d "@$path" "$ENDPOINT/dash-preview" -o "$1/$name.pdf"
+done
