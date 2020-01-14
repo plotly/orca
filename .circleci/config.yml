@@ -182,9 +182,10 @@ jobs:
               echo "...  quay.io/plotly/image-exporter:$CIRCLE_BRANCH will NOT be pushed to quay.io"
             else
               # otherwise, tag and push as branch name
-              echo "Tag and push image as branch name"
-              docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$CIRCLE_BRANCH
-              docker push quay.io/plotly/image-exporter:$CIRCLE_BRANCH
+              SANITIZED_BRANCH=$(echo "$CIRCLE_BRANCH" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9\.]+/-/g | sed -r s/^-+\|-+$//g | tr A-Z a-z)
+              echo "Tag and push image as sanitized branch name: $SANITIZED_BRANCH"
+              docker tag quay.io/plotly/image-exporter:$CIRCLE_SHA1 quay.io/plotly/image-exporter:$SANITIZED_BRANCH
+              docker push quay.io/plotly/image-exporter:$SANITIZED_BRANCH
             fi
       - run:
           name: Trigger the version upgrade and release build
