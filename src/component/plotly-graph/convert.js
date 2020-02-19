@@ -81,6 +81,10 @@ function convert (info, opts, reply) {
   }
 
   switch (format) {
+    case 'json':
+      body = imgData
+      bodyLength = body.length
+      return done()
     case 'png':
     case 'jpeg':
     case 'webp':

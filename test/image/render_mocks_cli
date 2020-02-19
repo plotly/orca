@@ -2,7 +2,7 @@
 set -e
 programname=$0
 
-PLOTLYJS_URL="https://cdn.plot.ly/plotly-1.47.2.min.js"
+PLOTLYJS_URL="https://67630-45646037-gh.circle-artifacts.com/0/dist/plotly.min.js"
 
 function usage {
     echo "usage: $programname output_folder [docker:image]"
@@ -17,7 +17,7 @@ then
 	usage
 fi
 
-for format in png pdf svg eps emf
+for format in png pdf svg eps emf json
 do
   # To obtain reproducible results, we need to use software rendering
   export LIBGL_ALWAYS_SOFTWARE=true
