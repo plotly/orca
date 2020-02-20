@@ -64,6 +64,13 @@ function render (info, opts, sendToMain) {
         : ''
   }
 
+  // Set uid for deterministic rendering
+  for (var i = 0; i < figure.data.length; i++) {
+    var trace = figure.data[i]
+    if (trace && !trace.uid) trace.uid = 'trace-' + i
+  }
+  if (figure.layout && !figure.layout.uid) figure.layout.uid = 'layout-0'
+
   if (format === 'full-json' && semver.lte(Plotly.version, '1.52.0')) {
     errorCode = 527
     result.error = `plotly.js version: ${Plotly.version}`
