@@ -9,6 +9,23 @@ https://github.com/plotly/orca/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent Orca release.
 
+## [1.3.0] 2020-03-12
+
+## Added
+
+- Implement HTTP content-negotiation for plotly-graph [#228]
+
+### Changed
+
+- Bump electron from `1.8.4` to `6.1.4`
+
+## Fixed
+
+- Fix colorbar in EMF exports [#220]
+- Fix `pageSize` attribute for Dash app preview [#245, #250, #254]
+- Fix EPS export to preserve graphics in vector format [#266]
+- Segmentation fault when NODE_OPTIONS environment variable set [#266]
+
 
 ## [1.2.1] 2019-02-04
 
