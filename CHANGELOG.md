@@ -9,6 +9,12 @@ https://github.com/plotly/orca/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent Orca release.
 
+## [1.3.1] 2020-03-26
+
+## Fixed
+
+- Fix sandbox problem in the conda package for Linux [#301]
+
 ## [1.3.0] 2020-03-12
 
 ## Added
