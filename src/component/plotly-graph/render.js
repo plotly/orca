@@ -64,14 +64,6 @@ function render (info, opts, sendToMain) {
         : ''
   }
 
-  // Set uid for deterministic rendering
-  for (var i = 0; i < figure.data.length; i++) {
-    var trace = figure.data[i]
-    if (trace && !trace.uid) trace.uid = 'trace-' + i
-  }
-  if (figure.layout && !figure.layout.uid) figure.layout.uid = 'layout-0'
-
-
   if (
     // 'full-json' was introduced in plotly.js v1.53.0
     // see: https://github.com/plotly/plotly.js/releases/tag/v1.53.0
