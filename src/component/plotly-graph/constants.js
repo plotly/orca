@@ -15,7 +15,7 @@ module.exports = {
     406: 'requested format is not acceptable',
     525: 'plotly.js error',
     526: 'plotly.js version 1.11.0 or up required',
-    527: 'plotly.js version 1.52.0 or up required for exporting to `json`',
+    527: 'plotly.js version 1.53.0 or up required for exporting to `json`',
     530: 'image conversion error'
   },
 

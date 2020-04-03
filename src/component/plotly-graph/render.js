@@ -71,7 +71,13 @@ function render (info, opts, sendToMain) {
   }
   if (figure.layout && !figure.layout.uid) figure.layout.uid = 'layout-0'
 
-  if (format === 'full-json' && semver.lte(Plotly.version, '1.52.0')) {
+
+  if (
+    // 'full-json' was introduced in plotly.js v1.53.0
+    // see: https://github.com/plotly/plotly.js/releases/tag/v1.53.0
+    format === 'full-json' && semver.lte(Plotly.version, '1.53.0')
+  )
+  {
     errorCode = 527
     result.error = `plotly.js version: ${Plotly.version}`
     return done()
