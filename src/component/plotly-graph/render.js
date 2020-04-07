@@ -51,7 +51,7 @@ function render (info, opts, sendToMain) {
   }
 
   const imgOpts = {
-    format: (PRINT_TO_PDF || PRINT_TO_EMF) ? 'svg' : format,
+    format: (PRINT_TO_PDF || PRINT_TO_EMF) ? 'svg' : (format === 'json' ? 'full-json' : format),
     width: info.width,
     height: info.height,
     // only works as of plotly.js v1.31.0
@@ -62,6 +62,16 @@ function render (info, opts, sendToMain) {
     setBackground: (format === 'jpeg' || format === 'emf') ? 'opaque'
       : PRINT_TO_PDF ? pdfBackground
         : ''
+  }
+
+  if (
+    // 'full-json' was introduced in plotly.js v1.53.0
+    // see: https://github.com/plotly/plotly.js/releases/tag/v1.53.0
+    imgOpts.format === 'full-json' && semver.lt(Plotly.version, '1.53.0')
+  ) {
+    errorCode = 527
+    result.error = `plotly.js version: ${Plotly.version}`
+    return done()
   }
 
   let promise

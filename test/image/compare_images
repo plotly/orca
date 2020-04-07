@@ -21,6 +21,9 @@ do
   format="${filename##*.}"
 
   case "$format" in
+    json)
+      continue # not exactly an image, so let's skip it
+      ;;
     png)
       # Copy as is
       cp "$1/$filename" "$3/$filename.baseline.png"
