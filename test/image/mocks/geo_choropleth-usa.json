@@ -1,6 +1,7 @@
 {
     "data": [
         {
+            "uid": "data0",
             "autocolorscale": false,
             "zmax": 16472.88,
             "colorscale": [
