@@ -43,6 +43,15 @@ function render (info, opts, sendToMain) {
   const PRINT_TO_PDF = (format === 'pdf' || format === 'eps')
   const PRINT_TO_EMF = (format === 'emf')
 
+  let imgOptsFormat
+  if (PRINT_TO_PDF || PRINT_TO_EMF) {
+    imgOptsFormat = 'svg'
+  } else if (format === 'json') {
+    imgOptsFormat = 'full-json'
+  } else {
+    imgOptsFormat = format
+  }
+
   // stash `paper_bgcolor` here in order to set the pdf window bg color
   let bgColor
   const pdfBackground = (gd, _bgColor) => {
@@ -51,7 +60,7 @@ function render (info, opts, sendToMain) {
   }
 
   const imgOpts = {
-    format: (PRINT_TO_PDF || PRINT_TO_EMF) ? 'svg' : (format === 'json' ? 'full-json' : format),
+    format: imgOptsFormat,
     width: info.width,
     height: info.height,
     // only works as of plotly.js v1.31.0
