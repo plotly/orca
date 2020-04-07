@@ -21,8 +21,21 @@ do
   format="${filename##*.}"
 
   case "$format" in
-    json)
-      continue # not exactly an image, so let's skip it
+    json)  
+      diff "$1/$filename" "$2/$filename" > "$3/$filename.diff"
+
+      # if output are the same
+      if [ $? -eq 0 ]
+      then
+        rm "$3/$filename.diff"
+      # else copy
+      else
+        cp "$1/$filename" "$3/$filename.baseline.json"
+        cp "$2/$filename" "$3/$filename"
+        echo "all: 1" > "$3/$filename.txt"
+      fi
+
+      continue # skip the rest
       ;;
     png)
       # Copy as is
@@ -63,7 +76,7 @@ do
   fi
 done
 
-CODE=$(grep -R "all: [^0]" "$3"/*.txt | wc -l)
+CODE=$(ls "$3"/*.txt | wc -l)
 
 echo "$CODE different images"
 exit "$CODE"
