@@ -1,11 +1,13 @@
 {
     "data":[{
+        "uid": "data0",
         "x": [0, 1],
         "y": [0, 1.414],
         "text": ["Hx+yH", "H\\sqrt{2}H"],
         "mode": "text+markers",
         "name": "$E^2=m^2c^4+p^2c^2$"
     }, {
+        "uid": "data1",
         "x": [0, 1],
         "y": [1.4, 0.1],
         "text": ["H1.400 \\pm 0.023H", "H0.100 \\pm 0.002H"],
@@ -13,12 +15,14 @@
         "type": "bar",
         "name": "$x=\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$"
     }, {
+        "uid": "data2",
         "type": "pie",
         "values": [1, 9],
         "labels": ["$\\frac{1}{10}=10\\%$", "$\\frac{9}{10}=90\\%$"],
         "textinfo": "label",
         "domain": {"x": [0.3, 0.75], "y": [0.55, 1]}
     }, {
+        "uid": "data3",
         "type": "heatmap",
         "z": [[1,2],[3,4]],
         "xaxis": "x2",

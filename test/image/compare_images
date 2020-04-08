@@ -21,6 +21,22 @@ do
   format="${filename##*.}"
 
   case "$format" in
+    json)  
+      diff "$1/$filename" "$2/$filename" > "$3/$filename.diff"
+
+      # if output are the same
+      if [ $? -eq 0 ]
+      then
+        rm "$3/$filename.diff"
+      # else copy
+      else
+        cp "$1/$filename" "$3/$filename.baseline.json"
+        cp "$2/$filename" "$3/$filename"
+        echo "all: 1" > "$3/$filename.txt"
+      fi
+
+      continue # skip the rest
+      ;;
     png)
       # Copy as is
       cp "$1/$filename" "$3/$filename.baseline.png"
@@ -46,10 +62,21 @@ do
 
   # Do exact pixel comparison using ImageMagick
   compare -verbose -metric AE "$3/$filename.baseline.png" "$3/$filename.png" "$3/$filename.diff.png" 2> "$3/$filename.txt"
-  cat "$3/$filename.txt"
+
+  # Check result and log
+  if grep -q "all: [^0]" "$3/$filename.txt"; then
+    # If it doesn't start by 0, they are different
+    cat "$3/$filename.txt"
+  else
+    # If it starts by 0, they are the same
+    rm "$3/$filename.txt"
+    rm "$3/$filename.diff.png"
+    rm "$3/$filename.baseline.png"
+    rm "$3/$filename.png"
+  fi
 done
 
-CODE=$(grep -R "all: [^0]" "$3"/*.txt | wc -l)
+CODE=$(ls "$3"/*.txt | wc -l)
 
 echo "$CODE different images"
 exit "$CODE"

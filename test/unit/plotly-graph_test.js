@@ -109,7 +109,7 @@ tap.test('parse:', t => {
   })
 
   t.test('parsing *format*', t => {
-    const shouldPass = ['png', 'webp', 'svg', 'jpeg']
+    const shouldPass = ['png', 'webp', 'svg', 'jpeg', 'json']
     const shouldFail = ['not gonna work', 'too one too', 'jpg', 'JPEG']
     const shouldDflt = ['', null, undefined, [], {}]
 
@@ -675,6 +675,13 @@ tap.test('render:', t => {
     done()
   })
 
+  const mock153 = () => {
+    Plotly.version = '1.53.0'
+    Plotly.toImage = sinon.stub().returns(
+      new Promise(resolve => resolve('image data'))
+    )
+  }
+
   const mock130 = () => {
     Plotly.version = '1.30.0'
     Plotly.toImage = sinon.stub().returns(
@@ -708,7 +715,20 @@ tap.test('render:', t => {
     }
   }
 
-  t.test('v1.30.0 and up', t => {
+  t.test('v1.53.0 and up', t => {
+    t.test('format json', t => {
+      mock153()
+
+      fn({ format: 'json' }, {}, (errorCode, result) => {
+        t.equal(errorCode, null)
+        t.equal(result.imgData, 'image data')
+        t.end()
+      })
+    })
+    t.end()
+  })
+
+  t.test('v1.30.0 <= versions < 1.53.0', t => {
     t.test('(format png)', t => {
       mock130()
 
@@ -735,6 +755,15 @@ tap.test('render:', t => {
         t.ok(win.close.calledOnce)
 
         restore()
+        t.end()
+      })
+    })
+
+    t.test('format json', t => {
+      mock130()
+
+      fn({ format: 'json' }, {}, (errorCode, result) => {
+        t.equal(errorCode, 527)
         t.end()
       })
     })
