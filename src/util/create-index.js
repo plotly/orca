@@ -7,7 +7,7 @@ const os = require('os')
 const COMPONENT_GLOBAL = 'PlotlyExporterComponent'
 const PATH_TO_BUILD = path.join(os.tmpdir(), 'orca-build')
 try {
-  fs.mkdirSync(PATH_TO_BUILD)
+  fs.mkdirSync(PATH_TO_BUILD, 0o777)
 } catch (e) {}
 const PATH_TO_INIT_RENDERERS = path.join(__dirname, 'init-renderers.js')
 const PATH_TO_INIT_PINGS = path.join(__dirname, 'init-pings.js')
