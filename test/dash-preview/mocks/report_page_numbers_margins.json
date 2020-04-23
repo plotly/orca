@@ -1,9 +1,0 @@
-{
-  "url": "https://dash-design-table-css-s-fuheoq.herokuapp.com/report_page_numbers_margins?print=true",
-  "timeout": "10",
-  "pdf_options": {
-    "pageSize": "A4",
-    "landscape": true,
-    "marginsType": 1
-  }
-}

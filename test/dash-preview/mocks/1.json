@@ -1,8 +1,0 @@
-{
-  "url": "https://dash-demo.plotly.host/report-demo/report/report-1546830621-9989?print=true",
-  "timeout": "15",
-  "pdf_options": {
-    "pageSize": "Letter",
-    "marginsType": 1
-  }
-}
