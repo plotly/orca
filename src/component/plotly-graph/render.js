@@ -207,19 +207,15 @@ function toPDF (imgData, imgOpts, bgColor) {
       img.onerror = reject
       img.src = "${imgData}"
       setTimeout(() => reject(new Error('too long to load image')), ${cst.pdfPageLoadImgTimeout})
-    })`).then(() => {
-      win.webContents.printToPDF(printOpts, (err, pdfData) => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(pdfData)
-        }
+    })`)
+      .then(() => win.webContents.printToPDF(printOpts))
+      .then(pdfData => {
         win.close()
+        resolve(pdfData)
+      }).catch((err) => {
+        win.close()
+        reject(err)
       })
-    }).catch((err) => {
-      reject(err)
-      win.close()
-    })
   })
 }
 

@@ -744,7 +744,7 @@ tap.test('render:', t => {
       mockBrowser()
       const { win, restore } = mockWindow()
       win.webContents.executeJavaScript.returns(new Promise(resolve => resolve()))
-      win.webContents.printToPDF.yields(null, 'pdf data')
+      win.webContents.printToPDF.returns(Promise.resolve('pdf data'))
 
       fn({ format: 'pdf' }, {}, (errorCode, result) => {
         t.equal(errorCode, null)
@@ -835,7 +835,7 @@ tap.test('render:', t => {
       mockBrowser()
       const { win, restore } = mockWindow()
       win.webContents.executeJavaScript.returns(new Promise(resolve => resolve()))
-      win.webContents.printToPDF.yields(null, 'pdf data')
+      win.webContents.printToPDF.returns(Promise.resolve('pdf data'))
 
       fn({ format: 'pdf' }, {}, (errorCode, result) => {
         t.equal(errorCode, null)
@@ -903,7 +903,7 @@ tap.test('render:', t => {
     mockBrowser()
     const { win, restore } = mockWindow()
     win.webContents.executeJavaScript.returns(new Promise(resolve => resolve()))
-    win.webContents.printToPDF.yields(new Error('oops'))
+    win.webContents.printToPDF.returns(Promise.reject(new Error('oops')))
 
     fn({ format: 'pdf' }, {}, (errorCode, result) => {
       t.equal(errorCode, 525)
