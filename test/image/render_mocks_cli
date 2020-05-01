@@ -2,7 +2,7 @@
 set -e
 programname=$0
 
-PLOTLYJS_URL="https://cdn.plot.ly/plotly-1.53.0.min.js"
+PLOTLYJS_URL="https://cdn.plot.ly/plotly-1.54.0.min.js"
 
 function usage {
     echo "usage: $programname output_folder [docker:image]"
