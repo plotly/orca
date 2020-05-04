@@ -21,8 +21,8 @@ do
   format="${filename##*.}"
 
   case "$format" in
-    json)  
-      diff "$1/$filename" "$2/$filename" > "$3/$filename.diff"
+    json)
+      diff <(jq -S . "$1/$filename") <(jq -S . "$2/$filename") > "$3/$filename.diff"
 
       # if output are the same
       if [ $? -eq 0 ]
