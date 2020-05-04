@@ -103,6 +103,7 @@ jobs:
       - image: quay.io/plotly/image-exporter:$CIRCLE_SHA1
     steps:
       - checkout
+      - run: apt-get update && apt-get install -y jq
       - run:
           name: Run image test
           command: ./.circleci/test-image.sh
