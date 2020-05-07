@@ -17,6 +17,7 @@ workflows:
           requires:
             - test-node-v6
             - test-node-v8
+            - test-node-v10
           filters:
             branches:
               # Do not run on branches based off forks as
@@ -91,12 +92,17 @@ jobs:
   test-node-v6:
     <<: *base
     docker:
-      - image: circleci/node:6.14-stretch-browsers
+      - image: circleci/node:6.17-stretch-browsers
 
   test-node-v8:
     <<: *base
     docker:
-      - image: circleci/node:8.11-stretch-browsers
+      - image: circleci/node:8.17-stretch-browsers
+
+  test-node-v10:
+    <<: *base
+    docker:
+      - image: circleci/node:10.20-stretch-browsers
 
   test-image:
     docker:
