@@ -23,11 +23,6 @@ function render (info, opts, sendToMain) {
   const contents = win.webContents
   const session = contents.session
 
-  // Clear cookies before loading URL
-  session.clearStorageData({}, () => {
-    win.loadURL(info.url)
-  })
-
   const done = errorCode => {
     win.close()
 
@@ -72,20 +67,32 @@ function render (info, opts, sendToMain) {
     win = null
   })
 
-  loaded().then(() => {
-    // Move mouse outside the page to prevent hovering on figures
-    contents.sendInputEvent({ type: 'mouseMove', x: -1, y: -1 })
-    contents.printToPDF(info.pdfOptions, (err, pdfData) => {
-      if (err) {
-        done(525)
-      } else {
-        result.imgData = pdfData
-        done()
-      }
+  // Clear cookies before loading URL
+  session.clearStorageData({})
+    .then(() => win.loadURL(info.url))
+    .then(() => loaded())
+    .catch(() => {
+      done(526) // timeout
     })
-  }).catch(() => {
-    done(526)
-  })
+    .then(() => {
+      // Move mouse outside the page to prevent hovering on figures
+      contents.sendInputEvent({ type: 'mouseMove', x: -1, y: -1 })
+
+      // Close window if timeout is exceeded
+      // This is necessary because `printToPDF` sometimes never end
+      // https://github.com/electron/electron/issues/20634
+      if (info.timeOut) {
+        setTimeout(() => done(526), info.timeOut * 1000)
+      }
+      return contents.printToPDF(info.pdfOptions)
+    })
+    .then(pdfData => {
+      result.imgData = pdfData
+      done() // success
+    })
+    .catch(e => {
+      done(525) // generation failed
+    })
 }
 
 module.exports = render
