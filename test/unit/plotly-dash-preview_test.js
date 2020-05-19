@@ -130,6 +130,10 @@ tap.test('parse:', t => {
 
 tap.test('render:', t => {
   const fn = _module.render
+  const mock = {
+    url: 'https://dummy.com',
+    timeOut: 1
+  }
 
   t.afterEach((done) => {
     remote.createBrowserWindow.restore()
@@ -140,11 +144,9 @@ tap.test('render:', t => {
     const win = createMockWindow()
     sinon.stub(remote, 'createBrowserWindow').returns(win)
     win.webContents.executeJavaScript.resolves(true)
-    win.webContents.printToPDF.yields(null, '-> image data <-')
+    win.webContents.printToPDF.resolves('-> image data <-')
 
-    fn({
-      url: 'https://dummy.com'
-    }, {}, (errorCode, result) => {
+    fn(mock, {}, (errorCode, result) => {
       t.ok(win.webContents.printToPDF.calledOnce)
       t.ok(win.close.calledOnce)
       t.equal(errorCode, undefined, 'code')
@@ -157,11 +159,9 @@ tap.test('render:', t => {
     const win = createMockWindow()
     sinon.stub(remote, 'createBrowserWindow').returns(win)
     win.webContents.executeJavaScript.resolves(true)
-    win.webContents.printToPDF.yields(null, '-> image data <-')
+    win.webContents.printToPDF.resolves('-> image data <-')
 
-    fn({
-      url: 'https://dummy.com'
-    }, {}, (errorCode, result) => {
+    fn(mock, {}, (errorCode, result) => {
       t.ok(win.webContents.session.clearStorageData.calledOnce)
       t.equal(errorCode, undefined, 'code')
       t.equal(result.imgData, '-> image data <-', 'result')
@@ -173,11 +173,9 @@ tap.test('render:', t => {
     const win = createMockWindow()
     sinon.stub(remote, 'createBrowserWindow').returns(win)
     win.webContents.executeJavaScript.rejects('fail to load')
-    win.webContents.printToPDF.yields(null, '-> image data <-')
+    win.webContents.printToPDF.resolves('-> image data <-')
 
-    fn({
-      url: 'https://dummy.com'
-    }, {}, (errorCode, result) => {
+    fn(mock, {}, (errorCode, result) => {
       t.ok(win.webContents.printToPDF.notCalled)
       t.ok(win.close.calledOnce)
       t.equal(errorCode, 526, 'code')
@@ -190,11 +188,9 @@ tap.test('render:', t => {
     const win = createMockWindow()
     sinon.stub(remote, 'createBrowserWindow').returns(win)
     win.webContents.executeJavaScript.resolves(true)
-    win.webContents.printToPDF.yields(new Error('printToPDF error'))
+    win.webContents.printToPDF.rejects(new Error('printToPDF error'))
 
-    fn({
-      url: 'https://dummy.com'
-    }, {}, (errorCode, result) => {
+    fn(mock, {}, (errorCode, result) => {
       t.ok(win.webContents.printToPDF.calledOnce)
       t.ok(win.close.calledOnce)
       t.equal(errorCode, 525, 'code')

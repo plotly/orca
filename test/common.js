@@ -31,7 +31,7 @@ function createMockWindow (opts = {}) {
   webContents.printToPDF = sinon.stub()
   webContents.sendInputEvent = sinon.stub()
   webContents.session = sinon.stub()
-  webContents.session.clearStorageData = sinon.stub()
+  webContents.session.clearStorageData = sinon.stub().resolves(true)
 
   Object.assign(win, opts, {
     webContents: webContents,
