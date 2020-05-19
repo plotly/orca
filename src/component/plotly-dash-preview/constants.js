@@ -14,7 +14,7 @@ module.exports = {
     'Tabloid': { 'width': 11 * pixelsInInch, 'height': 17 * pixelsInInch }
   },
   statusMsg: {
-    525: 'dash preview generation failed',
-    526: 'dash preview generation timed out'
+    525: 'dash preview pdf generation failed',
+    526: 'dash preview generation timed out',
   }
 }

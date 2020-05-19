@@ -67,7 +67,6 @@ function render (info, opts, sendToMain) {
     win = null
   })
 
-  var timer
   // Clear cookies before loading URL
   session.clearStorageData({})
     .then(() => win.loadURL(info.url))
@@ -79,20 +78,12 @@ function render (info, opts, sendToMain) {
       // Move mouse outside the page to prevent hovering on figures
       contents.sendInputEvent({ type: 'mouseMove', x: -1, y: -1 })
 
-      // Close window if timeout is exceeded
-      // This is necessary because `printToPDF` sometimes never end
-      // https://github.com/electron/electron/issues/20634
-      if (info.timeOut) {
-        timer = setTimeout(() => Promise.reject(526), info.timeOut * 1000)
-      }
       return contents.printToPDF(info.pdfOptions)
         .then(pdfData => {
-          clearTimeout(timer)
           result.imgData = pdfData
           done() // success
         })
         .catch(e => {
-          clearTimeout(timer)
           return Promise.reject(525) // generation failed
         })
     })

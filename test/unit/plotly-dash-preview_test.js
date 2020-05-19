@@ -194,7 +194,25 @@ tap.test('render:', t => {
       t.ok(win.webContents.printToPDF.calledOnce)
       t.ok(win.close.calledOnce)
       t.equal(errorCode, 525, 'code')
-      t.equal(result.msg, 'dash preview generation failed', 'error msg')
+      t.equal(result.msg, 'dash preview pdf generation failed', 'error msg')
+      t.end()
+    })
+  })
+
+  t.test('should handle printToPDF call that never completes', t => {
+    // See https://github.com/electron/electron/issues/20634 for details
+    const win = createMockWindow()
+    sinon.stub(remote, 'createBrowserWindow').returns(win)
+    win.webContents.executeJavaScript.resolves(true)
+    win.webContents.printToPDF.rejects(new Error('printToPDF error'))
+
+    fn({
+      "url": "https://stackoverflow.com/questions/909018/avoiding-initial-memory-heap-size-error",
+      "timeout": 3
+    }, {}, (errorCode, result) => {
+      t.ok(win.close.calledOnce)
+      t.equal(errorCode, 525, 'code')
+      t.equal(result.msg, 'dash preview pdf generation failed', 'error msg')
       t.end()
     })
   })
