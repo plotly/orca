@@ -207,8 +207,8 @@ tap.test('render:', t => {
     win.webContents.printToPDF.rejects(new Error('printToPDF error'))
 
     fn({
-      "url": "https://stackoverflow.com/questions/909018/avoiding-initial-memory-heap-size-error",
-      "timeout": 3
+      'url': 'https://stackoverflow.com/questions/909018/avoiding-initial-memory-heap-size-error',
+      'timeout': 3
     }, {}, (errorCode, result) => {
       t.ok(win.close.calledOnce)
       t.equal(errorCode, 525, 'code')

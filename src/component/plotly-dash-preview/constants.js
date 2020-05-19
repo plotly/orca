@@ -15,6 +15,6 @@ module.exports = {
   },
   statusMsg: {
     525: 'dash preview pdf generation failed',
-    526: 'dash preview generation timed out',
+    526: 'dash preview generation timed out'
   }
 }
