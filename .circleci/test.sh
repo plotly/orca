@@ -7,7 +7,7 @@ set +e
 set +o pipefail
 
 EXIT_STATE=0
-MAX_AUTO_RETRY=5
+MAX_AUTO_RETRY=2
 
 # inspired by https://unix.stackexchange.com/a/82602
 retry () {

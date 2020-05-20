@@ -203,5 +203,23 @@ tap.test('render:', t => {
     })
   })
 
+  t.test('should handle pages with iframes', t => {
+    // https://github.com/electron/electron/issues/20634
+    const win = createMockWindow()
+    sinon.stub(remote, 'createBrowserWindow').returns(win)
+    win.webContents.executeJavaScript.resolves(true)
+
+    fn({
+      url: 'https://stackoverflow.com/questions/909018/avoiding-initial-memory-heap-size-error',
+      timeOut: 1
+    }, {}, (errorCode, result) => {
+      t.ok(win.webContents.printToPDF.calledOnce)
+      t.ok(win.close.calledOnce)
+      t.equal(errorCode, 527, 'code')
+      t.equal(result.msg, 'dash preview pdf generation timed out', 'error msg')
+      t.end()
+    })
+  })
+
   t.end()
 })

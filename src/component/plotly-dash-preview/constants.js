@@ -4,6 +4,7 @@ const micronsInInch = 25400
 module.exports = {
   minInterval: 500,
   maxRenderingTries: 100,
+  maxPrintPDFTime: 50,
   pixelsInMicron: pixelsInInch / micronsInInch,
   sizeMapping: {
     'A3': { 'width': 11.7 * pixelsInInch, 'height': 16.5 * pixelsInInch },
@@ -15,6 +16,7 @@ module.exports = {
   },
   statusMsg: {
     525: 'dash preview generation failed',
-    526: 'dash preview generation timed out'
+    526: 'dash preview generation timed out',
+    527: 'dash preview pdf generation timed out'
   }
 }
