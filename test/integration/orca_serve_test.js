@@ -94,7 +94,7 @@ tap.test('should work for *plotly-dashboard* component', { timeout: 1e5 }, t => 
       url: SERVER_URL + '/dashboard',
       body: JSON.stringify({
         fid: 'some-fid',
-        url: 'https://plot.ly/dashboard/jackp:17872/embed',
+        url: 'https://chart-studio.plotly.com/dashboard/jackp:17872/embed',
         format: 'pdf'
       })
     }, (err, res, body) => {
@@ -115,7 +115,7 @@ tap.test('should work for *plotly-dashboard* component', { timeout: 1e5 }, t => 
       url: SERVER_URL + '/dashboard',
       body: JSON.stringify({
         fid: 'some-fid',
-        url: 'https://plot.ly/dashboard/jackp:17872/embed',
+        url: 'https://chart-studio.plotly.com/dashboard/jackp:17872/embed',
         format: 'pdf'
       })
     }).on('error', t.fail).pipe(ws)
