@@ -8,6 +8,7 @@
  */
 function initApp (app, ipcMain) {
   app.commandLine.appendSwitch('ignore-gpu-blacklist')
+  app.commandLine.appendSwitch('headless')
 
   ipcMain.on('renderer-error', (event, info) => {
     app.emit('renderer-error', {
