@@ -114,7 +114,7 @@ COPY deployment/ImageMagickPolicy.xml /etc/ImageMagick-6/policy.xml
 ####################
 # Copy and set up Orca
 
-RUN apt-get update && apt-get install -y chromium-browser fonts-liberation xvfb poppler-utils git \
+RUN apt-get update && apt-get install -y chromium-browser fonts-liberation poppler-utils git \
     && rm -rf /var/lib/apt/lists/* && apt-get clean
 
 COPY package.json /var/www/image-exporter/
