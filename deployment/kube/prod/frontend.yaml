@@ -2,7 +2,7 @@
 # stage version.  When updating this file, please check if your changes
 # need to be made to the other version.
 
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: imageserver

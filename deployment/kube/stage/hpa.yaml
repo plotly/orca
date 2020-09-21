@@ -8,7 +8,7 @@ metadata:
   name: imageserver
 spec:
   scaleTargetRef:
-    apiVersion: extensions/v1beta1
+    apiVersion: apps/v1
     kind: Deployment
     name: imageserver
   # Set this to 3x "min-nodes":
