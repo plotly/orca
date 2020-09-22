@@ -6,6 +6,7 @@ FROM ubuntu:xenial
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         gnupg curl ca-certificates xz-utils wget libgtk2.0-0 libgconf-2-4 \
+        libxss1 \
     && rm -rf /var/lib/apt/lists/* && apt-get clean
 
 RUN groupadd --gid 1000 node \
