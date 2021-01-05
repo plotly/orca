@@ -81,7 +81,7 @@
     "uuid": "^3.3.3"
   },
   "devDependencies": {
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "chttps": "^1.0.6",
     "cross-env": "^5.2.1",
     "delay": "^4.3.0",
