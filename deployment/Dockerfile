@@ -80,10 +80,9 @@ RUN apt-get update -y && \
     fc-cache -fv && apt-get --auto-remove -y remove subversion
 
 ####################
-# Download mathjax (same version as plotly.js extras/)
+# Download mathjax 2.7.5
 
-RUN curl -L https://github.com/plotly/plotly.js/archive/master.tar.gz \
-    | tar -xvzf - --strip-components=3 plotly.js-master/dist/extras/mathjax
+RUN cd / && npm install mathjax@2.7.5 && mv node_modules/mathjax / && rm -rf /node_modules
 
 ####################
 # Install and configure monit
