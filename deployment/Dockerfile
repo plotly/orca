@@ -82,8 +82,7 @@ RUN apt-get update -y && \
 ####################
 # Download mathjax 2.7.5
 
-RUN mkdir /mathjax && cd /mathjax && curl -L https://github.com/mathjax/MathJax/archive/2.7.5.tar.gz \
-    | tar -xvzf - --strip-components=1
+RUN cd / && npm install mathjax@2.7.5 && mv node_modules/mathjax / && rm -rf /node_modules
 
 ####################
 # Install and configure monit
