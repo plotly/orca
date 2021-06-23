@@ -87,8 +87,9 @@ RUN apt-get update -y && \
 ####################
 # Download mathjax (same version as plotly.js extras/)
 
-RUN curl -L https://github.com/plotly/plotly.js/archive/master.tar.gz \
-    | tar -xvzf - --strip-components=3 plotly.js-master/dist/extras/mathjax
+RUN mkdir /mathjax && cd /mathjax && \
+    curl -L https://github.com/mathjax/MathJax/archive/2.3.0.tar.gz \
+    | tar -xvzf - --strip-components=2 MathJax-2.3.0/unpacked
 
 ####################
 # Install and configure monit
