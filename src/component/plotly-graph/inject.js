@@ -23,6 +23,7 @@ function inject (opts = {}) {
     let src = resolve(mathjax)
     if (src) {
       parts.push(script(src + cst.mathJaxConfigQuery))
+      parts.push(scriptMathJaxFont(cst.mathJaxFontQuery))
     } else {
       throw new Error('Provided path to MathJax files does not exists')
     }
@@ -64,6 +65,10 @@ function resolve (v) {
 
 function script (src) {
   return `<script src="${src}"></script>`
+}
+
+function scriptMathJaxFont (opts) {
+  return `<script type="text/javascript">${opts}</script>`
 }
 
 function cdnSrc (v) {
