@@ -2,6 +2,12 @@
 
 ![orca logo](orca_logo.png)
 
+<div align="center">
+  <a href="https://dash.plotly.com/project-maintenance">
+    <img src="https://dash.plotly.com/assets/images/maintained-by-plotly.png" width="800px" alt="Maintained by Plotly">
+  </a>
+</div>
+
 [![npm version](https://badge.fury.io/js/orca.svg)](https://badge.fury.io/js/orca)
 [![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/orca/blob/master/LICENSE)
 
