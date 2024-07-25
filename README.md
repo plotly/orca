@@ -26,7 +26,7 @@ Follow [@plotlygraphs](https://twitter.com/plotlygraphs) on Twitter for Orca ann
 If you have conda installed, you can easily install Orca from the plotly
 conda channel using:
 ```
-$ conda install -c plotly plotly-orca
+$ conda install -c plotly conda-forge::plotly-orca
 ```
 
 which makes the `orca` executable available on the path of current conda
