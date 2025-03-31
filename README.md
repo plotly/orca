@@ -1,3 +1,5 @@
+> Orca support in Plotly.py is deprecated and will be removed after September 2025. Use [Kaleido](https://plotly.com/python/static-image-export/) instead.
+
 # Orca
 
 ![orca logo](orca_logo.png)
