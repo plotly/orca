@@ -58,31 +58,27 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 ####################
 # Download fonts
 
-RUN apt-get update -y && \
-    apt-get install -y \
-        fontconfig \
-        fonts-ipafont-gothic \
-        fonts-ipafont-mincho \
-        subversion \
-        && \
-    rm -rf /var/lib/apt/lists/* && apt-get clean && \
-    cd /usr/share/fonts/truetype && \
-    for font in \
-      https://github.com/google/fonts/trunk/apache/droidsansmono \
-      https://github.com/google/fonts/trunk/apache/droidsans \
-      https://github.com/google/fonts/trunk/apache/droidserif \
-      https://github.com/google/fonts/trunk/apache/roboto \
-      https://github.com/google/fonts/trunk/apache/opensans \
-      https://github.com/google/fonts/trunk/ofl/gravitasone \
-      https://github.com/google/fonts/trunk/ofl/oldstandardtt \
-      https://github.com/google/fonts/trunk/ofl/ptsansnarrow \
-      https://github.com/google/fonts/trunk/ofl/raleway \
-      https://github.com/google/fonts/trunk/ofl/overpass \
-    ; do \
-      svn checkout $font ; \
-    done && \
-    mkdir /usr/share/fonts/user && \
-    fc-cache -fv && apt-get --auto-remove -y remove subversion
+RUN apt-get update && apt-get install -y \
+    fontconfig \
+    fonts-ipafont-gothic \
+    fonts-ipafont-mincho \
+    fonts-droid-fallback \
+    fonts-roboto \
+    fonts-oldstandard \
+    git \
+    && mkdir -p /tmp/fonts /usr/share/fonts/truetype/google-fonts \
+    && git clone --depth 1 https://github.com/google/fonts.git /tmp/fonts \
+    && find /tmp/fonts/ofl -iname "*roboto*.ttf" -exec cp {} /usr/share/fonts/truetype/google-fonts/ \; \
+    && find /tmp/fonts/ofl -iname "*opensans*.ttf" -exec cp {} /usr/share/fonts/truetype/google-fonts/ \; \
+    && find /tmp/fonts/ofl -iname "*gravitasone*.ttf" -exec cp {} /usr/share/fonts/truetype/google-fonts/ \; \
+    && find /tmp/fonts/ofl -iname "*ptsansnarrow*.ttf" -exec cp {} /usr/share/fonts/truetype/google-fonts/ \; \
+    && find /tmp/fonts/ofl -iname "*raleway*.ttf" -exec cp {} /usr/share/fonts/truetype/google-fonts/ \; \
+    && find /tmp/fonts/ofl -iname "*overpass*.ttf" -exec cp {} /usr/share/fonts/truetype/google-fonts/ \; \
+    && fc-cache -fv \
+    && rm -rf /tmp/fonts \
+    && apt-get remove -y git \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 ####################
 # Download mathjax (same version as plotly.js extras/)
@@ -102,9 +98,7 @@ RUN cd /opt && \
 
 ####################
 # Install latest stable Inkscape
-RUN apt-get update && apt-get install -y software-properties-common python-software-properties \
-    && add-apt-repository -y ppa:inkscape.dev/stable \
-    && apt-get update && apt-get install -y inkscape=0.92.5+68~ubuntu16.04.1 \
+RUN apt-get update && apt-get install -y inkscape \
     && rm -rf /var/lib/apt/lists/* && apt-get clean
 
 # Copy Inkscape defaults
