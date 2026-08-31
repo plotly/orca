@@ -33,7 +33,8 @@ module.exports = {
   },
 
   mathJaxConfigQuery: '?config=TeX-AMS-MML_SVG',
-
+  mathJaxFontQuery: 'if (window.MathJax) {MathJax.Hub.Config({SVG: {blacker: 1, font: "STIX-Web"}});}',
+  
   // config option passed in render step
   plotGlPixelRatio: 2.5,
 
